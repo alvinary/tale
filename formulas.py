@@ -54,18 +54,11 @@ class Assignment:
         else:
             return None, AssignmentError(term)
 
-class Index:
+class DimacsIndex:
 
-    def __init__(self, atoms=[],
-                       values={},
-                       sorts={},
-                       variables={}):
-
+    def __init__(self, atoms):        
         self.dimacsMap = {}
         self.stringMap = {}
-        self.valueMap = values
-        self.sortMap = sorts
-        self.variableMap = variables
         self.counter = 0
 
         for atom in atoms:
@@ -75,6 +68,22 @@ class Index:
             self.dimacsMap[atom] = dimacs_atom
             self.stringMap[dimacs_atom] = atom
             self.counter += 1
+            
+    def toDimacs(self, atom):
+        return self.dimacsMap[atom]
+        
+    def fromDimacs(self, dimacs):
+        return self.stringMap[dimacs]
+
+class Index:
+
+    def __init__(self, values={},
+                       sorts={},
+                       variables={}):
+
+        self.valueMap = values
+        self.sortMap = sorts
+        self.variableMap = variables
 
     def toDimacs(self, atom):
         return self.dimacsMap[atom]
@@ -110,6 +119,10 @@ class Index:
 
     def isVariable(self, name):
         return name in self.variableMap.keys()
+        
+    def assignments(self, sorts):
+        for t in product()
+            yield assignment
 
 @dataclass(frozen=True)
 class Term:
@@ -140,9 +153,12 @@ class Term:
     def show(self):
         return f"{self.term}.{'.'.join(self.functions)}"
 
+@dataclass(frozen=True)
 class Atom:
-    def __init__(self, terms):
-        self.terms = terms
+    terms : List[Term]
+    
+    def evaluate(self, index, assignment):
+        return Atom([t.evaluate(index, assignment)] for t in self.terms)
 
 class Either:
     def __init__(self, atoms):
