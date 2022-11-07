@@ -9,8 +9,8 @@ class Ok(Exception):
     def __str__(self):
         return "No error."
         
-    def fail(self):
-        pass
+    def __bool__(self):
+        return False
         
 class ExtensionError(Exception):
     
@@ -19,6 +19,9 @@ class ExtensionError(Exception):
         
     def __str__(self):
         return f"There is no extension for sort {self.sort}"
+        
+    def __bool__(self):
+        return True
 
 class FunctionError(Exception):
 
@@ -28,10 +31,10 @@ class FunctionError(Exception):
         self.term = term
 
     def __str__(self):
-        return f"No value found for {str(f)} of {str(x)}."
+        return f"No value found for {term}.{function}."
         
-    def fail(self):
-        raise self
+    def __bool__(self):
+        return True
         
 class AssignmentError(Exception):
     
@@ -42,8 +45,8 @@ class AssignmentError(Exception):
     def __str__(self):
         return f"Term {self.term} has no bound value."
         
-    def fail(self):
-        raise self
+    def __bool__(self):
+        return True
 
 class Assignment:
     def __init__(self, mapping):
@@ -93,12 +96,14 @@ class Index:
         return self.stringMap[atom]
 
     def value(self, function, elem):
+        
         if (function, elem) in self.valueMap.keys():
             value = self.valueMap[function, elem]
             error = Ok()
         else:
             value = None
-            error = FunctionError(function, elem)
+            error = FunctionError(function, elem)  
+            
         return value, error
 
     def hasVariable(self, name):
@@ -107,7 +112,8 @@ class Index:
     def extension(self, sort, local_sorts={}):
     
         in_map = sort in self.sortMap.keys()
-        in_local = sort in local_sorts.keys() 
+        in_local = sort in local_sorts.keys()
+        
         if not in_map and not in_local:
             raise ExtensionError(sort)
 
