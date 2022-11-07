@@ -215,7 +215,7 @@ class Either:
                      for o1, o2 in product(self.options, self.options)]
 
     def show(self):
-        return f"Either {', '.concat([a.show() for a in self.options])}"
+        return f"Either {', '.join([a.show() for a in self.options])}"
 
 @dataclass(frozen=True)
 class If:
