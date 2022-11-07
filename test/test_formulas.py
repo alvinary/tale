@@ -1,6 +1,26 @@
 import pytest
 from tale.formulas import *
 
+a = Term('a', [])
+b = Term('b', [])
+c = Term('c', [])
+d = Term('d', [])
+p = Term('p', [])
+q = Term('q', [])
+r = Term('r', [])
+t = Term('t', [])
+s = Term('s', [])
+
+pa = Atom([p, a])
+qa = Atom([q, a])
+sa = Atom([s, a])
+pab = Atom([p, a, b])
+qab = Atom([q, a, b])
+rba = Atom([r, b, a])
+pb = Atom([p, b])
+sab = Atom([s, a, b])
+ta = Atom([t, a])
+
 def test_terms():
 
     # Define constants, functions, and a variable 'v',
@@ -98,5 +118,26 @@ def test_rules():
     assert rule4.show() == rule4s
     assert rule5.show() == rule5s
 
+def test_assigments():
+
+    testSorts = {
+        's' : ['a', 'b'],
+        't' : ['c', 'd'],
+        'v' : ['f', 'g'],
+        'r' : ['s', 't']
+    }
+
+    testVariables = {
+        'v' : 'v',
+        'r' : 'r'
+    }
+
+    testIndex = Index(sorts=testSorts, variables=testVariables)
+    
+    target = {('a', 'f'), ('b', 'f'), ('a', 'g'), ('b', 'g')}
+    covered = set(testIndex.assignments(['s', 'v']))
+    assert target == covered
+
+def test_embedding():
     dimacs = DimacsIndex(atoms=[pa, qa, pab, qab, rba, pb, sab, ta])
 
