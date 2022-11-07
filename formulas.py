@@ -183,8 +183,12 @@ class Atom:
         
 @dataclass(frozen=True)
 class Comparison:
+    comparison : str
     left : Term
     right : Term
+    
+    def clausify(self, index):
+        return [index.getLiteral(self)]
 
 @dataclass(frozen=True)
 class Either:
