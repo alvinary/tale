@@ -168,8 +168,7 @@ class Term:
             argument = value
 
         if not self.functions and index.hasVariable(argument):
-            value, error = assignment.bind(
-                c24b296f38562a16f811bc1b35b1f3f73860e65fargument)
+            value, error = assignment.bind(argument)
 
         if not self.functions and not index.hasVariable(argument):
             value, error = argument, Ok()
