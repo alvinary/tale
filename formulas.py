@@ -205,7 +205,7 @@ class Or:
     disjuncts : List[Atom]
     
     def clausify(self, index):
-        
+        return [-index.getLiteral(a) for a in self.disjuncts]
 
 @dataclass(frozen=True)
 class Never:
