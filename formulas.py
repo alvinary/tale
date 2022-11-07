@@ -58,11 +58,11 @@ class AssignmentError(Exception):
 class Assignment:
 
     def __init__(self, mapping):
-        self.assignment = mapping
+        self.binding = mapping
 
     def bind(self, term):
-        if term in self.assignment.keys():
-            return self.assignment[term], Ok()
+        if term in self.binding.keys():
+            return self.binding[term], Ok()
         else:
             return None, AssignmentError(term)
 
@@ -145,9 +145,11 @@ class Index:
     def isVariable(self, name):
         return name in self.variableMap.keys()
 
-    def assignments(self, sorts):
+    def assignments(self, variables):
+        sorts = [self.variableMap[v] for v in variables]
         for assignment in product(*[self.sortMap[s] for s in sorts]):
-            yield assignment
+            binding = dict(zip(variables, assignment))
+            yield Assignment(binding)
 
 
 @dataclass(frozen=True)
