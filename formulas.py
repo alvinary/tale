@@ -189,7 +189,7 @@ class Atom:
     def show(self):
         predicate = self.terms[0].show()
         arguments = [a.show() for a in self.terms[1:]]
-        return f"{predicate}({','.join(arguments)})"
+        return f"{predicate}({', '.join(arguments)})"
 
 
 @dataclass(frozen=True)
@@ -268,4 +268,4 @@ class Never:
 
     def show(self):
         conjuncts = ", ".join([a.show() for a in self.conjuncts])
-        return "{conjuncts} => False"
+        return f"{conjuncts} => False"
