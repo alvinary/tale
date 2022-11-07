@@ -78,7 +78,7 @@ class DimacsIndex:
             self.addAtom(atom)
 
     def toDimacs(self, atom):
-        return self.dimacsMap[atom]
+        return self.dimacsMap[atom.show()]
 
     def fromDimacs(self, dimacs):
         return self.stringMap[dimacs]
@@ -87,12 +87,12 @@ class DimacsIndex:
         while self.counter in self.stringMap.keys():
             self.counter += 1
         dimacs_atom = self.counter
-        self.dimacsMap[atom] = dimacs_atom
+        self.dimacsMap[atom.show()] = dimacs_atom
         self.stringMap[dimacs_atom] = atom
         self.counter += 1
 
     def getLiteral(self, atom):
-        if atom in self.dimacsMap.keys():
+        if atom.show() in self.dimacsMap.keys():
             return self.toDimacs(atom)
         else:
             self.addAtom(atom)
