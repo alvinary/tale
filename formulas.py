@@ -1,5 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
+from typing import List
 
 class Ok(Exception):
     def __init__(self):
@@ -121,8 +122,9 @@ class Index:
         return name in self.variableMap.keys()
         
     def assignments(self, sorts):
-        for t in product()
-            yield assignment
+        pass
+        #for t in product():
+        #    yield assignment
 
 @dataclass(frozen=True)
 class Term:
@@ -139,7 +141,6 @@ class Term:
             if index.hasVariable(function):
                 function, error = assignment.bind(function)
             value, error = index.value(function, argument)
-            print("f(x):", function, argument)
             argument = value
 
         if not self.functions and index.hasVariable(argument):
@@ -159,23 +160,31 @@ class Atom:
     
     def evaluate(self, index, assignment):
         return Atom([t.evaluate(index, assignment)] for t in self.terms)
+        
+@dataclass(frozen=True)
+class Comparison:
+    left : Term
+    right : Term
 
+@dataclass(frozen=True)
 class Either:
-    def __init__(self, atoms):
-        self.atoms = atoms
+    options : List[Atom]
 
+@dataclass(frozen=True)
 class If:
-    def __init__(self, body, head):
-        pass
+    body : List[Atom]
+    head : List[Atom]
 
+@dataclass(frozen=True)
 class Iff:
-    def __init__(self, left, right):
-        pass
+    left : List[Atom]
+    right : List[Atom]
 
+@dataclass(frozen=True)
 class Or:
-    def __init__(self, disjuncts):
-        pass
+    disjuncts : List[Atom]
 
+@dataclass(frozen=True)
 class Never:
-    def __init__(self, conjuncts):
-        pass
+    conjuncts : List[Atom]
+
