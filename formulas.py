@@ -49,6 +49,7 @@ class AssignmentError(Exception):
         return True
 
 class Assignment:
+
     def __init__(self, mapping):
         self.assignment = mapping
         
@@ -166,6 +167,9 @@ class Atom:
     
     def evaluate(self, index, assignment):
         return Atom([t.evaluate(index, assignment)] for t in self.terms)
+        
+    def show(self):
+        return f"{self.terms[0]}({','.join(self.terms[1:])})"
         
 @dataclass(frozen=True)
 class Comparison:
