@@ -243,8 +243,8 @@ class Iff:
                  for l in self.right]]
 
     def show(self):
-        left = ', '.join([a.show() for a in self.body])
-        right = ', '.join([a.show() for a in self.head])
+        left = ', '.join([a.show() for a in self.left])
+        right = ', '.join([a.show() for a in self.right])
         return f"{left} <=> {right}"
 
 
