@@ -216,29 +216,21 @@ class Either:
 class If:
     body: List[Atom]
     head: List[Atom]
-    
+
     def clausify(self, index):
-        return [ [-index.getLiteral(a) for a in self.body] + [h]
-            for h in head
-        ]
-        
+        return [[-index.getLiteral(a) for a in self.body] + [h] for h in head]
+
 
 @dataclass(frozen=True)
 class Iff:
     left: List[Atom]
     right: List[Atom]
-    
+
     def clausify(self, index):
-        return [
-            [
-                [ -index.getLiteral(a) for a in self.left ] + [r]
-                   for r in self.right 
-            ] +
-            [
-                [ -index.getLiteral(a) for a in self.right ] + [l]
-                   for l in self.right
-            ]
-        ]
+        return [[[-index.getLiteral(a) for a in self.left] + [r]
+                 for r in self.right] +
+                [[-index.getLiteral(a) for a in self.right] + [l]
+                 for l in self.right]]
 
 
 @dataclass(frozen=True)
