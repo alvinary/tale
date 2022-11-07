@@ -227,6 +227,18 @@ class If:
 class Iff:
     left: List[Atom]
     right: List[Atom]
+    
+    def clausify(self, index):
+        return [
+            [
+                [ -index.getLiteral(a) for a in self.left ] + [r]
+                   for r in self.right 
+            ] +
+            [
+                [ -index.getLiteral(a) for a in self.right ] + [l]
+                   for l in self.right
+            ]
+        ]
 
 
 @dataclass(frozen=True)
