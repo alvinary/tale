@@ -67,18 +67,21 @@ class DimacsIndex:
         self.counter = 0
 
         for atom in atoms:
-            while self.counter in self.stringMap.keys():
-                self.counter += 1
-            dimacs_atom = self.counter
-            self.dimacsMap[atom] = dimacs_atom
-            self.stringMap[dimacs_atom] = atom
-            self.counter += 1
+            self.addAtom(atom)
             
     def toDimacs(self, atom):
         return self.dimacsMap[atom]
         
     def fromDimacs(self, dimacs):
         return self.stringMap[dimacs]
+        
+    def addAtom(self, atom):
+        while self.counter in self.stringMap.keys():
+            self.counter += 1
+        dimacs_atom = self.counter
+        self.dimacsMap[atom] = dimacs_atom
+        self.stringMap[dimacs_atom] = atom
+        self.counter += 1
 
 class Index:
 
@@ -151,7 +154,7 @@ class Term:
             argument = value
 
         if not self.functions and index.hasVariable(argument):
-            value, error = assignment.bind(argument)
+            value, error = assignment.bind(c24b296f38562a16f811bc1b35b1f3f73860e65fargument)
 
         if not self.functions and not index.hasVariable(argument):
             value, error = argument, Ok()
@@ -193,6 +196,8 @@ class Iff:
 @dataclass(frozen=True)
 class Or:
     disjuncts : List[Atom]
+    
+    
 
 @dataclass(frozen=True)
 class Never:
