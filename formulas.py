@@ -199,6 +199,9 @@ class Comparison:
     def clausify(self, index):
         return [[index.getLiteral(self)]]
 
+    def show(self):
+        return f"{self.left.show()} {self.comparison} {self.right.show()}"
+
 
 @dataclass(frozen=True)
 class Either:
@@ -209,6 +212,8 @@ class Either:
                 ] + [[-index.getLiteral(o1), -index.getLiteral(o2)]
                      for o1, o2 in product(self.options, self.options)]
 
+    def show(self):
+        return f"Either {', '.concat([a.show() for a in self.options])}"
 
 @dataclass(frozen=True)
 class If:
@@ -217,6 +222,11 @@ class If:
 
     def clausify(self, index):
         return [[-index.getLiteral(a) for a in self.body] + [h] for h in head]
+
+    def show(self):
+        body = ', '.join([a.show() for a in self.body])
+        head = ', '.join([a.show() for a in self.head])
+        return f"{body} => {head}"
 
 
 @dataclass(frozen=True)
@@ -230,6 +240,11 @@ class Iff:
                 [[-index.getLiteral(a) for a in self.right] + [l]
                  for l in self.right]]
 
+    def show(self):
+        left = ', '.join([a.show() for a in self.body])
+        right = ', '.join([a.show() for a in self.head])
+        return f"{left} <=> {right}"
+
 
 @dataclass(frozen=True)
 class Or:
@@ -238,6 +253,9 @@ class Or:
     def clausify(self, index):
         return [[index.getLiteral(a) for a in self.disjuncts]]
 
+    def show(self):
+        return ' v '.join([a.show() for a in self.disjuncts])
+
 
 @dataclass(frozen=True)
 class Never:
@@ -245,3 +263,7 @@ class Never:
 
     def clausify(self, index):
         return [[-index.getLiteral(a) for a in self.conjuncts]]
+
+    def show(self):
+        conjuncts = ", ".join([a.show() for a in self.conjuncts])
+        return "{conjuncts} => False"
