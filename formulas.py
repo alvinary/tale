@@ -82,6 +82,13 @@ class DimacsIndex:
         self.dimacsMap[atom] = dimacs_atom
         self.stringMap[dimacs_atom] = atom
         self.counter += 1
+        
+    def getLiteral(self, atom):
+        if atom in self.dimacsMap.keys():
+            return self.toDimacs(atom)
+        else:
+            self.addAtom(atom)
+            return self.toDimacs(atom)
 
 class Index:
 
@@ -197,7 +204,8 @@ class Iff:
 class Or:
     disjuncts : List[Atom]
     
-    
+    def clausify(self, index):
+        
 
 @dataclass(frozen=True)
 class Never:
