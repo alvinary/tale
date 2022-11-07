@@ -129,13 +129,15 @@ def test_assigments():
 
     testVariables = {
         'v' : 'v',
-        'r' : 'r'
+        'r' : 'r',
+        'x' : 's'
     }
 
     testIndex = Index(sorts=testSorts, variables=testVariables)
     
     target = {('a', 'f'), ('b', 'f'), ('a', 'g'), ('b', 'g')}
-    covered = set(testIndex.assignments(['s', 'v']))
+    bindings = testIndex.assignments(['x', 'v'])
+    covered = {(b.binding['x'], b.binding['v']) for b in bindings}
     assert target == covered
 
 def test_embedding():
