@@ -2,7 +2,9 @@ from collections import defaultdict
 from dataclasses import dataclass
 from itertools import product
 from typing import List
+from functools import reduce
 
+union = lambda x, y : x | y
 
 class Ok(Exception):
 
@@ -142,9 +144,6 @@ class Index:
         for elem in self.sortMap[sort]:
             yield elem
 
-    def isVariable(self, name):
-        return name in self.variableMap.keys()
-
     def assignments(self, variables):
         sorts = [self.variableMap[v] for v in variables]
         for assignment in product(*[self.sortMap[s] for s in sorts]):
@@ -176,6 +175,11 @@ class Term:
             value, error = argument, Ok()
 
         return value, error
+        
+    def collect(self, index):
+        
+        names = [self.term] + self.functions
+        return {n for n in names if index.hasVariable(n)}
 
     def show(self):
         return f"{self.term}{''.join(['.' + f for f in self.functions])}"
@@ -187,6 +191,12 @@ class Atom:
 
     def evaluate(self, index, assignment):
         return Atom([t.evaluate(index, assignment)] for t in self.terms)
+        
+    def collect(self, index):
+        variables = set()
+        for t in self.terms:
+            variables |= t.collect(index)
+        return variables
 
     def show(self):
         predicate = self.terms[0].show()
@@ -202,6 +212,14 @@ class Comparison:
 
     def clausify(self, index):
         return [[index.getLiteral(self)]]
+        
+    def collect(self, index):
+        variables = set()
+        for t in self.left:
+            variables |= t.collect(index)
+        for t in self.right:
+            variables |= t.collect(index)
+        return variables
 
     def show(self):
         return f"{self.left.show()} {self.comparison} {self.right.show()}"
@@ -215,6 +233,11 @@ class Either:
         return [[index.getLiteral(o) for o in self.options]
                 ] + [[-index.getLiteral(o1), -index.getLiteral(o2)]
                      for o1, o2 in product(self.options, self.options)]
+                     
+    def collect(self, index):
+        return reduce(union,
+                      [o.collect(index) for o in self.options],
+                      set())
 
     def show(self):
         return f"Either {', '.join([a.show() for a in self.options])}"
@@ -226,6 +249,14 @@ class If:
 
     def clausify(self, index):
         return [[-index.getLiteral(a) for a in self.body] + [h] for h in head]
+        
+    def collect(self, index):
+        variables = set()
+        for a in self.body:
+            variables |= a.collect(index)
+        for a in self.head:
+            variables |= a.collect(index)
+        return variables
 
     def show(self):
         body = ', '.join([a.show() for a in self.body])
@@ -243,6 +274,14 @@ class Iff:
                  for r in self.right] +
                 [[-index.getLiteral(a) for a in self.right] + [l]
                  for l in self.right]]
+                 
+    def collect(self, index):
+        variables = set()
+        for a in self.left:
+            variables |= a.collect()
+        for a in self.right:
+            variables |= a.collect()
+        return variables
 
     def show(self):
         left = ', '.join([a.show() for a in self.left])
@@ -256,6 +295,11 @@ class Or:
 
     def clausify(self, index):
         return [[index.getLiteral(a) for a in self.disjuncts]]
+        
+    def collect(self, index):
+        return reduce(union,
+                      [d.collect(index) for d in self.disjuncts],
+                      set())
 
     def show(self):
         return ' v '.join([a.show() for a in self.disjuncts])
@@ -267,6 +311,11 @@ class Never:
 
     def clausify(self, index):
         return [[-index.getLiteral(a) for a in self.conjuncts]]
+        
+    def collect(self, index):
+        return reduce(union,
+                      [c.collect(index) for c in self.conjuncts],
+                      set())
 
     def show(self):
         conjuncts = ", ".join([a.show() for a in self.conjuncts])
