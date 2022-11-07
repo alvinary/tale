@@ -216,7 +216,12 @@ class Either:
 class If:
     body: List[Atom]
     head: List[Atom]
-
+    
+    def clausify(self, index):
+        return [ [-index.getLiteral(a) for a in self.body] + [h]
+            for h in head
+        ]
+        
 
 @dataclass(frozen=True)
 class Iff:
