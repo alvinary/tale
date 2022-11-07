@@ -176,7 +176,7 @@ class Term:
         return value, error
 
     def show(self):
-        return f"{self.term}.{'.'.join(self.functions)}"
+        return f"{self.term}{''.join(['.' + f for f in self.functions])}"
 
 
 @dataclass(frozen=True)
@@ -187,7 +187,9 @@ class Atom:
         return Atom([t.evaluate(index, assignment)] for t in self.terms)
 
     def show(self):
-        return f"{self.terms[0]}({','.join(self.terms[1:])})"
+        predicate = self.terms[0].show()
+        arguments = [a.show() for a in self.terms[1:]]
+        return f"{predicate}({','.join(arguments)})"
 
 
 @dataclass(frozen=True)
