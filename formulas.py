@@ -146,9 +146,8 @@ class Index:
         return name in self.variableMap.keys()
 
     def assignments(self, sorts):
-        pass
-        #for t in product():
-        #    yield assignment
+        for assignment in product(*[self.sortMap[s] for s in sorts]):
+            yield assignment
 
 
 @dataclass(frozen=True)
