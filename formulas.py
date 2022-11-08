@@ -248,7 +248,7 @@ class If:
     head: List[Atom]
 
     def clausify(self, index):
-        return [[-index.getLiteral(a) for a in self.body] + [h] for h in head]
+        return [[-index.getLiteral(a) for a in self.body] + [h] for h in self.head]
         
     def collect(self, index):
         variables = set()
