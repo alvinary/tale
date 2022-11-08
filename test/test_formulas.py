@@ -1,4 +1,5 @@
 import pytest
+from pysat.solvers import Solver
 from tale.formulas import *
 
 a = Term('a', [])
@@ -96,16 +97,6 @@ def test_rules():
     t = Term('t', [])
     s = Term('s', [])
 
-    pa = Atom([p, a])
-    qa = Atom([q, a])
-    sa = Atom([s, a])
-    pab = Atom([p, a, b])
-    qab = Atom([q, a, b])
-    rba = Atom([r, b, a])
-    pb = Atom([p, b])
-    sab = Atom([s, a, b])
-    ta = Atom([t, a])
-
     rule1 = If([pab], [qa])
     rule2 = Never([qab, pab])
     rule3 = Iff([pa, rba, pb], [sab])
@@ -141,5 +132,31 @@ def test_assigments():
     assert target == covered
 
 def test_embedding():
+
+    solver = Solver()
+
     dimacs = DimacsIndex(atoms=[pa, qa, pab, qab, rba, pb, sab, ta])
+
+    iff1 = Iff([pa], [qa])
+    if1 = If([ta], [pa, pab])
+    either1 = Either([ta, pb])
+
+    rules = [iff1, if1, either1]
+
+    for rule in rules:
+        for clause in rule.clausify(dimacs):
+            solver.add_clause(clause)
+
+    iffAtoms = {pa.show(), qa.show()}
+
+    cond1 = lambda m: not (m & iffAtoms) or iffAtoms <= m
+    cond2 = lambda m: ta.show() not in m or pa.show() in m
+    cond3 = lambda m: not (ta.show() in m and pb.show() in m)
+
+    readable = lambda m: {dimacs.fromDimacs(a) for a in m if a > 0}
+
+    for m in solver.enum_models():
+        assert cond1(m)
+        assert cond2(m)
+        assert cond3(m)
 
