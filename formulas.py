@@ -74,7 +74,7 @@ class DimacsIndex:
     def __init__(self, atoms):
         self.dimacsMap = {}
         self.stringMap = {}
-        self.counter = 0
+        self.counter = 1
 
         for atom in atoms:
             self.addAtom(atom)
