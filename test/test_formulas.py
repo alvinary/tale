@@ -140,6 +140,8 @@ def test_embedding():
     iff1 = Iff([pa], [qa])
     if1 = If([ta], [pb])
     either1 = Either([ta, qa])
+    or1 = Or([ta, qa, pa, pb, sab])
+    never1 = Never([sab, qa])
 
     rules = [iff1, if1, either1]
 
@@ -153,6 +155,8 @@ def test_embedding():
     cond1 = lambda m: not (m & iffAtoms) or iffAtoms <= m
     cond2 = lambda m: ta.show() not in m or pb.show() in m
     cond3 = lambda m: not (ta.show() in m and qa.show() in m)
+    cond4 = lambda m: ta.show() in m or qa.show() in m or pa.show() in m or pb-show() in m or sab.show() in m
+    cond5 = lambda m: not (sab.show() in m and qa.show() in m)
 
     readable = lambda m: {dimacs.fromDimacs(a).show() for a in m if a > 0 and isinstance(a, int)}
 
