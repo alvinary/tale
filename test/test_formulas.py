@@ -138,26 +138,30 @@ def test_embedding():
     dimacs = DimacsIndex(atoms=[pa, qa, pab, qab, rba, pb, sab, ta])
 
     iff1 = Iff([pa], [qa])
-    if1 = If([ta], [pa, pab])
-    either1 = Either([ta, pb])
+    if1 = If([ta], [pb])
+    either1 = Either([ta, qa])
 
     rules = [iff1, if1, either1]
 
     for rule in rules:
         for clause in rule.clausify(dimacs):
+            print("add: ", clause)
             solver.add_clause(clause)
 
     iffAtoms = {pa.show(), qa.show()}
 
     cond1 = lambda m: not (m & iffAtoms) or iffAtoms <= m
-    cond2 = lambda m: ta.show() not in m or pa.show() in m
-    cond3 = lambda m: not (ta.show() in m and pb.show() in m)
+    cond2 = lambda m: ta.show() not in m or pb.show() in m
+    cond3 = lambda m: not (ta.show() in m and qa.show() in m)
 
-    readable = lambda m: {dimacs.fromDimacs(a) for a in m if a > 0}
+    readable = lambda m: {dimacs.fromDimacs(a).show() for a in m if a > 0 and isinstance(a, int)}
 
     listedModels = 0
 
+    solver.solve()
+
     for m in solver.enum_models():
+        print(m)
         m = readable(m)
         print(m)
         assert cond1(m)
