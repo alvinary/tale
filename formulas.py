@@ -232,7 +232,7 @@ class Either:
     def clausify(self, index):
         return [[index.getLiteral(o) for o in self.options]
                 ] + [[-index.getLiteral(o1), -index.getLiteral(o2)]
-                     for o1, o2 in product(self.options, self.options)]
+                     for o1, o2 in product(self.options, self.options) if o1 != o2]
                      
     def collect(self, index):
         return reduce(union,
