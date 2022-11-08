@@ -270,9 +270,9 @@ class Iff:
     right: List[Atom]
 
     def clausify(self, index):
-        return [[[-index.getLiteral(a) for a in self.left] + [r]
+        return [[[-index.getLiteral(a) for a in self.left] + [index.getLiteral(r)]
                  for r in self.right] +
-                [[-index.getLiteral(a) for a in self.right] + [l]
+                [[-index.getLiteral(a) for a in self.right] + [index.getLiteral(l)]
                  for l in self.right]]
                  
     def collect(self, index):
