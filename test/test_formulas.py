@@ -155,8 +155,14 @@ def test_embedding():
 
     readable = lambda m: {dimacs.fromDimacs(a) for a in m if a > 0}
 
+    listedModels = 0
+
     for m in solver.enum_models():
+        m = readable(m)
+        print(m)
         assert cond1(m)
         assert cond2(m)
         assert cond3(m)
+        listedModels += 1
 
+    assert listedModels != 0
