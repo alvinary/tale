@@ -21,15 +21,19 @@ def flip(bit):
     options.remove(bit)
     return options.pop(0)
 
+def pad(word, length, char='0'):
+    return char * (length - len(word)) + word
+
 def chooseOne(p, q, a):
     return Either([Atom([p, a]), Atom([p, q])])
 
-def imageBits(index, image, elem, label):
+def imageBits(index, image, elem, label, padding):
     allBits = []
     elemHasImage = Atom(termify('predicate', image.term, elem.term))
-    for b in bits(index):
-        bit = Atom(termify(label, b, elem.term))
-        negatedBit = Atom(termify(label, flip(b), elem.term))
+    for i, b in enumerate(pad(bits(index), padding)):
+        stringIndex = str(i)
+        bit = Atom(termify(label, stringIndex, b, elem.term))
+        negatedBit = Atom(termify(label, stringIndex, flip(b), elem.term))
         allBits.append(bit)
         yield Either([bit, negatedBit])
     yield Iff(allBits, [elemHasImage])
@@ -56,11 +60,12 @@ def unfold(rule, index):
 def oneOf(imageSort, domainSort, label=''):
 
     imageSize = len(imageSort)
-    bottom = 2**(ceil(log(imageSize, 2)))
+    logSize = (ceil(log(imageSize, 2)))
+    bottom = 2**logSize
 
-    for i, image in range(imageSort):
+    for i, image in enumerate(imageSort):
         for elem in domainSort:
-            for r in imageBits(i, image, elem, label=label):
+            for r in imageBits(i, image, elem, label, logSize):
                 yield r
 
     for i in range(imageSize, bottom):
