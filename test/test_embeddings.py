@@ -1,6 +1,7 @@
 import pytest
 from tale.formulas import *
 from tale.embeddings import *
+from pysat.solvers import Solver
 
 a = Term('a', [])
 b = Term('b', [])
@@ -20,8 +21,27 @@ def test_negation():
         assert either.options[1].show() in target
 
 def test_oneOf():
+    
     target = {}
-    oneOf1 = oneOf(termify('A', 'B', 'C', 'D'), termify('1', '2', '3', '4'), label='letter')
-    oneOf1 = sorted([r.show() for r in oneOf1])
-    for s in oneOf1:
+    rules = list(oneOf(termify('A', 'B', 'C', 'D'), termify('1', '2', '3', '4'), label='letter'))
+    ruleStrings = sorted([r.show() for r in rules])
+
+    for s in ruleStrings:
         print(s)
+
+    solver = Solver()
+    dimacs = DimacsIndex([])
+    clauses = []
+
+    for r in rules:
+        dimacs.addRule(r)
+        clauses += list(r.clausify(dimacs))
+
+    for c in clauses:
+        solver.add_clause(c)
+    
+    count = 0
+    for m in solver.enum_models():
+        count += 1
+
+    assert count == 256
