@@ -30,6 +30,7 @@ def imageBits(index, image, elem, label):
     for b in bits(index):
         bit = Atom(termify(label, b, elem.term))
         negatedBit = Atom(termify(label, flip(b), elem.term))
+A       allBits.append(bit)
         yield Either([bit, negatedBit])
     yield Iff(allBits, [elemHasImage])
 
