@@ -86,12 +86,13 @@ class DimacsIndex:
         return self.stringMap[dimacs]
 
     def addAtom(self, atom):
-        while self.counter in self.stringMap.keys():
+        if atom.show() not in self.dimacsMap.keys():
+            while self.counter in self.stringMap.keys():
+                self.counter += 1
+            dimacs_atom = self.counter
+            self.dimacsMap[atom.show()] = dimacs_atom
+            self.stringMap[dimacs_atom] = atom
             self.counter += 1
-        dimacs_atom = self.counter
-        self.dimacsMap[atom.show()] = dimacs_atom
-        self.stringMap[dimacs_atom] = atom
-        self.counter += 1
 
     def getLiteral(self, atom):
         if atom.show() in self.dimacsMap.keys():
@@ -100,6 +101,29 @@ class DimacsIndex:
             self.addAtom(atom)
             return self.toDimacs(atom)
 
+    def addRule(self, rule):
+
+        if isinstance(rule, Comparison):
+            self.addAtom(rule)
+        if isinstance(rule, Iff):
+            for a in rule.left:
+                self.addAtom(a)
+            for a in rule.right:
+                self.addAtom(a)
+        if isinstance(rule, Or):
+            for a in rule.disjuncts:
+                self.addAtom(a)
+        if isinstance(rule, Never):
+            for a in rule.conjuncts:
+                self.addAtom(a)
+        if isinstance(rule, Either):
+            for a in rule.options:
+                self.addAtom(a)
+        if isinstance(rule, If):
+            for a in rule.head:
+                self.addAtom(a)
+            for a in rule.body:
+                self.addAtom(a)
 
 class Index:
 
