@@ -34,7 +34,8 @@ def test_oneOf():
     clauses = []
 
     for r in rules:
-        dimacs.addRule(r)
+        for a in r.atoms():
+            dimacs.addAtom(a)
         clauses += list(r.clausify(dimacs))
 
     for c in clauses:
