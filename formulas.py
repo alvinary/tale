@@ -102,30 +102,6 @@ class DimacsIndex:
             self.addAtom(atom)
             return self.toDimacs(atom)
 
-    def addRule(self, rule):
-
-        if isinstance(rule, Comparison):
-            self.addAtom(rule)
-        if isinstance(rule, Iff):
-            for a in rule.left:
-                self.addAtom(a)
-            for a in rule.right:
-                self.addAtom(a)
-        if isinstance(rule, Or):
-            for a in rule.disjuncts:
-                self.addAtom(a)
-        if isinstance(rule, Never):
-            for a in rule.conjuncts:
-                self.addAtom(a)
-        if isinstance(rule, Either):
-            for a in rule.options:
-                self.addAtom(a)
-        if isinstance(rule, If):
-            for a in rule.head:
-                self.addAtom(a)
-            for a in rule.body:
-                self.addAtom(a)
-
 
 class Index:
 
@@ -236,6 +212,9 @@ class Comparison:
     left: Term
     right: Term
 
+    def atoms(self):
+        yield self
+
     def clausify(self, index):
         return [[index.getLiteral(self)]]
 
@@ -255,6 +234,10 @@ class Comparison:
 class Either:
     options: List[Atom]
 
+    def atoms(self):
+        for a in self.options:
+            yield a
+
     def clausify(self, index):
         return [[index.getLiteral(o) for o in self.options]] + [[
             -index.getLiteral(o1), -index.getLiteral(o2)
@@ -271,6 +254,12 @@ class Either:
 class If:
     body: List[Atom]
     head: List[Atom]
+
+    def atoms(self, index):
+        for a in self.body:
+            yield a
+        for a in self.head:
+            yield a
 
     def clausify(self, index):
         return [[-index.getLiteral(a)
@@ -295,6 +284,12 @@ class If:
 class Iff:
     left: List[Atom]
     right: List[Atom]
+
+    def atoms(self):
+        for a in self.left:
+            yield a
+        for a in self.right:
+            yield a
 
     def clausify(self, index):
         return [[-index.getLiteral(a)
@@ -322,6 +317,10 @@ class Iff:
 class Or:
     disjuncts: List[Atom]
 
+    def atoms(self):
+        for a in self.disjuncts:
+            yield a
+
     def clausify(self, index):
         return [[index.getLiteral(a) for a in self.disjuncts]]
 
@@ -335,6 +334,10 @@ class Or:
 @dataclass(frozen=True)
 class Never:
     conjuncts: List[Atom]
+
+    def atoms(self):
+        for a in self.disjuncts:
+            return a
 
     def clausify(self, index):
         return [[-index.getLiteral(a) for a in self.conjuncts]]
