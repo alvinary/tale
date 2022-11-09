@@ -4,7 +4,8 @@ from itertools import product
 from typing import List
 from functools import reduce
 
-union = lambda x, y : x | y
+union = lambda x, y: x | y
+
 
 class Ok(Exception):
 
@@ -125,6 +126,7 @@ class DimacsIndex:
             for a in rule.body:
                 self.addAtom(a)
 
+
 class Index:
 
     def __init__(self, values={}, sorts={}, variables={}):
@@ -199,9 +201,9 @@ class Term:
             value, error = argument, Ok()
 
         return value, error
-        
+
     def collect(self, index):
-        
+
         names = [self.term] + self.functions
         return {n for n in names if index.hasVariable(n)}
 
@@ -215,7 +217,7 @@ class Atom:
 
     def evaluate(self, index, assignment):
         return Atom([t.evaluate(index, assignment)] for t in self.terms)
-        
+
     def collect(self, index):
         variables = set()
         for t in self.terms:
@@ -236,7 +238,7 @@ class Comparison:
 
     def clausify(self, index):
         return [[index.getLiteral(self)]]
-        
+
     def collect(self, index):
         variables = set()
         for t in self.left:
@@ -254,17 +256,16 @@ class Either:
     options: List[Atom]
 
     def clausify(self, index):
-        return [[index.getLiteral(o) for o in self.options]
-                ] + [[-index.getLiteral(o1), -index.getLiteral(o2)]
-                     for o1, o2 in product(self.options, self.options) if o1 != o2]
-                     
+        return [[index.getLiteral(o) for o in self.options]] + [[
+            -index.getLiteral(o1), -index.getLiteral(o2)
+        ] for o1, o2 in product(self.options, self.options) if o1 != o2]
+
     def collect(self, index):
-        return reduce(union,
-                      [o.collect(index) for o in self.options],
-                      set())
+        return reduce(union, [o.collect(index) for o in self.options], set())
 
     def show(self):
         return f"Either {', '.join([a.show() for a in self.options])}"
+
 
 @dataclass(frozen=True)
 class If:
@@ -272,8 +273,10 @@ class If:
     head: List[Atom]
 
     def clausify(self, index):
-        return [[-index.getLiteral(a) for a in self.body] + [index.getLiteral(h)] for h in self.head]
-        
+        return [[-index.getLiteral(a)
+                 for a in self.body] + [index.getLiteral(h)]
+                for h in self.head]
+
     def collect(self, index):
         variables = set()
         for a in self.body:
@@ -294,10 +297,13 @@ class Iff:
     right: List[Atom]
 
     def clausify(self, index):
-        return [[-index.getLiteral(a) for a in self.left] + [index.getLiteral(r)]
-                 for r in self.right] + [[-index.getLiteral(a) for a in self.right] + [index.getLiteral(l)]
-                 for l in self.left]
-                 
+        return [[-index.getLiteral(a)
+                 for a in self.left] + [index.getLiteral(r)]
+                for r in self.right
+                ] + [[-index.getLiteral(a)
+                      for a in self.right] + [index.getLiteral(l)]
+                     for l in self.left]
+
     def collect(self, index):
         variables = set()
         for a in self.left:
@@ -318,11 +324,9 @@ class Or:
 
     def clausify(self, index):
         return [[index.getLiteral(a) for a in self.disjuncts]]
-        
+
     def collect(self, index):
-        return reduce(union,
-                      [d.collect(index) for d in self.disjuncts],
-                      set())
+        return reduce(union, [d.collect(index) for d in self.disjuncts], set())
 
     def show(self):
         return ' v '.join([a.show() for a in self.disjuncts])
@@ -334,11 +338,9 @@ class Never:
 
     def clausify(self, index):
         return [[-index.getLiteral(a) for a in self.conjuncts]]
-        
+
     def collect(self, index):
-        return reduce(union,
-                      [c.collect(index) for c in self.conjuncts],
-                      set())
+        return reduce(union, [c.collect(index) for c in self.conjuncts], set())
 
     def show(self):
         conjuncts = ", ".join([a.show() for a in self.conjuncts])
