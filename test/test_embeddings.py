@@ -18,3 +18,10 @@ def test_negation():
 
     for either in negation(atoms):
         assert either.options[1].show() in target
+
+def test_oneOf():
+    target = {}
+    oneOf1 = oneOf(termify('A', 'B', 'C', 'D'), termify('1', '2', '3', '4'), label='letter')
+    oneOf1 = sorted([r.show() for r in oneOf1])
+    for s in oneOf1:
+        print(s)
