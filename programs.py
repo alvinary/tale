@@ -27,12 +27,12 @@ programs = '''
 
     rule
         =
-        | if
+        | horn
         | iff
         | never
         | or
 
-    if = body:atoms '->' head:atoms
+    horn = body:atoms '->' head:atoms
     iff = left:atoms '<->' right:atoms
     never = conjuncts:atoms '->' 'False'
     or = atomd
@@ -99,7 +99,7 @@ class ProgramSemantics:
         return [ast.fun] + ast.rest
     def rule(self, ast):
         return ast
-    def if(self, ast):
+    def horn(self, ast):
         return If(ast.body, ast.head)
     def iff(self, ast):
         return Iff(ast.left, ast.right)
