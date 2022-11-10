@@ -31,11 +31,13 @@ programs = '''
         | iff
         | never
         | disjunction
+        | either
 
     horn = body:atoms '->' head:atoms
     iff = left:atoms '<->' right:atoms
     never = conjuncts:atoms '->' 'False'
     disjunction = atomd
+    either = 'either ' options:atoms
 
     atom
         =
@@ -107,6 +109,8 @@ class ProgramSemantics:
         return Never(ast.conjuncts)
     def disjunction(self, ast):
         return Or(ast)
+    def either(self, ast):
+        return Either(ast)
     def atomd(self, ast):
         return ast
     def manyd(self, ast):
