@@ -1,29 +1,28 @@
 import tatsu
 from tatsu.ast import AST
 
-programs = ''' 
+grammar = ''' 
     @@grammar::Program
 
     start = program $ ;
 
-    program = programpart | finalstatement
+    program = programpart | finalstatement ;
 
-    programpart = current:statement next:program
-    finalstatement = last:statement
+    programpart = current:statement next:program ;
+    finalstatement = last:statement ;
 
     statement
         = 
         | comment "."
-        | rule "."
-        ;
+        | rule "." ;
 
-    comment = '*' ?/[^\.]+/
+    comment = '*' ?/[^\.]+/ ;
 
-    term = main:name funs:functions
+    term = main:name funs:functions ;
 
-    functions = application | several
-    application = "." fun:name
-    several = "." fun:name rest:application 
+    functions = application | several ;
+    application = "." fun:name ;
+    several = "." fun:name rest:application ;
 
     rule
         =
@@ -31,51 +30,51 @@ programs = '''
         | iff
         | never
         | disjunction
-        | either
+        | either ;
 
-    horn = body:atoms '->' head:atoms
-    iff = left:atoms '<->' right:atoms
-    never = conjuncts:atoms '->' 'False'
-    disjunction = atomd
-    either = 'either ' options:atoms
+    horn = body:atoms '->' head:atoms ;
+    iff = left:atoms '<->' right:atoms ;
+    never = conjuncts:atoms '->' 'False' ;
+    disjunction = atomd ;
+    either = 'either ' options:atoms ;
 
     atom
         =
         | predicate
         | comparison
-        | plain
+        | plain ;
 
-    predicate = predicate:term "(" args:arguments ")"
+    predicate = predicate:term "(" args:arguments ")" ;
 
     atoms
         =
         | manyatoms
-        | lastatom
+        | lastatom ;
 
-    manyatoms = head:atom "," tail:atoms
-    lastatom = end:atom
+    manyatoms = head:atom "," tail:atoms ;
+    lastatom = end:atom ;
 
-    atomd = manyd | lastd
-    manyd = head:atom "v" tail:atomd
-    lastd = end:atom
+    atomd = manyd | lastd ;
+    manyd = head:atom "v" tail:atomd ;
+    lastd = end:atom ;
 
     arguments =
-              | manya
-              | lasta
+              | manya 
+              | lasta ;
 
-    manya = head:term "," tail:arguments
-    lasta = end:term
+    manya = head:term "," tail:arguments ;
+    lasta = end:term ;
 
-    plain = term
+    plain = term ;
 
-    comparison = left:term op:operator right:term
+    comparison = left:term op:operator right:term ;
 
-    operator = nequals | equals | get | gt
+    operator = nequals | equals | get | gt ;
 
-    nequals = '!='
-    equals = '='
-    get = '<='
-    ge = '<'
+    nequals = '!=' ;
+    equals = '=' ;
+    get = '<=' ;
+    ge = '<' ;
 '''
 
 class ProgramSemantics:
@@ -141,4 +140,9 @@ class ProgramSemantics:
         return '<='
     def ge(self, ast):
         return "<"
+
+def parseProgram(text):
+    parser = tatsu.compile(grammar)
+    interpretation = ProgramSemantics()
+    return parser.parse(text, semantics=interpretation)
 
