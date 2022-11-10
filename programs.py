@@ -30,12 +30,12 @@ programs = '''
         | horn
         | iff
         | never
-        | or
+        | disjunction
 
     horn = body:atoms '->' head:atoms
     iff = left:atoms '<->' right:atoms
     never = conjuncts:atoms '->' 'False'
-    or = atomd
+    disjunction = atomd
 
     atom
         =
@@ -105,7 +105,7 @@ class ProgramSemantics:
         return Iff(ast.left, ast.right)
     def never(self, ast):
         return Never(ast.conjuncts)
-    def or(self, ast):
+    def disjunction(self, ast):
         return Or(ast)
     def atomd(self, ast):
         return ast
