@@ -6,6 +6,8 @@ grammar = '''
 
     start = program $ ;
 
+    name = /[A-Za-z0-9]+/
+
     program = programpart | finalstatement ;
 
     programpart = current:statement next:program ;
@@ -69,7 +71,7 @@ grammar = '''
 
     comparison = left:term op:operator right:term ;
 
-    operator = nequals | equals | get | gt ;
+    operator = nequals | equals | get | ge ;
 
     nequals = '!=' ;
     equals = '=' ;
