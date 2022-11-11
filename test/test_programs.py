@@ -8,11 +8,11 @@ either p (a), not p (a).
 '''
 
 def test_parser():
-    content = list(parseProgram(testProgram))
-    print(len(content))
-    assert isinstance(content, list)
+    content = parseProgram(testProgram)
+    assert len(content) == 4
     for rule in content:
         print(rule)
+        print(type(rule))
         print('')
         checks = False
         checks = checks or isinstance(rule, Or)
@@ -20,4 +20,4 @@ def test_parser():
         checks = checks or isinstance(rule, If)
         checks = checks or isinstance(rule, Never)
         checks = checks or isinstance(rule, Iff)
-    assert False
+        assert checks
