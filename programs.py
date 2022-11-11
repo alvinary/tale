@@ -1,30 +1,27 @@
 import tatsu
 from tatsu.ast import AST
 
+from tale.formulas import *
+
 grammar = ''' 
     @@grammar::Program
 
     start = program $ ;
 
-    name = /[A-Za-z0-9]+/
+    name = /[A-Za-z0-9]+/ ;
 
     program = programpart | finalstatement ;
 
     programpart = current:statement next:program ;
     finalstatement = last:statement ;
 
-    statement
-        = 
-        | comment "."
-        | rule "." ;
+    term = functional | simple ;
+    functional = main:name funs:functions ;
+    simple = main:name ;
 
-    comment = '*' ?/[^\.]+/ ;
-
-    term = main:name funs:functions ;
-
-    functions = application | several ;
+    functions = several | application ;
     application = "." fun:name ;
-    several = "." fun:name rest:application ;
+    several = "." fun:name rest:functions ;
 
     rule
         =
@@ -44,7 +41,9 @@ grammar = '''
         =
         | predicate
         | comparison
-        | plain ;
+        | negative;
+
+    negative = 'not ' pred:predicate ;
 
     predicate = predicate:term "(" args:arguments ")" ;
 
@@ -67,8 +66,6 @@ grammar = '''
     manya = head:term "," tail:arguments ;
     lasta = end:term ;
 
-    plain = term ;
-
     comparison = left:term op:operator right:term ;
 
     operator = nequals | equals | get | ge ;
@@ -77,6 +74,8 @@ grammar = '''
     equals = '=' ;
     get = '<=' ;
     ge = '<' ;
+
+    statement = rule "." ;
 '''
 
 class ProgramSemantics:
@@ -85,7 +84,7 @@ class ProgramSemantics:
     def program(self, ast):
         return ast
     def programpart(self, ast):
-        return ast.current + ast.next
+        return list(ast.current) + list(ast.next)
     def finalstatement(self, ast):
         return [ast.last]
     def statement(self, ast):
@@ -93,13 +92,17 @@ class ProgramSemantics:
     def comment(self, ast):
         return []
     def term(self, ast):
+        return ast
+    def functional(self, ast):
         return Term(ast.main, ast.funs)
+    def simple(self, ast):
+        return Term(ast.main, [])
     def functions(self, ast):
         return ast
     def application(self, ast):
         return [ast.name]
     def several(self, ast):
-        return [ast.fun] + ast.rest
+        return [ast.fun] + list(ast.rest)
     def rule(self, ast):
         return ast
     def horn(self, ast):
@@ -115,21 +118,21 @@ class ProgramSemantics:
     def atomd(self, ast):
         return ast
     def manyd(self, ast):
-        return [ast.head] + ast.tail
+        return [ast.head] + list(ast.tail)
     def lastd(self, ast):
         return [ast.end]
     def atom(self, ast):
         return ast
+    def negative(self, ast):
+        return ast.pred.negate()
     def predicate(self, ast):
-        return Atom([ast.term] + ast.args)
+        return Atom([ast.term] + list(ast.args))
     def arguments(self, ast):
         return ast
     def manya(self, ast):
-        return [ast.head] + ast.tail
+        return [ast.head] + list(ast.tail)
     def lasta(self, ast):
         return [ast.end]
-    def plain(self, ast):
-        return ast
     def operator(self, ast):
         return str(ast)
     def comparison(self, ast):
