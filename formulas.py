@@ -6,6 +6,22 @@ from functools import reduce
 
 union = lambda x, y: x | y
 
+def reverseComp(comparison):
+    if comparison == '=':
+        return '!='
+    if comparison == '!=':
+        return '='
+    if comparison == '<=':
+        return '</='
+    if comparison == '</=':
+        return '<='
+    if comparison == '<':
+        return '</'
+    if comparison == '</':
+        return '<'
+
+def reverseNot(term):
+    return f'not {term}'
 
 class Ok(Exception):
 
@@ -152,7 +168,6 @@ class Index:
             binding = dict(zip(variables, assignment))
             yield Assignment(binding)
 
-
 @dataclass(frozen=True)
 class Term:
     term: str
@@ -200,6 +215,9 @@ class Atom:
             variables |= t.collect(index)
         return variables
 
+    def negate(self):
+        return Atom([reverseNot(self.terms[0])] + self.terms[1:])
+
     def show(self):
         predicate = self.terms[0].show()
         arguments = [a.show() for a in self.terms[1:]]
@@ -217,6 +235,9 @@ class Comparison:
 
     def clausify(self, index):
         return [[index.getLiteral(self)]]
+
+    def negate(self):
+        return Comparison(reverseComp(self.comparison), self.left, self.right)
 
     def collect(self, index):
         variables = set()
