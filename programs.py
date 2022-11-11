@@ -75,7 +75,7 @@ grammar = '''
     get = '<=' ;
     ge = '<' ;
 
-    statement = rule "." ;
+    statement = cont:rule "." ;
 '''
 
 class ProgramSemantics:
@@ -86,9 +86,9 @@ class ProgramSemantics:
     def programpart(self, ast):
         return list(ast.current) + list(ast.next)
     def finalstatement(self, ast):
-        return [ast.last]
+        return ast.last
     def statement(self, ast):
-        return [ast]
+        return [ast.cont]
     def comment(self, ast):
         return []
     def term(self, ast):
@@ -114,7 +114,7 @@ class ProgramSemantics:
     def disjunction(self, ast):
         return Or(ast)
     def either(self, ast):
-        return Either(ast)
+        return Either(ast.options)
     def atomd(self, ast):
         return ast
     def manyd(self, ast):
