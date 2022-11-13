@@ -298,7 +298,7 @@ class If:
     def show(self):
         body = ', '.join([a.show() for a in self.body])
         head = ', '.join([a.show() for a in self.head])
-        return f"{body} => {head}"
+        return f"{body} -> {head}"
 
 
 @dataclass(frozen=True)
@@ -331,7 +331,7 @@ class Iff:
     def show(self):
         left = ', '.join([a.show() for a in self.left])
         right = ', '.join([a.show() for a in self.right])
-        return f"{left} <=> {right}"
+        return f"{left} <-> {right}"
 
 
 @dataclass(frozen=True)
@@ -368,4 +368,4 @@ class Never:
 
     def show(self):
         conjuncts = ", ".join([a.show() for a in self.conjuncts])
-        return f"{conjuncts} => False"
+        return f"{conjuncts} -> False"
