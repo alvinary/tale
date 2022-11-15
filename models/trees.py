@@ -6,7 +6,7 @@ identity = lambda x: x
 NODE = 'node'
 LABEL = 'label'
 
-treeRules = '''
+scaffolding = '''
 either leaf (a), node (a).
 either actual (a), virtual (a).
 
@@ -29,15 +29,20 @@ def embedSequences(sequences, tokenLabeling):
         for clause in embedTree(sequence, name=identifier, labeling=tokenLabeling):
             yield clause
 
-def embedTree(sequence, name='', labeling=identity):
+def parseGrammar(grammar):
+    pass
+
+def embedTree(sequence, grammar, name='', labeling=identity):
     clauses = []
     treeIndex = Index()
-    treeSize = len(sequence)
+    size = len(sequence)
+    productions, labels = parseGrammar(grammar)
+    rules = parseProgram(scaffolding) + productions
 
     leaves = [(name, i, i) for i, _  in enumerate(sequence)]
     leafLabels = [(labeling(token), name, i, i) for i, token in enumerate(sequence)]
     
-    nodes = [(name, j, i) for i in range(treeSize) for j in range(i+1)]
+    nodes = [(name, j, i) for i in range(size) for j in range(i+1)]
 
     for node, i, j in nodes:
         left = (node, i, j - 1)
@@ -49,14 +54,20 @@ def embedTree(sequence, name='', labeling=identity):
     for leafLabel in leafLabels:
         pass
 
+    for clause in oneOf(labels, nodes):
+        yield clause
+
     for node in leaves:
         treeIndex.valueMap[NODE].append(node)
+
+    for label in nodeLabels:
+        treeIndex.valueMap[LABEL].append(label)
 
     nodeVariable = 'a'
     labelVariable = 'A'
     treeIndex.variableMap[nodeVariable] = NODE
     treeIndex.variableMap[labelVariable] = LABEL
 
-    for rule in treeRules:
+    for rule in rules:
         for clause in unfold(rule, treeIndex)
             yield clause
