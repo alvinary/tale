@@ -205,6 +205,9 @@ class Term:
 @dataclass(frozen=True)
 class Atom:
     terms: List[Term]
+    
+    def clausify(self, index):
+        return [[index.getLiteral(self)]]
 
     def evaluate(self, index, assignment):
         return Atom([t.evaluate(index, assignment)] for t in self.terms)
