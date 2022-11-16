@@ -26,6 +26,7 @@ actual (a), terminal (a.right, A) <-> rightTerminal (a, A).
 
 longRule = lambda l,r,h : f"leftTerminal (a, {l}), rightTerminal (a, {r}) -> terminal (a, {h}).\n"
 shortRule = lambda h, p : f"symbol (a, {p}) -> terminal (a, {h}).\n"
+nodeName = lambda n, i, j : f"{n}[{i},{j}]"
 
 def embedSequences(sequences, tokenLabeling):
     for sequence, identifier in sequences:
@@ -104,12 +105,16 @@ def embedTree(sequence, grammar, name='', labeling=identity):
     for node, i, j in nodes:
         left = (node, i, j - 1)
         right = (node, i + 1, j)
-        treeIndex.sortMap[NODE].append(node)
-        treeIndex.valueMap[RIGHT] = right
-        treeIndex.valueMap[LEFT] = left
+        nodeName = nodeString(name, i, j)
+        leftName = nodeString(*left)
+        rightName = nodeString(*right)
+        treeIndex.sortMap[NODE].append(nodeName)
+        treeIndex.valueMap[RIGHT] = rightName
+        treeIndex.valueMap[LEFT] = leftName
 
-    for leafLabel in leafLabels:
-        pass
+    for label, name, i, j in leafLabels:
+        nodeName = nodeString(name, i, j)
+        yield Atom(termify(label, nodeName))
 
     for clause in oneOf(labels, nodes):
         yield clause
