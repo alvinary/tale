@@ -24,14 +24,18 @@ actual (a), terminal (a.left, A) <-> leftTerminal (a, A).
 actual (a), terminal (a.right, A) <-> rightTerminal (a, A).
 '''
 
-longRule = lambda l,r,h : f"leftTerminal (a, {l}), rightTerminal (a, {r}) -> terminal (a, {h}).\n"
-shortRule = lambda h, p : f"symbol (a, {p}) -> terminal (a, {h}).\n"
-nodeName = lambda n, i, j : f"{n}[{i},{j}]"
+longRule = lambda l, r, h: f"leftTerminal (a, {l}), rightTerminal (a, {r}) -> terminal (a, {h}).\n"
+shortRule = lambda h, p: f"symbol (a, {p}) -> terminal (a, {h}).\n"
+nodeName = lambda n, i, j: f"{n}[{i},{j}]"
+
 
 def embedSequences(sequences, tokenLabeling):
     for sequence, identifier in sequences:
-        for clause in embedTree(sequence, name=identifier, labeling=tokenLabeling):
+        for clause in embedTree(sequence,
+                                name=identifier,
+                                labeling=tokenLabeling):
             yield clause
+
 
 def parseGrammar(text):
 
@@ -90,6 +94,7 @@ def parseGrammar(text):
 
     return grammar, preterminals
 
+
 def embedTree(sequence, grammar, name='', labeling=identity):
     clauses = []
     treeIndex = Index()
@@ -97,10 +102,11 @@ def embedTree(sequence, grammar, name='', labeling=identity):
     productions, labels = parseGrammar(grammar)
     rules = parseProgram(scaffolding) + productions
 
-    leaves = [(name, i, i) for i, _  in enumerate(sequence)]
-    leafLabels = [(labeling(token), name, i, i) for i, token in enumerate(sequence)]
-    
-    nodes = [(name, j, i) for i in range(size) for j in range(i+1)]
+    leaves = [(name, i, i) for i, _ in enumerate(sequence)]
+    leafLabels = [(labeling(token), name, i, i)
+                  for i, token in enumerate(sequence)]
+
+    nodes = [(name, j, i) for i in range(size) for j in range(i + 1)]
 
     for node, i, j in nodes:
         left = (node, i, j - 1)
