@@ -126,5 +126,5 @@ def embedTree(sequence, grammar, name='', labeling=identity):
     treeIndex.variableMap[labelVariable] = LABEL
 
     for rule in rules:
-        for clause in unfold(rule, treeIndex)
+        for clause in unfold(rule, treeIndex):
             yield clause
