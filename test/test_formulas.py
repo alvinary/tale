@@ -83,9 +83,9 @@ def test_terms():
 
 def test_rules():
     
-    rule1s = "p(a, b) => q(a)"
-    rule2s = "q(a, b), p(a, b) => False"
-    rule3s = "p(a), r(b, a), p(b) <=> s(a, b)"
+    rule1s = "p(a, b) -> q(a)"
+    rule2s = "q(a, b), p(a, b) -> False"
+    rule3s = "p(a), r(b, a), p(b) <-> s(a, b)"
     rule4s = "Either q(a), s(a)"
     rule5s = "t(a) v p(a) v q(a)"
 
