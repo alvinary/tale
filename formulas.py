@@ -127,12 +127,6 @@ class Index:
         self.sortMap = sorts
         self.variableMap = variables
 
-    def toDimacs(self, atom):
-        return self.dimacsMap[atom]
-
-    def fromDimacs(self, atom):
-        return self.stringMap[atom]
-
     def value(self, function, elem):
 
         if (function, elem) in self.valueMap.keys():
