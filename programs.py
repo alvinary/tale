@@ -5,12 +5,14 @@ from tatsu.ast import AST
 
 from tale.formulas import *
 
-listMap = defaultdict(lambda x: [])
+listMap = lambda: defaultdict(lambda: [])
 
 grammar = ''' 
     @@grammar::Program
 
-    start = preamble:declarations rules:program $ ;
+    start = fullprogram $ ;
+    
+    fullprogram = preamble:declarations rules:program ;
 
     declarations = declarationspart | finaldeclaration ;
 
@@ -26,16 +28,16 @@ grammar = '''
         | var
         ;
 
-    add = elems:elements  ":" sort:name ;
+    add = elems:elements ":" sort:name ;
     fill = "fill " prefix:name n:number ":" sort:name ;
     var = "var " vars:elements ":" sort:name ;
     let = "let " f:name ":" domain:name "->" range:name ;
 
     number = n:/[0-9]+/ ;
 
-    elements = lastelem | manyelems ;
-    lastelem = last:element ;
-    manyelems = current:element rest:elements ;
+    elements = manyelems | lastelem ;
+    manyelems = current:name "," rest:elements ;
+    lastelem = last:name ;
 
     finaldeclaration = last:declaration ;
 
@@ -128,7 +130,7 @@ class ProgramSemantics:
     def lastelem(self, ast):
         return [ast.last]
     def manyelems(self, ast):
-        return [ast.current] + ast.rest
+        return [ast.current] + list(ast.rest)
     def declarations(self, ast):
         return ast
     def declaration(self, ast):
@@ -156,6 +158,9 @@ class ProgramSemantics:
         sorts, variables, values = listMap(), {}, {}
         values[ast.f] = (ast.domain, ast.range)
         return sorts, variables, values
+    def fullprogram(self, ast):
+        sorts, variables, values = ast.preamble
+        return sorts, variables, values, ast.rules
     def program(self, ast):
         return ast
     def programpart(self, ast):
