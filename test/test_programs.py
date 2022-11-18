@@ -30,6 +30,17 @@ def test_parser():
         checks = checks or isinstance(rule, Iff)
         assert checks
         
+def test_declarations():
+    sorts, variables, values, _ = parseProgram(testProgram)
+    assert 'c1' in sorts['const']
+    assert 'c3' in sorts['const']
+    assert 'f' in sorts['fun']
+    assert 'F' in variables.keys()
+    assert 'a' in variables.keys()
+    assert 'f' in values.keys()
+    assert variables['F'] == 'fun'
+    assert variables['a'] == 'const'
+        
 def test_negation():
     pass
 
