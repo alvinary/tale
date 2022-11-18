@@ -6,7 +6,34 @@ from tale.formulas import *
 grammar = ''' 
     @@grammar::Program
 
-    start = program $ ;
+    start = preamble:declarations rules:program $ ;
+
+    declarations = declarationspart | finaldeclaration ;
+
+    declarationspart = current:declaration next:declarations ;
+
+    declaration = cont:declare "." ;
+
+    declare
+        =
+        | add
+        | fill
+        | let
+        | var
+        ;
+
+    add = elems:elements  ":" sort:name ;
+    fill = "fill " prefix:name n:number ":" sort:name ;
+    var = "var " vars:elements ":" sort:name ;
+    let = "let " f:name ":" domain:name "->" range:name ;
+
+    number = n:/[0-9]+/ ;
+
+    elements = lastelem | manyelems ;
+    lastelem = last:element ;
+    manyelems = current:element rest:elements ;
+
+    finaldeclaration = last:declaration ;
 
     name = /[A-Za-z0-9]+/ ;
 
