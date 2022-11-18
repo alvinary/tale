@@ -115,7 +115,8 @@ def merge(left, right):
     leftSorts, leftVariables, leftValues = left
     rightSorts, rightVariables, rightValues = right
     for key in rightSorts.keys():
-        leftSorts[key] += rightSorts[key]
+        for elem in rightSorts[key]:
+            leftSorts[key].append(elem)
     leftVariables = leftVariables | rightVariables
     leftValues = leftValues | rightValues 
     return leftSorts, leftVariables, leftValues
@@ -143,7 +144,8 @@ class ProgramSemantics:
         return ast
     def add(self, ast):
         sorts, variables, values = listMap(), {}, {}
-        sorts[ast.name] += ast.elems
+        for elem in ast.elems:
+            sorts[ast.sort].append(elem)
         return sorts, variables, values
     def fill(self, ast):
         sorts, variables, values = listMap(), {}, {}
