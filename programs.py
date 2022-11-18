@@ -1,7 +1,11 @@
+from collections import defaultdict
+
 import tatsu
 from tatsu.ast import AST
 
 from tale.formulas import *
+
+listMap = defaultdict(lambda x: [])
 
 grammar = ''' 
     @@grammar::Program
@@ -105,9 +109,53 @@ grammar = '''
     statement = cont:rule "." ;
 '''
 
+def merge(left, right):
+    leftSorts, leftVariables, leftValues = left
+    rightSorts, rightVariables, rightValues = right
+    for key in rightSorts.keys():
+        leftSorts[key] += rightSorts[key]
+    leftVariables = leftVariables | rightVariables
+    leftValues = leftValues | rightValues 
+    return leftSorts, leftVariables, leftValues
+
 class ProgramSemantics:
     def name(self, ast):
         return str(ast)
+    def number(self, ast):
+        return int(ast.n)
+    def elements(self, ast):
+        return ast
+    def lastelem(self, ast):
+        return [ast.last]
+    def manyelems(self, ast):
+        return [ast.current] + ast.rest
+    def declarations(self, ast):
+        return ast
+    def declaration(self, ast):
+        return ast.cont
+    def finaldeclaration(self, ast):
+        return ast.last
+    def declarationspart(self, ast):
+        return merge(ast.current, ast.next)
+    def declare(self, ast):
+        return ast
+    def add(self, ast):
+        sorts, variables, values = listMap(), {}, {}
+        sorts[ast.name] += ast.elems
+        return sorts, variables, values
+    def fill(self, ast):
+        sorts, variables, values = listMap(), {}, {}
+        sorts[ast.sort] += [f"{ast.prefix}{i}" for i in range(ast.n)]
+        return sorts, variables, values
+    def var(self, ast):
+        sorts, variables, values = listMap(), {}, {}
+        for var in ast.vars:
+            variables[var] = ast.sort
+        return sorts, variables, values
+    def let(self, ast):
+        sorts, variables, values = listMap(), {}, {}
+        values[ast.f] = (ast.domain, ast.range)
+        return sorts, variables, values
     def program(self, ast):
         return ast
     def programpart(self, ast):
