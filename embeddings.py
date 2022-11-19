@@ -86,7 +86,7 @@ def totalOrder(size, prefix, sort):
         # next is not part of any sort, and should not be involved
         # in any predicate. But by adding it we ensure f(a) is always
         # defined.
-        sorts[sort].append(current)
+        sorts[sort].append(Term(current, []))
         functions['next', current] = _next
     return sorts, {}, {}, functions
 
