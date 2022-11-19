@@ -40,6 +40,9 @@ def pipeline(program):
                     solver.add_clause(clause)
         else:
             solver.add_clause(rule.clausify(dimacs))
+            
+    for atom in dimacs.dimacsMap.keys():
+        for clauseSet in negation():
 
     for model in solver.enum_models():
         yield showModel(model, dimacs)

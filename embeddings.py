@@ -41,10 +41,10 @@ def imageBits(index, image, args, label, padding):
         yield Either([bit, negatedBit])
     yield Iff(allBits, [elemHasImage])
 
-def forbid(index, elem, label=''):
+def forbid(index, elem, padding, label=''):
     indexBits = []
     for i, b in enumerate(pad(bits(index), padding)):
-        indexBits.append(bitAtom(f'{label} bit', str(i), b, elem))
+        indexBits.append(Atom(termify(f'{label} bit', str(i), b, elem)))
     return Never(indexBits)
 
 # Clause embeddings
@@ -75,7 +75,7 @@ def oneOf(imageSort, domainSorts, label=''):
 
     for i in range(imageSize, bottom):
         for elem in domainSorts:
-            yield forbid(i, elem, label=label)
+            yield forbid(i, elem, logSize, label=label)
 
 # Index embeddings
 
