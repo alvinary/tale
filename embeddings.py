@@ -15,7 +15,8 @@ def termify(*args):
     return [Term(a, []) for a in args]
 
 def bitAtom(label, bit, elem):
-    return Atom(termify(label, bit, elem.term))
+    elemTerms = [e.term for e in elem]
+    return Atom(termify(label, bit, *elemTerms))
 
 def flip(bit):
     options = ['0', '1']
@@ -56,7 +57,7 @@ def negation(atoms):
         yield Either([atom, negatedAtom])
 
 def unfold(rule, index):
-    for assignment in index.assignments(rule.collect()):
+    for assignment in index.assignments(rule.collect(index)):
         yield rule.evaluate(index, assignment)
 
 def oneOf(imageSort, domainSorts, label=''):
@@ -71,7 +72,7 @@ def oneOf(imageSort, domainSorts, label=''):
                 yield r
 
     for i in range(imageSize, bottom):
-        for elem in domainSort:
+        for elem in domainSorts:
             yield forbid(i, elem, label=label)
 
 # Index embeddings
