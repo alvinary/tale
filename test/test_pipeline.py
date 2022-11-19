@@ -28,6 +28,11 @@ at (i0, goat, shore).
 '''
 
 def test_pipeline():
+    count = 10
     for model in pipeline(program):
-        print("\n".join(model))
-        print("\n")
+        print(model)
+        print("")
+        count -= 1
+        if count == 0:
+            break
+    assert False
