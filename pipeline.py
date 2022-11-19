@@ -32,9 +32,7 @@ def pipeline(program):
             solver.add_clause(rule.evaluate(index, assignment).clausify(index))
 
     for model in solver.enum_models():
-        print("\n".join(sorted(list(showModel(model, index)))))
-        print("\n")
-        input()
+        yield showModel(model)
 
 if __name__ == '__main__':
     line = True
