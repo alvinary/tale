@@ -127,7 +127,7 @@ class ProgramSemantics:
     def number(self, ast):
         return int(ast.n)
     def elements(self, ast):
-        return ast
+        return list(ast)
     def lastelem(self, ast):
         return [ast.last]
     def manyelems(self, ast):
