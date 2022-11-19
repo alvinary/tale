@@ -23,7 +23,7 @@ def test_negation():
 def test_oneOf():
     
     target = {}
-    rules = list(oneOf(termify('A', 'B', 'C', 'D'), termify('1', '2', '3', '4'), label='letter'))
+    rules = list(oneOf(termify('A', 'B', 'C', 'D'), [termify('1', '2', '3', '4')], label='letter'))
     ruleStrings = sorted([r.show() for r in rules])
 
     for s in ruleStrings:
