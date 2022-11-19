@@ -2,8 +2,7 @@ from tale.pipeline import *
 
 program = '''
 shore, docks : place.
-cabbage, goat, wolf : actor.
-farmer : player.
+cabbage, goat, wolf, farmer : actor.
 order i 6 : index.
 
 let at : index, actor -> place.
@@ -16,8 +15,7 @@ var i : index.
 let docks.opposite = shore.
 let shore.opposite = docks.
 
-at(i, a, p), at (i, b, p), not at (farmer, p), eats (a, b) -> False.
-
+at(i, a, p), at (i, b, p), not at (i, farmer, p), eats (a, b) -> False.
 at(i, a, p), ferry(i, farmer, a) -> at(i.next, a, p.opposite).
 
 at (i0, farmer, shore).
