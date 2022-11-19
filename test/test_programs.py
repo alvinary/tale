@@ -17,7 +17,7 @@ either p (a), not p (a).
 '''
 
 def test_parser():
-    _, _, _, content = parseProgram(testProgram)
+    _, _, _, _, content = parseProgram(testProgram)
     assert len(content) == 4
     for rule in content:
         print(rule)
@@ -32,7 +32,7 @@ def test_parser():
         assert checks
         
 def test_declarations():
-    sorts, variables, values, _ = parseProgram(testProgram)
+    sorts, variables, values, functions, _ = parseProgram(testProgram)
     assert 'c1' in sorts['const']
     assert 'c3' in sorts['const']
     assert 'f' in sorts['fun']
