@@ -8,6 +8,7 @@ f, g, h : fun.
 let g : const -> const.
 let f : const -> const.
 let h : const -> const.
+let y : const, const -> const.
 
 a.F.g = a.F.g, g = f.F <-> fun(F).
 p (a, b.h), q (b) -> r (a, b), s(b, a).
@@ -38,8 +39,11 @@ def test_declarations():
     assert 'F' in variables.keys()
     assert 'a' in variables.keys()
     assert 'f' in values.keys()
+    assert 'y' in values.keys()
     assert variables['F'] == 'fun'
     assert variables['a'] == 'const'
+    assert values['f'] == (['const'], 'const')
+    assert values['y'] == (['const', 'const'], 'const')
         
 def test_negation():
     pass
