@@ -88,7 +88,8 @@ grammar = '''
     atoms
         =
         | manyatoms
-        | lastatom ;
+        | lastatom
+        ;
 
     manyatoms = head:atom "," tail:atoms ;
     lastatom = end:atom ;
@@ -151,11 +152,13 @@ class ProgramSemantics:
     def add(self, ast):
         sorts, variables, values, functions = listMap(), {}, {}, {}
         for elem in ast.elems:
+            elem = Term(elem, [])
             sorts[ast.sort].append(elem)
         return sorts, variables, values, functions
     def fill(self, ast):
         sorts, variables, values, functions = listMap(), {}, {}, {}
-        sorts[ast.sort] += [f"{ast.prefix}{i}" for i in range(ast.n)]
+        indexTerms = [Term(f"{ast.prefix}{i}", []) for i in range(ast.n)]
+        sorts[ast.sort] += indexTerms
         return sorts, variables, values, functions
     def order(self, ast):
         left = listMap(), {}, {}, {}
