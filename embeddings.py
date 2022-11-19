@@ -1,4 +1,5 @@
 from math import log, ceil
+from itertools import product
 
 from tale.formulas import *
 
@@ -27,13 +28,14 @@ def pad(word, length, char='0'):
 def chooseOne(p, q, a):
     return Either([Atom([p, a]), Atom([p, q])])
 
-def imageBits(index, image, elem, label, padding):
+def imageBits(index, image, args, label, padding):
     allBits = []
-    elemHasImage = Atom(termify('predicate', image.term, elem.term))
+    argumentTerms = [elem.term for elem in args]
+    elemHasImage = Atom(termify('predicate', image.term, *argumentTerms))
     for i, b in enumerate(pad(bits(index), padding)):
         stringIndex = str(i)
-        bit = Atom(termify(label, stringIndex, b, elem.term))
-        negatedBit = Atom(termify(label, stringIndex, flip(b), elem.term))
+        bit = Atom(termify(label, stringIndex, b, *argumentTerms))
+        negatedBit = Atom(termify(label, stringIndex, flip(b), *argumentTerms))
         allBits.append(bit)
         yield Either([bit, negatedBit])
     yield Iff(allBits, [elemHasImage])
@@ -57,15 +59,15 @@ def unfold(rule, index):
     for assignment in index.assignments(rule.collect()):
         yield rule.evaluate(index, assignment)
 
-def oneOf(imageSort, domainSort, label=''):
+def oneOf(imageSort, domainSorts, label=''):
 
     imageSize = len(imageSort)
     logSize = (ceil(log(imageSize, 2)))
     bottom = 2**logSize
 
     for i, image in enumerate(imageSort):
-        for elem in domainSort:
-            for r in imageBits(i, image, elem, label, logSize):
+        for args in product(*domainSorts):
+            for r in imageBits(i, image, args, label, logSize):
                 yield r
 
     for i in range(imageSize, bottom):
