@@ -116,7 +116,7 @@ grammar = '''
 
 def merge(left, right):
     leftSorts, leftVariables, leftValues, leftFunctions = left
-    rightSorts, rightVariables, rightValues, leftFunctions = right
+    rightSorts, rightVariables, rightValues, rightFunctions = right
     for key in rightSorts.keys():
         for elem in rightSorts[key]:
             leftSorts[key].append(elem)
