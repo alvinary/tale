@@ -76,19 +76,19 @@ def oneOf(imageSort, domainSorts, label=''):
 
 # Index embeddings
 
-def totalOrder(size, label):
-    sort = {label : []}
-    values = {}
+def totalOrder(size, prefix, sort):
+    sorts = {sort : []}
+    functions = {}
     for i in range(size):
-        current = f"{label}{i}"
-        _next = f"{label}{i+1}"
+        current = f"{prefix}{i}"
+        _next = f"{prefix}{i+1}"
         # If next is out of bounds, it does not matter, because
         # next is not part of any sort, and should not be involved
         # in any predicate. But by adding it we ensure f(a) is always
         # defined.
-        sort[label].append(current)
+        sorts[sort].append(current)
         values['next', current] = _next
-    return sort, values
+    return sorts, {}, {}, functions
 
 # Mixed embeddings
 
