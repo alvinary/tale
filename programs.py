@@ -28,6 +28,7 @@ grammar = '''
         | let
         | var
         | order
+        | assign
         ;
 
     add = elems:elements ":" sort:name ;
@@ -35,6 +36,7 @@ grammar = '''
     var = "var " vars:elements ":" sort:name ;
     let = "let " f:name ":" domain:elements "->" range:name ;
     order = "order " prefix:name n:number ":" sort:name ;
+    assign = "let " preimage:name "." f:name "=" image:name ;
 
     number = n:/[0-9]+/ ;
 
@@ -159,6 +161,8 @@ class ProgramSemantics:
         left = listMap(), {}, {}, {}
         right = totalOrder(ast.number, ast.prefix, ast.sort)
         return merge(left, right)
+    def assign(self, ast):
+        return listMap(), {}, {}, {(ast.f, ast.preimage), ast.image}
     def var(self, ast):
         sorts, variables, values, functions = listMap(), {}, {}, {}
         for var in ast.vars:
