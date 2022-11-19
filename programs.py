@@ -31,7 +31,7 @@ grammar = '''
     add = elems:elements ":" sort:name ;
     fill = "fill " prefix:name n:number ":" sort:name ;
     var = "var " vars:elements ":" sort:name ;
-    let = "let " f:name ":" domain:name "->" range:name ;
+    let = "let " f:name ":" domain:elements "->" range:name ;
 
     number = n:/[0-9]+/ ;
 
