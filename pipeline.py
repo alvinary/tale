@@ -5,7 +5,7 @@ from tale.formulas import *
 from tale.programs import parseProgram
 
 def showModel(model, index):
-    return {index.fromDimacs(literal).show() for literal in model}
+    return {index.fromDimacs(literal).show() for literal in model if literal > 0}
 
 def functionClauses(index, functions):
     for f in functions.keys():
@@ -17,22 +17,24 @@ def functionClauses(index, functions):
 
 def pipeline(program):
 
-    _variables, _sorts, functions, rules = parseProgram(program)
+    _sorts, _variables, _values, _functions, rules = parseProgram(program)
 
-    index = Index(sorts=_sorts, variables=_variables)
-    dimacs = DimacsIndex()
+    index = Index(sorts=_sorts, variables=_variables, functions=_functions)
+    dimacs = DimacsIndex([])
     solver = Solver()
 
-    for clause in functionClauses(index, functions):
-        solver.add_clause(clause.clausify(dimacs))
+    for clauseSet in functionClauses(index, _values):
+        for clause in clauseSet.clausify(dimacs):
+            solver.add_clause(clause)
 
     for rule in rules:
         source = rule.collect(index)
-        for assignment in index.assignments(source):
-            solver.add_clause(rule.evaluate(index, assignment).clausify(index))
+        for groundRule in unfold(rule, index):
+            for clause in groundRule.clausify(dimacs):
+                solver.add_clause(clause)
 
     for model in solver.enum_models():
-        yield showModel(model)
+        yield showModel(model, dimacs)
 
 if __name__ == '__main__':
     line = True
