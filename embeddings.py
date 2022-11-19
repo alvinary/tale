@@ -32,17 +32,19 @@ def chooseOne(p, q, a):
 def imageBits(index, image, args, label, padding):
     allBits = []
     argumentTerms = [elem.term for elem in args]
-    elemHasImage = Atom(termify('predicate', image.term, *argumentTerms))
+    elemHasImage = Atom(termify(label, *argumentTerms, image.term))
     for i, b in enumerate(pad(bits(index), padding)):
         stringIndex = str(i)
-        bit = Atom(termify(label, stringIndex, b, *argumentTerms))
-        negatedBit = Atom(termify(label, stringIndex, flip(b), *argumentTerms))
+        bit = Atom(termify(f'{label} bit', stringIndex, b, *argumentTerms))
+        negatedBit = Atom(termify(f'{label} bit', stringIndex, flip(b), *argumentTerms))
         allBits.append(bit)
         yield Either([bit, negatedBit])
     yield Iff(allBits, [elemHasImage])
 
 def forbid(index, elem, label=''):
-    indexBits = [bitAtom(label, b, elem) for b in bits(index)]
+    indexBits = []
+    for i, b in enumerate(pad(bits(index), padding)):
+        indexBits.append(bitAtom(f'{label} bit', str(i), b, elem))
     return Never(indexBits)
 
 # Clause embeddings
