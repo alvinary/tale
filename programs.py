@@ -159,7 +159,7 @@ class ProgramSemantics:
         return sorts, variables, values, functions
     def order(self, ast):
         left = listMap(), {}, {}, {}
-        right = totalOrder(ast.number, ast.prefix, ast.sort)
+        right = totalOrder(ast.n, ast.prefix, ast.sort)
         return merge(left, right)
     def assign(self, ast):
         return listMap(), {}, {}, {(ast.f, ast.preimage) : ast.image}
