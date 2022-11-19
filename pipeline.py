@@ -18,7 +18,12 @@ def functionClauses(index, functions):
 def pipeline(program):
 
     _sorts, _variables, _values, _functions, rules = parseProgram(program)
-
+    
+    print("Rules: ")
+    for r in rules:
+        print(r.show())
+    print("")    
+        
     index = Index(sorts=_sorts, variables=_variables, functions=_functions)
     dimacs = DimacsIndex([])
     solver = Solver()
@@ -29,9 +34,12 @@ def pipeline(program):
 
     for rule in rules:
         source = rule.collect(index)
-        for groundRule in unfold(rule, index):
-            for clause in groundRule.clausify(dimacs):
-                solver.add_clause(clause)
+        if unfold(rule, index):
+            for groundRule in unfold(rule, index):
+                for clause in groundRule.clausify(dimacs):
+                    solver.add_clause(clause)
+        else:
+            solver.add_clause(rule.clausify(dimacs))
 
     for model in solver.enum_models():
         yield showModel(model, dimacs)
