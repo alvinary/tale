@@ -4,6 +4,7 @@ import tatsu
 from tatsu.ast import AST
 
 from tale.formulas import *
+from tale.embeddings import *
 
 listMap = lambda: defaultdict(lambda: [])
 
@@ -26,12 +27,14 @@ grammar = '''
         | fill
         | let
         | var
+        | order
         ;
 
     add = elems:elements ":" sort:name ;
     fill = "fill " prefix:name n:number ":" sort:name ;
     var = "var " vars:elements ":" sort:name ;
     let = "let " f:name ":" domain:elements "->" range:name ;
+    order = "order " prefix:name n:number ":" sort:name ;
 
     number = n:/[0-9]+/ ;
 
@@ -112,14 +115,15 @@ grammar = '''
 '''
 
 def merge(left, right):
-    leftSorts, leftVariables, leftValues = left
-    rightSorts, rightVariables, rightValues = right
+    leftSorts, leftVariables, leftValues, leftFunctions = left
+    rightSorts, rightVariables, rightValues, leftFunctions = right
     for key in rightSorts.keys():
         for elem in rightSorts[key]:
             leftSorts[key].append(elem)
     leftVariables = leftVariables | rightVariables
-    leftValues = leftValues | rightValues 
-    return leftSorts, leftVariables, leftValues
+    leftValues = leftValues | rightValues
+    leftFunctions = leftFunctions | rightFunctions
+    return leftSorts, leftVariables, leftValues, leftFunctions
 
 class ProgramSemantics:
     def name(self, ast):
@@ -143,26 +147,30 @@ class ProgramSemantics:
     def declare(self, ast):
         return ast
     def add(self, ast):
-        sorts, variables, values = listMap(), {}, {}
+        sorts, variables, values, functions = listMap(), {}, {}, {}
         for elem in ast.elems:
             sorts[ast.sort].append(elem)
-        return sorts, variables, values
+        return sorts, variables, values, functions
     def fill(self, ast):
-        sorts, variables, values = listMap(), {}, {}
+        sorts, variables, values, functions = listMap(), {}, {}, {}
         sorts[ast.sort] += [f"{ast.prefix}{i}" for i in range(ast.n)]
-        return sorts, variables, values
+        return sorts, variables, values, functions
+    def order(self, ast):
+        left = listMap(), {}, {}, {}
+        right = totalOrder(ast.number, ast.prefix, ast.sort)
+        return merge(left, right)
     def var(self, ast):
-        sorts, variables, values = listMap(), {}, {}
+        sorts, variables, values, functions = listMap(), {}, {}, {}
         for var in ast.vars:
             variables[var] = ast.sort
-        return sorts, variables, values
+        return sorts, variables, values, functions
     def let(self, ast):
-        sorts, variables, values = listMap(), {}, {}
+        sorts, variables, values, functions = listMap(), {}, {}, {}
         values[ast.f] = (ast.domain, ast.range)
-        return sorts, variables, values
+        return sorts, variables, values, functions
     def fullprogram(self, ast):
-        sorts, variables, values = ast.preamble
-        return sorts, variables, values, ast.rules
+        sorts, variables, values, functions = ast.preamble
+        return sorts, variables, values, functions, ast.rules
     def program(self, ast):
         return ast
     def programpart(self, ast):
