@@ -42,7 +42,7 @@ def forbid(index, elem, label=''):
     indexBits = [bitAtom(label, b, elem) for b in bits(index)]
     return Never(indexBits)
 
-# Embeddings
+# Clause embeddings
 
 def negation(atoms):
     notPrefix = 'not'
@@ -71,3 +71,36 @@ def oneOf(imageSort, domainSort, label=''):
     for i in range(imageSize, bottom):
         for elem in domainSort:
             yield forbid(i, elem, label=label)
+
+# Index embeddings
+
+def totalOrder(size, label):
+    sort = {label : []}
+    values = {}
+    for i in range(size):
+        current = f"{label}{i}"
+        _next = f"{label}{i+1}"
+        # If next is out of bounds, it does not matter, because
+        # next is not part of any sort, and should not be involved
+        # in any predicate. But by adding it we ensure f(a) is always
+        # defined.
+        sort[label].append(current)
+        values['next', current] = _next
+    return sort, values
+
+# Mixed embeddings
+
+def binaryTree(size, label=''):
+    
+    leaves = []
+    partMap = {}
+
+    partMap['left'] = []
+    partMap['right'] = []
+
+    # virtual or actual
+    # virtuals have a direction
+    # inherit in that direction directly
+    # show
+
+
