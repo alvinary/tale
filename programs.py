@@ -54,26 +54,29 @@ grammar = '''
     finalstatement = last:statement ;
 
     term = functional | simple ;
-    functional = main:name funs:functions ;
+    functional = main:name "." funs:functions ;
     simple = main:name ;
 
     functions = several | application ;
-    application = "." fun:name ;
-    several = "." fun:name rest:functions ;
+    application = fun:name ;
+    several = fun:name "." rest:functions ;
 
     rule
         =
+        | never
         | horn
         | iff
-        | never
         | disjunction
-        | either ;
+        | either 
+        | assertion
+        ;
 
     horn = body:atoms '->' head:atoms ;
     iff = left:atoms '<->' right:atoms ;
     never = conjuncts:atoms '->' 'False' ;
     disjunction = atomd ;
     either = 'either ' options:atoms ;
+    assertion = asserted:atom ;
 
     atom
         =
@@ -195,12 +198,14 @@ class ProgramSemantics:
     def simple(self, ast):
         return Term(ast.main, [])
     def functions(self, ast):
-        return ast
+        return list(ast)
     def application(self, ast):
-        return [ast.name]
+        return [ast.fun]
     def several(self, ast):
         return [ast.fun] + list(ast.rest)
     def rule(self, ast):
+        return ast
+    def assertion(self, ast):
         return ast
     def horn(self, ast):
         return If(ast.body, ast.head)
@@ -218,12 +223,18 @@ class ProgramSemantics:
         return [ast.head] + list(ast.tail)
     def lastd(self, ast):
         return [ast.end]
+    def manyatoms(self, ast):
+        return [ast.head] + list(ast.tail)
+    def lastatom(self, ast):
+        return [ast.end]
     def atom(self, ast):
+        return ast
+    def atoms(self, ast):
         return ast
     def negative(self, ast):
         return ast.pred.negate()
     def predicate(self, ast):
-        return Atom([ast.term] + list(ast.args))
+        return Atom([ast.predicate] + list(ast.args))
     def arguments(self, ast):
         return ast
     def manya(self, ast):
