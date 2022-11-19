@@ -121,16 +121,16 @@ class DimacsIndex:
 
 class Index:
 
-    def __init__(self, values={}, sorts={}, variables={}):
+    def __init__(self, sorts={}, variables={}, functions={}):
 
-        self.valueMap = values
+        self.functionMap = functions
         self.sortMap = sorts
         self.variableMap = variables
 
     def value(self, function, elem):
 
-        if (function, elem) in self.valueMap.keys():
-            value = self.valueMap[function, elem]
+        if (function, elem) in self.functionMap.keys():
+            value = self.functionMap[function, elem]
             error = Ok()
         else:
             value = None
@@ -152,9 +152,10 @@ class Index:
         if local_sorts and sort in local_sorts.keys():
             for elem in local_sorts[sort]:
                 yield elem
-
-        for elem in self.sortMap[sort]:
-            yield elem
+                
+        if not local_sorts and in_map:
+            for elem in self.sortMap[sort]:
+                yield elem
 
     def assignments(self, variables):
         sorts = [self.variableMap[v] for v in variables]
