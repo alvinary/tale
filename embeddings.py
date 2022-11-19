@@ -87,7 +87,7 @@ def totalOrder(size, prefix, sort):
         # in any predicate. But by adding it we ensure f(a) is always
         # defined.
         sorts[sort].append(current)
-        values['next', current] = _next
+        functions['next', current] = _next
     return sorts, {}, {}, functions
 
 # Mixed embeddings
