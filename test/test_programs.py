@@ -10,6 +10,11 @@ let f : const -> const.
 let h : const -> const.
 let y : const, const -> const.
 
+let a.h = b.
+let a.g = a.
+let b.h = b.
+let b.h = a.
+
 a.F.g = a.F.g, g = f.F <-> fun(F).
 p (a, b.h), q (b) -> r (a, b), s(b, a).
 n (a) v m (a).
@@ -44,6 +49,8 @@ def test_declarations():
     assert variables['a'] == 'const'
     assert values['f'] == (['const'], 'const')
     assert values['y'] == (['const', 'const'], 'const')
+    assert functions['h', 'a'] == 'b'
+    assert functions['h', 'b'] == 'a'
         
 def test_negation():
     pass
