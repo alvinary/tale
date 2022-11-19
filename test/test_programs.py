@@ -38,13 +38,21 @@ def test_parser():
         
 def test_declarations():
     sorts, variables, values, functions, _ = parseProgram(testProgram)
-    assert 'c1' in sorts['const']
-    assert 'c3' in sorts['const']
-    assert 'f' in sorts['fun']
+    a = Term('a', [])
+    b = Term('b', [])
+    c1 = Term('c1', [])
+    c3 = Term('c3', [])
+    f = Term('f', [])
+    F = Term('F', [])
+    y = Term('y', [])
+    
+    assert c1 in sorts['const']
+    assert c3 in sorts['const']
+    assert f in sorts['fun']
     assert 'F' in variables.keys()
     assert 'a' in variables.keys()
     assert 'f' in values.keys()
-    assert 'y' in values.keys()
+    assert 'g' in values.keys()
     assert variables['F'] == 'fun'
     assert variables['a'] == 'const'
     assert values['f'] == (['const'], 'const')

@@ -55,7 +55,7 @@ def test_terms():
     # 1a) Test a single term with a single function, f(a)
     # 1b) Test a compund term, g(f(a))
     
-    index = Index(values=vals, variables=varbs)
+    index = Index(functions=vals, variables=varbs)
     term1 = Term(a, functions=[f])
     term2 = Term(a, functions=[f, g])
     
