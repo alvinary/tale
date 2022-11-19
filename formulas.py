@@ -21,7 +21,7 @@ def reverseComp(comparison):
         return '<'
 
 def reverseNot(term):
-    return f'not {term}'
+    return Term(f'not {term.term}', term.functions)
 
 class Ok(Exception):
 
@@ -55,7 +55,7 @@ class FunctionError(Exception):
         self.term = term
 
     def __str__(self):
-        return f"No value found for {term}.{function}."
+        return f"No value found for {self.term}.{self.function}"
 
     def __bool__(self):
         return True
@@ -180,13 +180,17 @@ class Term:
             value, error = index.value(function, argument)
             argument = value
 
-        if not self.functions and index.hasVariable(argument):
+        if not _functions and index.hasVariable(argument):
             value, error = assignment.bind(argument)
 
-        if not self.functions and not index.hasVariable(argument):
+        if not _functions and not index.hasVariable(argument):
             value, error = argument, Ok()
 
-        return value, error
+        if isinstance(error, Ok):
+            return Term(value, [])
+
+        else:
+            raise error
 
     def collect(self, index):
 
@@ -221,6 +225,9 @@ class Atom:
         arguments = [a.show() for a in self.terms[1:]]
         return f"{predicate}({', '.join(arguments)})"
 
+    def evaluate(self, index, assignment):
+        return Atom([t.evaluate(index, assignment) for t in self.terms])
+
 
 @dataclass(frozen=True)
 class Comparison:
@@ -247,6 +254,9 @@ class Comparison:
 
     def show(self):
         return f"{self.left.show()} {self.comparison} {self.right.show()}"
+        
+    def evaluate(self, index, assignment):
+        return Comparison(self.comparison, self.left.evaluate(index, assignment), self.right.evaluate(index, assignment))
 
 
 @dataclass(frozen=True)
@@ -267,6 +277,9 @@ class Either:
 
     def show(self):
         return f"Either {', '.join([a.show() for a in self.options])}"
+        
+    def evaluate(self, index, assignment):
+        return Either([o.evaluate(index, assignment) for o in self.options])
 
 
 @dataclass(frozen=True)
@@ -297,6 +310,9 @@ class If:
         body = ', '.join([a.show() for a in self.body])
         head = ', '.join([a.show() for a in self.head])
         return f"{body} -> {head}"
+
+    def evaluate(self, index, assignment):
+        return If([b.evaluate(index, assignment) for b in self.body], [h.evaluate(index, assignment) for h in self.head])
 
 
 @dataclass(frozen=True)
@@ -330,6 +346,9 @@ class Iff:
         left = ', '.join([a.show() for a in self.left])
         right = ', '.join([a.show() for a in self.right])
         return f"{left} <-> {right}"
+        
+    def evaluate(self, index, assignment):
+        return Iff([l.evaluate(index, assignment) for l in self.left], [r.evaluate(index, assignment) for r in self.right])
 
 
 @dataclass(frozen=True)
@@ -348,6 +367,9 @@ class Or:
 
     def show(self):
         return ' v '.join([a.show() for a in self.disjuncts])
+        
+    def evaluate(self, index, assignment):
+        return Or([d.evaluate(index, assignment) for d in self.disjuncts])
 
 
 @dataclass(frozen=True)
@@ -367,3 +389,6 @@ class Never:
     def show(self):
         conjuncts = ", ".join([a.show() for a in self.conjuncts])
         return f"{conjuncts} -> False"
+        
+    def evaluate(self, index, assignment):
+        return Never([a.evaluate(index, assignment) for a in self.conjuncts])
