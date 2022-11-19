@@ -10,7 +10,7 @@ def showModel(model, index):
 def functionClauses(index, functions):
     for f in functions.keys():
         _domain, _range = functions[f]
-        _domain = index.sortMap[_domain]
+        _domain = [index.sortMap[d] for d in _domain]
         _range = index.sortMap[_range]
         for clause in oneOf(_range, _domain, label=f):
             yield clause
