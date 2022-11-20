@@ -205,6 +205,9 @@ class Term:
 class Atom:
     terms: List[Term]
     
+    def atoms(self):
+        yield self
+    
     def clausify(self, index):
         return [[index.getLiteral(self)]]
 
