@@ -287,7 +287,7 @@ class If:
     body: List[Atom]
     head: List[Atom]
 
-    def atoms(self, index):
+    def atoms(self):
         for a in self.body:
             yield a
         for a in self.head:
