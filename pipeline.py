@@ -27,22 +27,30 @@ def pipeline(program):
     index = Index(sorts=_sorts, variables=_variables, functions=_functions)
     dimacs = DimacsIndex([])
     solver = Solver()
+    
+    atomForms = set()
+    atoms = []
 
     for clauseSet in functionClauses(index, _values):
         for clause in clauseSet.clausify(dimacs):
-            solver.add_clause(clause)
+            solver.add_clause(clause) 
 
     for rule in rules:
         source = rule.collect(index)
         if unfold(rule, index):
             for groundRule in unfold(rule, index):
+                for atom in groundRule.atoms():
+                    if atom.show() not in atomForms:
+                        atomForms.add(atom.show())
+                        atoms.append(atom)
                 for clause in groundRule.clausify(dimacs):
                     solver.add_clause(clause)
         else:
             solver.add_clause(rule.clausify(dimacs))
             
-    for atom in dimacs.dimacsMap.keys():
-        for clauseSet in negation():
+    for clauseSet in negation(atoms):
+        for clause in clauseSet.clausify(dimacs):
+            solver.add_clause(clause)
 
     for model in solver.enum_models():
         yield showModel(model, dimacs)
