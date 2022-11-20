@@ -381,7 +381,7 @@ class Never:
 
     def atoms(self):
         for a in self.conjuncts:
-            return a
+            yield a
 
     def clausify(self, index):
         return [[-index.getLiteral(a) for a in self.conjuncts]]
