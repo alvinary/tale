@@ -377,7 +377,7 @@ class Never:
     conjuncts: List[Atom]
 
     def atoms(self):
-        for a in self.disjuncts:
+        for a in self.conjuncts:
             return a
 
     def clausify(self, index):
