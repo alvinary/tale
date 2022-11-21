@@ -12,6 +12,7 @@ var c : factor.
 var i : index.
 let docks.opposite = shore.
 let shore.opposite = docks.
+ate (i, a, b), not eats (a, b) -> False.
 at (i, a,  p), at (i, b, p), eats (a, b) -> ate (i, a, b).
 at(i, a, p), at (i, b, p), not at (i, farmer, p), eats (a, b) -> False.
 ferry (i, wolf) -> False.
@@ -22,6 +23,7 @@ ferry (i, c), at (i, c, p) -> at (i.next, farmer, p.opposite).
 not ferry (i, c), at (i, c, p) -> at (i.next, c, p).
 eats (goat, cabbage).
 eats (wolf, goat).
+not eats (a, a).
 at (i0, farmer, shore).
 at (i0, wolf, shore).
 at (i0, cabbage, shore).
