@@ -188,7 +188,8 @@ class Term:
         
         for f in self.functions:
             if index.hasVariable(f):
-                groundFunctions.append(assignment.bind(f).term)
+                boundFunction, error = assignment.bind(f)
+                groundFunctions.append(boundFunction)
             else:
                 groundFunctions.append(f)
             
