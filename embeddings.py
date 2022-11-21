@@ -60,6 +60,9 @@ def negation(atoms):
 
 def unfold(rule, index):
     for assignment in index.assignments(rule.collect(index)):
+        print(rule.show())
+        print(rule.collect(index))
+        print(rule.evaluate(index, assignment).show())
         yield rule.evaluate(index, assignment)
 
 def oneOf(imageSort, domainSorts, label=''):
