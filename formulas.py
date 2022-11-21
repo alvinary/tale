@@ -194,6 +194,9 @@ class Term:
             
         argument = groundTerm
         
+        if not groundFunctions:
+            return argument
+        
         while groundFunctions:
         
             function = groundFunctions.pop(0)
@@ -203,13 +206,14 @@ class Term:
                 if not isinstance(error, Ok):
                    raise error
                 
+            print("argument :", argument, "type: ", type(argument))
             value, error = index.value(function, argument.term) # What if function is a term? Can that happen?
             
             if not isinstance(error, Ok):
                 raise error
             
             argument = value
-
+            
         return Term(argument, [])
 
     def collect(self, index):
