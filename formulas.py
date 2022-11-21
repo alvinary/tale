@@ -205,8 +205,7 @@ class Term:
                 function, error = assignment.bind(function)
                 if not isinstance(error, Ok):
                    raise error
-                
-            print("argument :", argument, "type: ", type(argument))
+            
             value, error = index.value(function, argument.term) # What if function is a term? Can that happen?
             
             if not isinstance(error, Ok):
