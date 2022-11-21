@@ -207,13 +207,14 @@ class Term:
                    raise error
             
             value, error = index.value(function, argument.term) # What if function is a term? Can that happen?
+            value = Term(value, [])
             
             if not isinstance(error, Ok):
                 raise error
             
             argument = value
             
-        return Term(argument, [])
+        return argument
 
     def collect(self, index):
         names = [self.term] + self.functions
