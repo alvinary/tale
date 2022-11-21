@@ -4,6 +4,12 @@ from tale.embeddings import *
 from tale.formulas import *
 from tale.programs import parseProgram
 
+def isPositive(atom):
+    if len(atom.terms[0].term) >= 4:
+        return 'not ' != atom.terms[0].term[0:4]
+    else:
+        return True
+
 def showModel(model, index):
     return {index.fromDimacs(literal).show() for literal in model if literal > 0}
 
@@ -40,7 +46,7 @@ def pipeline(program):
         if unfold(rule, index):
             for groundRule in unfold(rule, index):
                 for atom in groundRule.atoms():
-                    if atom.show() not in atomForms:
+                    if atom.show() not in atomForms and isPositive(atom):
                         atomForms.add(atom.show())
                         atoms.append(atom)
                 for clause in groundRule.clausify(dimacs):
