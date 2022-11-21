@@ -78,6 +78,10 @@ class Assignment:
 
     def __init__(self, mapping):
         self.binding = mapping
+        
+    
+    # It is confusing to use the identifier 'term' here,
+    # since these are strings and not Terms
 
     def bind(self, term):
         if term in self.binding.keys():
@@ -135,8 +139,12 @@ class Index:
         else:
             value = None
             error = FunctionError(function, elem)
-
-        return value, error
+            
+        if not isinstance(error, FunctionError):
+            return value, error
+            
+        else:
+            raise error
 
     def hasVariable(self, name):
         return name in self.variableMap.keys()
@@ -169,31 +177,42 @@ class Term:
     functions: list[str]
 
     def evaluate(self, index, assignment):
-
-        _functions = list(self.functions)
-        argument = self.term
-
-        while _functions:
-            function = _functions.pop(0)
+        
+        if index.hasVariable(self.term):
+            groundTerm, error = assignment.bind(self.term)
+            
+        else:
+            groundTerm = self
+            
+        groundFunctions = []
+        
+        for f in self.functions:
+            if index.hasVariable(f):
+                groundFunctions.append(assignment.bind(f).term)
+            else:
+                groundFunctions.append(f)
+            
+        argument = groundTerm
+        
+        while groundFunctions:
+        
+            function = groundFunctions.pop(0)
+            
             if index.hasVariable(function):
                 function, error = assignment.bind(function)
-            value, error = index.value(function, argument)
+                if not isinstance(error, Ok):
+                   raise error
+                
+            value, error = index.value(function, argument.term) # What if function is a term? Can that happen?
+            
+            if not isinstance(error, Ok):
+                raise error
+            
             argument = value
 
-        if not _functions and index.hasVariable(argument):
-            value, error = assignment.bind(argument)
-
-        if not _functions and not index.hasVariable(argument):
-            value, error = argument, Ok()
-
-        if isinstance(error, Ok):
-            return Term(value, [])
-
-        else:
-            raise error
+        return Term(argument, [])
 
     def collect(self, index):
-
         names = [self.term] + self.functions
         return {n for n in names if index.hasVariable(n)}
 
