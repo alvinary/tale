@@ -1,5 +1,7 @@
 from tale.pipeline import *
 
+MODELS = 10
+
 program = '''
 shore, docks : place.
 cabbage, goat, wolf, farmer : actor.
@@ -36,15 +38,8 @@ won (i, farmer), ferry (i, a) -> False.
 '''
 
 def test_pipeline():
-    count = 10
-    
-    for model in pipeline(program):
-        
+    for index, model in zip(range(MODELS), pipeline(program)):
         for a in sorted(list(model)):
             print(a)
-        
         print("")
-        count -= 1
-        if count == 0:
-            break
     assert False
