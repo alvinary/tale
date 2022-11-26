@@ -12,6 +12,8 @@ def bits(n):
     return format(n, 'b')
 
 def termify(*args):
+    for a in args:
+        assert isinstance(a, str)
     return [Term(a, []) for a in args]
 
 def bitAtom(label, bit, elem):
@@ -41,10 +43,11 @@ def imageBits(index, image, args, label, padding):
         yield Either([bit, negatedBit])
     yield Iff(allBits, [elemHasImage])
 
-def forbid(index, padding, *elem, label=''):
+def forbid(index, padding, args, label=''):
     indexBits = []
+    argumentTerms = [elem.term for elem in args]
     for i, b in enumerate(pad(bits(index), padding)):
-        indexBits.append(Atom(termify(f'{label} bit', str(i), b, *elem)))
+        indexBits.append(Atom(termify(f'{label} bit', str(i), b, *argumentTerms)))
     return Never(indexBits)
 
 # Clause embeddings
@@ -74,8 +77,8 @@ def oneOf(imageSort, domainSorts, label=''):
                 yield r
 
     for i in range(imageSize, bottom):
-        for elem in product(*domainSorts):
-            yield forbid(i, logSize, elem, label=label)
+        for args in product(*domainSorts):
+            yield forbid(i, logSize, args, label=label)
 
 # Index embeddings
 
