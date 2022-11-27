@@ -5,8 +5,8 @@ MODELS = 10
 program = '''
 order token 5 : token.
 order node 4 : node.
-order token 5 : vertex.
 order node 4 : vertex.
+order token 5 : vertex.
 order lv 5 : level.
 
 let left : node -> vertex.
@@ -16,16 +16,29 @@ let level : node -> level.
 
 var t, s : node.
 var a, b : vertex. 
-var n : level.
+var n, m : level.
 
-left (t, t) -> False.
-right (t, t) -> False.
-left (t, a), right (t, a) -> False.
+not left (t, t).
+not right (t, t).
+left (t, a) -> not right (t, a).
+right (t, a) -> not left (t, a).
+
 left (t, a) -> parent (a, t).
 right (t, a) -> parent (a, t).
 
-level (t, n), right (t, s) -> level (s, n.next).
+left (t, s) -> not left (s, t).
+right (t, s) -> not right (s, t).
+
+level (t, n), right (t, s), not level (s, n.next) -> False.
+level (t, n), left (t, s), not level (s, n.next) -> False.
+
 level (t, lv0) -> parent (t, t).
+level (node0, lv0).
+
+before (n, n.next).
+before (n, m) -> before (n, m.next).
+not before (n, n).
+before (n, m) -> not before (m, n).
 '''
 
 def test_pipeline():
