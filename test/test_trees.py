@@ -29,8 +29,8 @@ right (t, a) -> parent (a, t).
 left (t, s) -> not left (s, t).
 right (t, s) -> not right (s, t).
 
-level (t, n), right (t, s), not level (s, n.next) -> False.
-level (t, n), left (t, s), not level (s, n.next) -> False.
+level (t, n), right (t, s) -> level (s, n.next).
+level (t, n), left (t, s) -> level (s, n.next).
 
 level (t, lv0) -> parent (t, t).
 level (node0, lv0).
