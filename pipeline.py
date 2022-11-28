@@ -133,7 +133,7 @@ if __name__ == '__main__':
     size = int(size)
     chatty = int(chatty)
 
-    models = pipeline(programText)
+    models = pipeline(programText, log=chatty)
             
     if models:
         print("The input program is satisfiable.")
@@ -145,3 +145,4 @@ if __name__ == '__main__':
         size = size - 1
         if size < 0:
             break
+            
