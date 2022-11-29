@@ -144,4 +144,15 @@ if __name__ == '__main__':
         size = size - 1
         if size < 0:
             break
-            
+
+    if chatty > 0:
+        print("Rules: ")
+        for r in logger.data[RULES]:
+            print(r)
+        print("")
+
+    if chatty > 1:
+        print("Ground rules: ")
+        for r in logger.data[GROUNDRULES]:
+            print(r)
+        print("")
