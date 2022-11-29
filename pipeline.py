@@ -66,7 +66,7 @@ def pipeline(program, log=0):
 
     _sorts, _variables, _values, _functions, rules = parseProgram(program)
     
-    if log > 1:
+    if log > 0:
         for r in rules:
             logger.log(RULES, r.show())
         
