@@ -93,7 +93,7 @@ def pipeline(program, log=0):
                     logger.log(GROUNDRULES, groundRule.show())
                 for atom in groundRule.atoms():
                     if atom.show() not in atomForms and isPositive(atom):
-                        if log > 2:
+                        if log > 1:
                             atomForms.add(atom.show())
                             atoms.append(atom)
                             logger.log(ATOMS, atom.show())
