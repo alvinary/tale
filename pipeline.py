@@ -156,3 +156,15 @@ if __name__ == '__main__':
         for r in logger.data[GROUNDRULES]:
             print(r)
         print("")
+        
+        print("Atoms: ")
+        for a in logger.data[ATOMS]:
+            print(a)
+        print("")
+        
+    if chatty > 2:
+        print("DIMACS clauses: ")
+        for c in logger.data[CLAUSES]:
+            print(c)
+        print("")
+        
