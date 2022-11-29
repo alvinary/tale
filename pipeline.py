@@ -119,7 +119,6 @@ if __name__ == '__main__':
 
     argParser = argumentParser()
     arguments = vars(argParser.parse_args())
-    print(arguments)
 
     chatty = arguments["verbosityFlag"]
     program = arguments["inputProgram"]
