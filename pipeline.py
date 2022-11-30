@@ -82,14 +82,15 @@ def pipeline(program, log=0):
     atomForms = set()
     atoms = []
     
-    '''
     for sortName in index.sortMap.keys():
         sort = index.sortMap[sortName]
         for comparison in uniqueNameAssumption(sort):
+            if comparison.show() not in atomForms:
+                atoms.append(comparison)
+                atomForms.add(comparison.show())
             for clause in comparison.clausify(dimacs):
                 solver.add_clause(clause)
                 logger.log(CLAUSES, clause)
-    '''
 
     for clauseSet in functionClauses(index, _values):
         logger.log(GROUNDRULES, clauseSet.show())
