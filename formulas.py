@@ -364,9 +364,9 @@ class Iff:
     def collect(self, index):
         variables = set()
         for a in self.left:
-            variables |= a.collect()
+            variables |= a.collect(index)
         for a in self.right:
-            variables |= a.collect()
+            variables |= a.collect(index)
         return variables
 
     def show(self):
