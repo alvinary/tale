@@ -95,6 +95,17 @@ def totalOrder(size, prefix, sort):
         sorts[sort].append(Term(current, []))
         functions['next', current] = _next
     return sorts, {}, {}, functions
+    
+def uniqueNameAssumption(constants):
+    size = len(constants)
+    for i in range(size):
+        for j in range(i+1):
+            c1 = constants[i]
+            c2 = constants[j]
+            if c1 != c2:
+                yield Comparison('!=', c1, c2)
+            else:
+                yield Comparison('=', c1, c2)
 
 # Mixed embeddings
 
