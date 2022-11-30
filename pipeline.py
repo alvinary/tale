@@ -50,6 +50,11 @@ def showModel(model, index):
 def printModel(model):
     print("\n".join(sorted(list(model))))
     print("\n")
+    
+def showDimacs(clause, index):
+    positives = [index.fromDimacs(i).show() for i in clause if i > 0]
+    negatives = ['~ ' + index.fromDimacs(abs(i)).show() for i in clause if i < 0]
+    return negatives + positives
 
 def functionClauses(index, functions):
     for f in functions.keys():
@@ -76,41 +81,44 @@ def pipeline(program, log=0):
     
     atomForms = set()
     atoms = []
+    
+    '''
+    for sortName in index.sortMap.keys():
+        sort = index.sortMap[sortName]
+        for comparison in uniqueNameAssumption(sort):
+            for clause in comparison.clausify(dimacs):
+                solver.add_clause(clause)
+                logger.log(CLAUSES, clause)
+    '''
 
     for clauseSet in functionClauses(index, _values):
-        if log > 1:
-            logger.log(GROUNDRULES, clauseSet.show())
+        logger.log(GROUNDRULES, clauseSet.show())
         for clause in clauseSet.clausify(dimacs):
             solver.add_clause(clause)
-            if log > 2:
-                logger.log(CLAUSES, clause)
+            logger.log(CLAUSES, clause)
 
     for rule in rules:
         source = rule.collect(index)
         if unfold(rule, index):
             for groundRule in unfold(rule, index):
-                if log > 1:
-                    logger.log(GROUNDRULES, groundRule.show())
+                logger.log(GROUNDRULES, groundRule.show())
                 for atom in groundRule.atoms():
                     if atom.show() not in atomForms and isPositive(atom):
-                        if log > 1:
-                            atomForms.add(atom.show())
-                            atoms.append(atom)
-                            logger.log(ATOMS, atom.show())
+                        atomForms.add(atom.show())
+                        atoms.append(atom)
+                        logger.log(ATOMS, atom.show())
                 for clause in groundRule.clausify(dimacs):
                     solver.add_clause(clause)
-                    if log > 1:
-                        logger.log(CLAUSES, clause)
+                    logger.log(CLAUSES, clause)
         else:
             solver.add_clause(rule.clausify(dimacs))
-            if log > 2:
-                logger.log(CLAUSES, rule.clausify(dimacs))
-            
+            logger.log(CLAUSES, rule.clausify(dimacs))
+
     for clauseSet in negation(atoms):
+        logger.log(GROUNDRULES, clauseSet.show())
         for clause in clauseSet.clausify(dimacs):
             solver.add_clause(clause)
-            if log > 2:
-                logger.log(CLAUSES, clause)
+            logger.log(CLAUSES, clause)
 
     for model in solver.enum_models():
         yield showModel(model, dimacs)
