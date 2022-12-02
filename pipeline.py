@@ -18,6 +18,8 @@ Find out if a logic program is satisfiable, and list some models, if any.
 
 EPILOG = 'Verbosity levels show: 1- rules, 2- grounded rules, and \n 3- dimacs ground clauses.\n'
 
+POSITIVE_COMPARISONS = ["=", "<", "<="]
+
 class Log:
     def __init__(self):
         self.data = defaultdict(lambda: [])
@@ -39,6 +41,15 @@ def argumentParser():
     return parser
 
 def isPositive(atom):
+    if isinstance(atom, Atom):
+        return isPositiveAtom(atom)
+    if isinstance(atom, Comparison):
+        return isPositiveComparison(atom)
+
+def isPositiveComparison(atom):
+    return atom.comparison in POSITIVE_COMPARISONS
+
+def isPositiveAtom(atom):
     if len(atom.terms[0].term) >= 4:
         return 'not ' != atom.terms[0].term[0:4]
     else:
