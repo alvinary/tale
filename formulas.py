@@ -273,10 +273,8 @@ class Comparison:
 
     def collect(self, index):
         variables = set()
-        for t in self.left:
-            variables |= t.collect(index)
-        for t in self.right:
-            variables |= t.collect(index)
+        variables |= self.left.collect(index)
+        variables |= self.right.collect(index)
         return variables
 
     def show(self):
