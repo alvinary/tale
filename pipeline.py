@@ -20,25 +20,37 @@ EPILOG = 'Verbosity levels show: 1- rules, 2- grounded rules, and \n 3- dimacs g
 
 POSITIVE_COMPARISONS = ["=", "<", "<="]
 
+
 class Log:
+
     def __init__(self):
         self.data = defaultdict(lambda: [])
 
     def log(self, field, data):
         self.data[field].append(data)
 
+
 logger = Log()
 
+
 def argumentParser():
-    parser = argparse.ArgumentParser(description=DESCRIPTION,
-                                     epilog=EPILOG)
-    parser.add_argument('-i', dest='inputProgram', default="",
-                        help='The input logic program, which should be a text file.')
-    parser.add_argument('-n', dest='requestedModels', default=1,
-                        help='Number of models to show, if the input program is satisfiable.')
-    parser.add_argument('-v', dest='verbosityFlag', default=0,
+    parser = argparse.ArgumentParser(description=DESCRIPTION, epilog=EPILOG)
+    parser.add_argument(
+        '-i',
+        dest='inputProgram',
+        default="",
+        help='The input logic program, which should be a text file.')
+    parser.add_argument(
+        '-n',
+        dest='requestedModels',
+        default=1,
+        help='Number of models to show, if the input program is satisfiable.')
+    parser.add_argument('-v',
+                        dest='verbosityFlag',
+                        default=0,
                         help='Verbosity level.')
     return parser
+
 
 def isPositive(atom):
     if isinstance(atom, Atom):
@@ -46,8 +58,10 @@ def isPositive(atom):
     if isinstance(atom, Comparison):
         return isPositiveComparison(atom)
 
+
 def isPositiveComparison(atom):
     return atom.comparison in POSITIVE_COMPARISONS
+
 
 def isPositiveAtom(atom):
     if len(atom.terms[0].term) >= 4:
@@ -55,17 +69,26 @@ def isPositiveAtom(atom):
     else:
         return True
 
+
 def showModel(model, index):
-    return {index.fromDimacs(literal).show() for literal in model if literal > 0}
-    
+    return {
+        index.fromDimacs(literal).show()
+        for literal in model if literal > 0
+    }
+
+
 def printModel(model):
     print("\n".join(sorted(list(model))))
     print("\n")
-    
+
+
 def showDimacs(clause, index):
     positives = [index.fromDimacs(i).show() for i in clause if i > 0]
-    negatives = ['~ ' + index.fromDimacs(abs(i)).show() for i in clause if i < 0]
+    negatives = [
+        '~ ' + index.fromDimacs(abs(i)).show() for i in clause if i < 0
+    ]
     return negatives + positives
+
 
 def functionClauses(index, functions):
     for f in functions.keys():
@@ -75,24 +98,25 @@ def functionClauses(index, functions):
         for clause in oneOf(_range, _domain, label=f):
             yield clause
 
+
 def pipeline(program, log=0):
 
     if log > 0:
         global logger
 
     _sorts, _variables, _values, _functions, rules = parseProgram(program)
-    
+
     if log > 0:
         for r in rules:
             logger.log(RULES, r.show())
-        
+
     index = Index(sorts=_sorts, variables=_variables, functions=_functions)
     dimacs = DimacsIndex([])
     solver = Solver()
-    
+
     atomForms = set()
     atoms = []
-    
+
     for sortName in index.sortMap.keys():
         sort = index.sortMap[sortName]
         for comparison in uniqueNameAssumption(sort):
@@ -135,6 +159,7 @@ def pipeline(program, log=0):
     for model in solver.enum_models():
         yield showModel(model, dimacs)
 
+
 if __name__ == '__main__':
 
     argParser = argumentParser()
@@ -143,18 +168,18 @@ if __name__ == '__main__':
     chatty = arguments["verbosityFlag"]
     program = arguments["inputProgram"]
     size = arguments["requestedModels"]
-    
+
     programText = ""
     with open(program) as programFile:
         for line in programFile:
             programText = f"{programText}\n{line}"
-            
+
     size = int(size)
     chatty = int(chatty)
     count = 1
 
     models = pipeline(programText, log=chatty)
-            
+
     if models:
         print("The input program is satisfiable.")
         print("")
@@ -184,15 +209,14 @@ if __name__ == '__main__':
         for r in logger.data[GROUNDRULES]:
             print(r)
         print("")
-        
+
         print("Atoms: ")
         for a in logger.data[ATOMS]:
             print(a)
         print("")
-        
+
     if chatty > 2:
         print("DIMACS clauses: ")
         for c in logger.data[CLAUSES]:
             print(c)
         print("")
-        

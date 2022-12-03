@@ -21,6 +21,7 @@ n (a) v m (a).
 either p (a), not p (a).
 '''
 
+
 def test_parser():
     _, _, _, _, content = parseProgram(testProgram)
     assert len(content) == 4
@@ -35,7 +36,8 @@ def test_parser():
         checks = checks or isinstance(rule, Never)
         checks = checks or isinstance(rule, Iff)
         assert checks
-        
+
+
 def test_declarations():
     sorts, variables, values, functions, _ = parseProgram(testProgram)
     a = Term('a', [])
@@ -45,7 +47,7 @@ def test_declarations():
     f = Term('f', [])
     F = Term('F', [])
     y = Term('y', [])
-    
+
     assert c1 in sorts['const']
     assert c3 in sorts['const']
     assert f in sorts['fun']
@@ -59,7 +61,7 @@ def test_declarations():
     assert values['y'] == (['const', 'const'], 'const')
     assert functions['h', 'a'] == 'b'
     assert functions['h', 'b'] == 'a'
-        
+
+
 def test_negation():
     pass
-

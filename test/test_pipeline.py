@@ -37,6 +37,7 @@ won (i, farmer) -> won (i.next, farmer).
 won (i, farmer), ferry (i, a) -> False.
 '''
 
+
 def test_pipeline():
     for index, model in zip(range(MODELS), pipeline(program)):
         for a in sorted(list(model)):

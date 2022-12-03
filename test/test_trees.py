@@ -41,6 +41,7 @@ not before (n, n).
 before (n, m) -> not before (m, n).
 '''
 
+
 def test_pipeline():
     for index, model in zip(range(MODELS), pipeline(program)):
         for a in sorted(list(model)):
