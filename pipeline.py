@@ -151,18 +151,26 @@ if __name__ == '__main__':
             
     size = int(size)
     chatty = int(chatty)
+    count = 1
 
     models = pipeline(programText, log=chatty)
             
     if models:
         print("The input program is satisfiable.")
         print("")
+        if size > 1:
+            print(f"Showing up to {size} models...")
+        elif size == 1:
+            print(f"Showing one model...")
+        print("")
 
     for m in models:
+        print(f"Model {count}:")
         printModel(m)
         print("")
-        size = size - 1
-        if size < 0:
+        print("")
+        count += 1
+        if size - count < 0:
             break
 
     if chatty > 0:
