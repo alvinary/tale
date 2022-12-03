@@ -18,6 +18,8 @@ Find out if a logic program is satisfiable, and list some models, if any.
 
 EPILOG = 'Verbosity levels show: 1- rules, 2- grounded rules, and \n 3- dimacs ground clauses.\n'
 
+POSITIVE_COMPARISONS = ["=", "<", "<="]
+
 class Log:
     def __init__(self):
         self.data = defaultdict(lambda: [])
@@ -39,6 +41,15 @@ def argumentParser():
     return parser
 
 def isPositive(atom):
+    if isinstance(atom, Atom):
+        return isPositiveAtom(atom)
+    if isinstance(atom, Comparison):
+        return isPositiveComparison(atom)
+
+def isPositiveComparison(atom):
+    return atom.comparison in POSITIVE_COMPARISONS
+
+def isPositiveAtom(atom):
     if len(atom.terms[0].term) >= 4:
         return 'not ' != atom.terms[0].term[0:4]
     else:
@@ -50,6 +61,11 @@ def showModel(model, index):
 def printModel(model):
     print("\n".join(sorted(list(model))))
     print("\n")
+    
+def showDimacs(clause, index):
+    positives = [index.fromDimacs(i).show() for i in clause if i > 0]
+    negatives = ['~ ' + index.fromDimacs(abs(i)).show() for i in clause if i < 0]
+    return negatives + positives
 
 def functionClauses(index, functions):
     for f in functions.keys():
@@ -76,41 +92,45 @@ def pipeline(program, log=0):
     
     atomForms = set()
     atoms = []
+    
+    for sortName in index.sortMap.keys():
+        sort = index.sortMap[sortName]
+        for comparison in uniqueNameAssumption(sort):
+            if comparison.show() not in atomForms:
+                atoms.append(comparison)
+                atomForms.add(comparison.show())
+            for clause in comparison.clausify(dimacs):
+                solver.add_clause(clause)
+                logger.log(CLAUSES, clause)
 
     for clauseSet in functionClauses(index, _values):
-        if log > 1:
-            logger.log(GROUNDRULES, clauseSet.show())
+        logger.log(GROUNDRULES, clauseSet.show())
         for clause in clauseSet.clausify(dimacs):
             solver.add_clause(clause)
-            if log > 2:
-                logger.log(CLAUSES, clause)
+            logger.log(CLAUSES, clause)
 
     for rule in rules:
         source = rule.collect(index)
         if unfold(rule, index):
             for groundRule in unfold(rule, index):
-                if log > 1:
-                    logger.log(GROUNDRULES, groundRule.show())
+                logger.log(GROUNDRULES, groundRule.show())
                 for atom in groundRule.atoms():
                     if atom.show() not in atomForms and isPositive(atom):
-                        if log > 1:
-                            atomForms.add(atom.show())
-                            atoms.append(atom)
-                            logger.log(ATOMS, atom.show())
+                        atomForms.add(atom.show())
+                        atoms.append(atom)
+                        logger.log(ATOMS, atom.show())
                 for clause in groundRule.clausify(dimacs):
                     solver.add_clause(clause)
-                    if log > 1:
-                        logger.log(CLAUSES, clause)
+                    logger.log(CLAUSES, clause)
         else:
             solver.add_clause(rule.clausify(dimacs))
-            if log > 2:
-                logger.log(CLAUSES, rule.clausify(dimacs))
-            
+            logger.log(CLAUSES, rule.clausify(dimacs))
+
     for clauseSet in negation(atoms):
+        logger.log(GROUNDRULES, clauseSet.show())
         for clause in clauseSet.clausify(dimacs):
             solver.add_clause(clause)
-            if log > 2:
-                logger.log(CLAUSES, clause)
+            logger.log(CLAUSES, clause)
 
     for model in solver.enum_models():
         yield showModel(model, dimacs)
@@ -131,18 +151,26 @@ if __name__ == '__main__':
             
     size = int(size)
     chatty = int(chatty)
+    count = 1
 
     models = pipeline(programText, log=chatty)
             
     if models:
         print("The input program is satisfiable.")
         print("")
+        if size > 1:
+            print(f"Showing up to {size} models...")
+        elif size == 1:
+            print(f"Showing one model...")
+        print("")
 
     for m in models:
+        print(f"Model {count}:")
         printModel(m)
         print("")
-        size = size - 1
-        if size < 0:
+        print("")
+        count += 1
+        if size - count < 0:
             break
 
     if chatty > 0:

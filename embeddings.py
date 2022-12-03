@@ -53,13 +53,8 @@ def forbid(index, padding, args, label=''):
 # Clause embeddings
 
 def negation(atoms):
-    notPrefix = 'not'
     for atom in atoms:
-        terms = list(atom.terms)
-        negatedPredicate = Term(f"{notPrefix} {terms[0].term}", [])
-        terms = [negatedPredicate] + terms[1:]
-        negatedAtom = Atom(terms)
-        yield Either([atom, negatedAtom])
+        yield Either([atom, atom.negate()])
 
 def unfold(rule, index):
     for assignment in index.assignments(rule.collect(index)):
@@ -95,6 +90,17 @@ def totalOrder(size, prefix, sort):
         sorts[sort].append(Term(current, []))
         functions['next', current] = _next
     return sorts, {}, {}, functions
+    
+def uniqueNameAssumption(constants):
+    size = len(constants)
+    for i in range(size):
+        for j in range(i+1):
+            c1 = constants[i]
+            c2 = constants[j]
+            if c1 != c2:
+                yield Comparison('!=', c1, c2)
+            else:
+                yield Comparison('=', c1, c2)
 
 # Mixed embeddings
 
