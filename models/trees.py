@@ -6,24 +6,6 @@ identity = lambda x: x
 NODE = 'node'
 LABEL = 'label'
 
-scaffolding = '''
-either leaf (a), node (a).
-either actual (a), virtual (a).
-
-not leftnode (a), not rightnode (a) -> not directed (a).
-not directed (a), virtual (a) -> False.
-
-leftnode (a) -> directed (a).
-rightnode (a) -> directed (a).
-directed (a), actual (a) -> False.
-
-leftnode (a), terminal (a.left, A) -> terminal (a, A).
-rightnode (a), terminal (a.right, A) -> terminal (a, A).
-
-actual (a), terminal (a.left, A) <-> leftTerminal (a, A).
-actual (a), terminal (a.right, A) <-> rightTerminal (a, A).
-'''
-
 longRule = lambda l, r, h: f"leftTerminal (a, {l}), rightTerminal (a, {r}) -> terminal (a, {h}).\n"
 shortRule = lambda h, p: f"symbol (a, {p}) -> terminal (a, {h}).\n"
 nodeName = lambda n, i, j: f"{n}[{i},{j}]"
@@ -95,7 +77,7 @@ def parseGrammar(text):
     return grammar, preterminals
 
 
-def embedTree(sequence, grammar, name='', labeling=identity):
+def embedTree(sequence, grammar, name='', customLabels=[], labeling=identity):
     clauses = []
     treeIndex = Index()
     size = len(sequence)
@@ -128,8 +110,9 @@ def embedTree(sequence, grammar, name='', labeling=identity):
     for node in leaves:
         treeIndex.valueMap[NODE].append(node)
 
-    for label in labels:
-        treeIndex.valueMap[LABEL].append(label)
+    if not customLabels:
+        for label in labels:
+            treeIndex.valueMap[LABEL].append(label)
 
     nodeVariable = 'a'
     labelVariable = 'A'
