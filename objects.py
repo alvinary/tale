@@ -84,7 +84,7 @@ def extract(literal):
 
 def reachesBack(vertex, edges):
     current = {vertex}
-    span = {}
+    span = set()
     while current:
         current = {b for a, b in edges if a in current}
         span |= set(current)
