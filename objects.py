@@ -117,7 +117,8 @@ def getTree(model):
     # function returns)
 
     if isTree:
-        return bort(root, edges)
-
+        root = roots.pop()
+        return bort(root, leftEdges, rightEdges)
+        
     else:
-        tree = None
+        raise BrokenPrecondition(f"{edges} do not specify a tree.")
