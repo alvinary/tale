@@ -35,21 +35,19 @@ def bort(vertex, left, right):
         leftChild = leftSuccessors.pop()
     elif len(leftSuccessors) > 1:
         raise BrokenPrecondition(
-            f"More than one left successor found for vertex {vertex} in edge list {NEWLINE.join(left)}"
-        )
+            f"More than one left successor found for vertex {vertex}")
     elif len(leftSuccessors) == 0:
         raise BrokenPrecondition(
-            f"No left successor found for vertex {vertex} in edge list {NEWLINE.join(left)}")
-
+            f"No left successor found for vertex {vertex}")
+            
     if len(rightSuccessors) == 1:
         rightChild = rightSuccessors.pop()
     elif len(rightSuccessors) > 1:
         raise BrokenPrecondition(
-            f"More than one right successor found for vertex {vertex} in edge list {NEWLINE.join(right)}"
-        )
+            f"More than one right successor found for vertex {vertex}")
     elif len(rightSuccessors) == 0:
         raise BrokenPrecondition(
-            f"No right successor found for vertex {vertex} in edge list {NEWLINE.join(right)}")
+            f"No right successor found for vertex {vertex}")
 
     leftRemainder, rightRemainder = remainder(vertex, left, right)
 
@@ -64,8 +62,8 @@ class Node():
 
     def __init__(self, vertex, left, right, leftEdges, rightEdges):
         self.vertex = vertex
-        self.left = bort(left, leftEdges)
-        self.right = bort(right, rightEdges)
+        self.left = bort(left, leftEdges, rightEdges)
+        self.right = bort(right, leftEdges, rightEdges)
 
 
 class Leaf():
@@ -87,8 +85,10 @@ def reachesBack(vertex, edges):
     current = {vertex}
     span = set()
     while current:
-        current = {b for a, b in edges if a in current}
+        currentEdges = {(a, b) for a, b in edges if a in current}
+        current = {b for a, b in currentEdges}
         span |= set(current)
+        edges = edges - currentEdges
     return vertex in span
 
 
