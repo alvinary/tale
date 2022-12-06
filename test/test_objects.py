@@ -44,3 +44,5 @@ def test_trees():
         pass
 
     assert getTree(model5)
+
+    assert getTree(model5).show() == "(2 (4 5))"
