@@ -1,3 +1,5 @@
+NEWLINE = "\n"
+
 class BrokenPrecondition(Exception):
 
     def __init__(self, message, data={}):
@@ -33,30 +35,29 @@ def bort(vertex, left, right):
         leftChild = leftSuccessors.pop()
     elif len(leftSuccessors) > 1:
         raise BrokenPrecondition(
-            f"More than one left successor found for vertex {vertex} in edge list {left}"
+            f"More than one left successor found for vertex {vertex} in edge list {NEWLINE.join(left)}"
         )
     elif len(leftSuccessors) == 0:
         raise BrokenPrecondition(
-            f"No left successor found for vertex {vertex}")
+            f"No left successor found for vertex {vertex} in edge list {NEWLINE.join(left)}")
 
     if len(rightSuccessors) == 1:
         rightChild = rightSuccessors.pop()
     elif len(rightSuccessors) > 1:
         raise BrokenPrecondition(
-            f"More than one right successor found for vertex {vertex} in edge list {right}"
+            f"More than one right successor found for vertex {vertex} in edge list {NEWLINE.join(right)}"
         )
     elif len(rightSuccessors) == 0:
         raise BrokenPrecondition(
-            f"No right successor found for vertex {vertex}")
+            f"No right successor found for vertex {vertex} in edge list {NEWLINE.join(right)}")
 
     leftRemainder, rightRemainder = remainder(vertex, left, right)
 
-    if leftSuccessors and rightSuccessors:
-        return Node(vertex, leftChild, rightChild, leftRemainder,
-                    rightRemainder)
-
-    if not leftSuccessors and not rightSuccessors:
-        return Leaf(vertex)
+    return Node(vertex,
+                leftChild,
+                rightChild,
+                leftRemainder,
+                rightRemainder)
 
 
 class Node():
