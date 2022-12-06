@@ -94,8 +94,8 @@ def reachesBack(vertex, edges):
 
 def getTree(model):
 
-    isLeft = lambda s: s[:4] == "left"
-    isRight = lambda s: s[:5] == "right"
+    isLeft = lambda s: "left" in s
+    isRight = lambda s: "right" in s
     leftEdges = {extract(literal) for literal in model if isLeft(literal)}
     rightEdges = {extract(literal) for literal in model if isRight(literal)}
 
