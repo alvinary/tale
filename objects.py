@@ -5,7 +5,7 @@ class BrokenPrecondition(Exception):
         self.data = data
 
     def __str__(self):
-        return message
+        return self.message
 
     def __bool__(self):
         return True
