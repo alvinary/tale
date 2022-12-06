@@ -40,7 +40,7 @@ def bort(vertex, left, right):
             f"No left successor found for vertex {vertex}")
 
     if len(rightSuccessors) == 1:
-        rightChild = leftSuccessors.pop()
+        rightChild = rightSuccessors.pop()
     elif len(rightSuccessors) > 1:
         raise BrokenPrecondition(
             f"More than one right successor found for vertex {vertex} in edge list {right}"
