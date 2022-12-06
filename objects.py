@@ -64,12 +64,18 @@ class Node():
         self.vertex = vertex
         self.left = bort(left, leftEdges, rightEdges)
         self.right = bort(right, leftEdges, rightEdges)
+        
+    def show(self):
+        return f"({self.left.show()} {self.right.show()})"
 
 
 class Leaf():
 
     def __init__(self, leaf):
         self.leaf = leaf
+        
+    def show(self):
+        return self.leaf
 
 
 def extract(literal):
