@@ -23,59 +23,60 @@ pb = Atom([p, b])
 sab = Atom([s, a, b])
 ta = Atom([t, a])
 
+
 def test_terms():
 
     # Define constants, functions, and a variable 'v',
     # which ranges over functions
-    
+
     funs = ["f", "g"]
     cons = [a, b, c, d]
-    
+
     vals = {
-        ('f', 'a') : 'a',
-        ('f', 'b') : 'a',
-        ('f', 'c') : 'd',
-        ('f', 'd') : 'c',
-        ('g', 'a') : 'b',
-        ('g', 'b') : 'a',
-        ('g', 'c') : 'd',
-        ('g', 'd') : 'c'
+        ('f', 'a'): 'a',
+        ('f', 'b'): 'a',
+        ('f', 'c'): 'd',
+        ('f', 'd'): 'c',
+        ('g', 'a'): 'b',
+        ('g', 'b'): 'a',
+        ('g', 'c'): 'd',
+        ('g', 'd'): 'c'
     }
-    
-    assign = Assignment({'v' : 'g'})
-    varbs = {'v' : 'funs'}
-    
+
+    assign = Assignment({'v': 'g'})
+    varbs = {'v': 'funs'}
+
     # 1a) Test a single term with a single function, f(a)
     # 1b) Test a compund term, g(f(a))
-    
+
     index = Index(functions=vals, variables=varbs)
     term1 = Term('a', functions=['f'])
     term2 = Term('a', functions=['f', 'g'])
-    
+
     val_1a = term1.evaluate(index, assign)
     val_1b = term2.evaluate(index, assign)
-    
-    assert val_1a == a 
-    
+
+    assert val_1a == a
+
     assert val_1b == b
-    
+
     # Test with assignment
     term3 = Term('a', functions=['f', 'g', 'v'])
     val2 = term3.evaluate(index, assign)
-    
+
     assert val2 == a
-    
+
     # Test error
-    
+
     term4 = Term("gggg", ["f"])
     try:
         val = term4.evaluate(index, assign)
     except FunctionError:
         assert True
-    
+
 
 def test_rules():
-    
+
     rule1s = "p(a, b) -> q(a)"
     rule2s = "q(a, b), p(a, b) -> False"
     rule3s = "p(a), r(b, a), p(b) <-> s(a, b)"
@@ -102,27 +103,25 @@ def test_rules():
     assert rule4.show() == rule4s
     assert rule5.show() == rule5s
 
+
 def test_assigments():
 
     testSorts = {
-        's' : ['a', 'b'],
-        't' : ['c', 'd'],
-        'v' : ['f', 'g'],
-        'r' : ['s', 't']
+        's': ['a', 'b'],
+        't': ['c', 'd'],
+        'v': ['f', 'g'],
+        'r': ['s', 't']
     }
 
-    testVariables = {
-        'v' : 'v',
-        'r' : 'r',
-        'x' : 's'
-    }
+    testVariables = {'v': 'v', 'r': 'r', 'x': 's'}
 
     testIndex = Index(sorts=testSorts, variables=testVariables)
-    
+
     target = {('a', 'f'), ('b', 'f'), ('a', 'g'), ('b', 'g')}
     bindings = testIndex.assignments(['x', 'v'])
     covered = {(b.binding['x'], b.binding['v']) for b in bindings}
     assert target == covered
+
 
 def test_embedding():
 
@@ -148,10 +147,14 @@ def test_embedding():
     cond1 = lambda m: not (m & iffAtoms) or iffAtoms <= m
     cond2 = lambda m: ta.show() not in m or pb.show() in m
     cond3 = lambda m: not (ta.show() in m and qa.show() in m)
-    cond4 = lambda m: ta.show() in m or qa.show() in m or pa.show() in m or pb-show() in m or sab.show() in m
+    cond4 = lambda m: ta.show() in m or qa.show() in m or pa.show(
+    ) in m or pb - show() in m or sab.show() in m
     cond5 = lambda m: not (sab.show() in m and qa.show() in m)
 
-    readable = lambda m: {dimacs.fromDimacs(a).show() for a in m if a > 0 and isinstance(a, int)}
+    readable = lambda m: {
+        dimacs.fromDimacs(a).show()
+        for a in m if a > 0 and isinstance(a, int)
+    }
 
     listedModels = 0
 

@@ -8,28 +8,35 @@ from tale.formulas import *
 IMAGE = Term('image', [])
 BIT = 'bit'
 
+
 def bits(n):
     return format(n, 'b')
+
 
 def termify(*args):
     for a in args:
         assert isinstance(a, str)
     return [Term(a, []) for a in args]
 
+
 def bitAtom(label, bit, elem):
     elemTerms = [e.term for e in elem]
     return Atom(termify(label, bit, *elemTerms))
+
 
 def flip(bit):
     options = ['0', '1']
     options.remove(bit)
     return options.pop(0)
 
+
 def pad(word, length, char='0'):
     return char * (length - len(word)) + word
 
+
 def chooseOne(p, q, a):
     return Either([Atom([p, a]), Atom([p, q])])
+
 
 def imageBits(index, image, args, label, padding):
     allBits = []
@@ -38,27 +45,34 @@ def imageBits(index, image, args, label, padding):
     for i, b in enumerate(pad(bits(index), padding)):
         stringIndex = str(i)
         bit = Atom(termify(f'{label} bit', stringIndex, b, *argumentTerms))
-        negatedBit = Atom(termify(f'{label} bit', stringIndex, flip(b), *argumentTerms))
+        negatedBit = Atom(
+            termify(f'{label} bit', stringIndex, flip(b), *argumentTerms))
         allBits.append(bit)
         yield Either([bit, negatedBit])
     yield Iff(allBits, [elemHasImage])
+
 
 def forbid(index, padding, args, label=''):
     indexBits = []
     argumentTerms = [elem.term for elem in args]
     for i, b in enumerate(pad(bits(index), padding)):
-        indexBits.append(Atom(termify(f'{label} bit', str(i), b, *argumentTerms)))
+        indexBits.append(
+            Atom(termify(f'{label} bit', str(i), b, *argumentTerms)))
     return Never(indexBits)
 
+
 # Clause embeddings
+
 
 def negation(atoms):
     for atom in atoms:
         yield Either([atom, atom.negate()])
 
+
 def unfold(rule, index):
     for assignment in index.assignments(rule.collect(index)):
         yield rule.evaluate(index, assignment)
+
 
 def oneOf(imageSort, domainSorts, label=''):
 
@@ -75,10 +89,12 @@ def oneOf(imageSort, domainSorts, label=''):
         for args in product(*domainSorts):
             yield forbid(i, logSize, args, label=label)
 
+
 # Index embeddings
 
+
 def totalOrder(size, prefix, sort):
-    sorts = {sort : []}
+    sorts = {sort: []}
     functions = {}
     for i in range(size):
         current = f"{prefix}{i}"
@@ -90,11 +106,12 @@ def totalOrder(size, prefix, sort):
         sorts[sort].append(Term(current, []))
         functions['next', current] = _next
     return sorts, {}, {}, functions
-    
+
+
 def uniqueNameAssumption(constants):
     size = len(constants)
     for i in range(size):
-        for j in range(i+1):
+        for j in range(i + 1):
             c1 = constants[i]
             c2 = constants[j]
             if c1 != c2:
@@ -102,10 +119,12 @@ def uniqueNameAssumption(constants):
             else:
                 yield Comparison('=', c1, c2)
 
+
 # Mixed embeddings
 
+
 def binaryTree(size, label=''):
-    
+
     leaves = []
     partMap = {}
 
@@ -116,5 +135,3 @@ def binaryTree(size, label=''):
     # virtuals have a direction
     # inherit in that direction directly
     # show
-
-

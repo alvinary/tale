@@ -9,21 +9,21 @@ p = Term('p', [])
 
 atoms = [Atom([p, a, a]), Atom([p, b, a]), Atom([p, a, b])]
 
+
 def test_negation():
-    
-    target = {
-        'not p(a, a)',
-        'not p(b, a)',
-        'not p(a, b)'
-    }
+
+    target = {'not p(a, a)', 'not p(b, a)', 'not p(a, b)'}
 
     for either in negation(atoms):
         assert either.options[1].show() in target
 
+
 def test_oneOf():
-    
+
     target = {}
-    rules = list(oneOf(termify('A', 'B', 'C', 'D'), [termify('1', '2', '3', '4')], label='letter'))
+    rules = list(
+        oneOf(termify('A', 'B', 'C', 'D'), [termify('1', '2', '3', '4')],
+              label='letter'))
     ruleStrings = sorted([r.show() for r in rules])
 
     for s in ruleStrings:
@@ -40,7 +40,7 @@ def test_oneOf():
 
     for c in clauses:
         solver.add_clause(c)
-    
+
     count = 0
     for m in solver.enum_models():
         count += 1

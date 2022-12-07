@@ -6,6 +6,7 @@ from functools import reduce
 
 union = lambda x, y: x | y
 
+
 def reverseComp(comparison):
     if comparison == '=':
         return '!='
@@ -20,8 +21,10 @@ def reverseComp(comparison):
     if comparison == '</':
         return '<'
 
+
 def reverseNot(term):
     return Term(f'not {term.term}', term.functions)
+
 
 class Ok(Exception):
 
@@ -78,8 +81,7 @@ class Assignment:
 
     def __init__(self, mapping):
         self.binding = mapping
-        
-    
+
     # It is confusing to use the identifier 'term' here,
     # since these are strings and not Terms
 
@@ -139,10 +141,10 @@ class Index:
         else:
             value = None
             error = FunctionError(function, elem)
-            
+
         if not isinstance(error, FunctionError):
             return value, error
-            
+
         else:
             raise error
 
@@ -160,7 +162,7 @@ class Index:
         if local_sorts and sort in local_sorts.keys():
             for elem in local_sorts[sort]:
                 yield elem
-                
+
         if not local_sorts and in_map:
             for elem in self.sortMap[sort]:
                 yield elem
@@ -171,50 +173,53 @@ class Index:
             binding = dict(zip(variables, assignment))
             yield Assignment(binding)
 
+
 @dataclass(frozen=True)
 class Term:
     term: str
     functions: list[str]
 
     def evaluate(self, index, assignment):
-        
+
         if index.hasVariable(self.term):
             groundTerm, error = assignment.bind(self.term)
-            
+
         else:
             groundTerm = self
-            
+
         groundFunctions = []
-        
+
         for f in self.functions:
             if index.hasVariable(f):
                 boundFunction, error = assignment.bind(f)
                 groundFunctions.append(boundFunction)
             else:
                 groundFunctions.append(f)
-            
+
         argument = groundTerm
-        
+
         if not groundFunctions:
             return argument
-        
+
         while groundFunctions:
-        
+
             function = groundFunctions.pop(0)
-            
+
             if index.hasVariable(function):
                 function, error = assignment.bind(function)
                 if not isinstance(error, Ok):
-                   raise error
-            
-            value, error = index.value(function, argument.term) # What if function is a term? Can that happen?
+                    raise error
+
+            value, error = index.value(
+                function,
+                argument.term)  # What if function is a term? Can that happen?
             value = Term(value, [])
-            
+
             if not isinstance(error, Ok):
                 raise error
-            
+
             argument = value
-            
+
         return argument
 
     def collect(self, index):
@@ -228,10 +233,10 @@ class Term:
 @dataclass(frozen=True)
 class Atom:
     terms: List[Term]
-    
+
     def atoms(self):
         yield self
-    
+
     def clausify(self, index):
         return [[index.getLiteral(self)]]
 
@@ -279,9 +284,11 @@ class Comparison:
 
     def show(self):
         return f"{self.left.show()} {self.comparison} {self.right.show()}"
-        
+
     def evaluate(self, index, assignment):
-        return Comparison(self.comparison, self.left.evaluate(index, assignment), self.right.evaluate(index, assignment))
+        return Comparison(self.comparison,
+                          self.left.evaluate(index, assignment),
+                          self.right.evaluate(index, assignment))
 
 
 @dataclass(frozen=True)
@@ -302,7 +309,7 @@ class Either:
 
     def show(self):
         return f"Either {', '.join([a.show() for a in self.options])}"
-        
+
     def evaluate(self, index, assignment):
         return Either([o.evaluate(index, assignment) for o in self.options])
 
@@ -337,7 +344,8 @@ class If:
         return f"{body} -> {head}"
 
     def evaluate(self, index, assignment):
-        return If([b.evaluate(index, assignment) for b in self.body], [h.evaluate(index, assignment) for h in self.head])
+        return If([b.evaluate(index, assignment) for b in self.body],
+                  [h.evaluate(index, assignment) for h in self.head])
 
 
 @dataclass(frozen=True)
@@ -371,9 +379,10 @@ class Iff:
         left = ', '.join([a.show() for a in self.left])
         right = ', '.join([a.show() for a in self.right])
         return f"{left} <-> {right}"
-        
+
     def evaluate(self, index, assignment):
-        return Iff([l.evaluate(index, assignment) for l in self.left], [r.evaluate(index, assignment) for r in self.right])
+        return Iff([l.evaluate(index, assignment) for l in self.left],
+                   [r.evaluate(index, assignment) for r in self.right])
 
 
 @dataclass(frozen=True)
@@ -392,7 +401,7 @@ class Or:
 
     def show(self):
         return ' v '.join([a.show() for a in self.disjuncts])
-        
+
     def evaluate(self, index, assignment):
         return Or([d.evaluate(index, assignment) for d in self.disjuncts])
 
@@ -414,6 +423,6 @@ class Never:
     def show(self):
         conjuncts = ", ".join([a.show() for a in self.conjuncts])
         return f"{conjuncts} -> False"
-        
+
     def evaluate(self, index, assignment):
         return Never([a.evaluate(index, assignment) for a in self.conjuncts])
