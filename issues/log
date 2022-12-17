@@ -1,4 +1,4 @@
 - When you declare a function f with let, but then add some other rule (like p x y -> f x y), f ceases to behave like a function.
 It might be an issue with Either.clausify, a problem with the embedding, a more problem with how negation is being handled, or something else entirely.
 
-- Total orders with next leave lots of 'hanging' facts about the out-of-bounds constant next of the last element.
+- Total orders with 'next' leave lots of 'hanging' facts about the out-of-bounds constant next of the last element.
