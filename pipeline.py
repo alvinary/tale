@@ -1,4 +1,5 @@
 from collections import defaultdict
+from itertools import islice as iteratorslice
 import argparse
 
 from pysat.solvers import Solver
@@ -189,14 +190,10 @@ if __name__ == '__main__':
             print(f"Showing one model...")
         print("")
 
-    for m in models:
-        print(f"Model {count}:")
+    for i, m in enumerate(iteratorslice(models, size)):
+        print(f"Model {i}:")
         printModel(m)
-        print("")
-        print("")
-        count += 1
-        if size - count < 0:
-            break
+        print("\n\n")
 
     if chatty > 0:
         print("Rules: ")
