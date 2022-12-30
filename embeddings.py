@@ -112,12 +112,12 @@ def totalOrder(size, prefix, sort):
 def uniqueNameAssumption(constants):
     size = len(constants)
     for i in range(size):
-        for j in range(i + 1):
+        for j in range(size):
             c1 = constants[i]
             c2 = constants[j]
             if c1 != c2:
                 yield Comparison('!=', c1, c2)
-            else:
+            elif c1 == c2:
                 yield Comparison('=', c1, c2)
 
 
