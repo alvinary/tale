@@ -1,50 +1,71 @@
 from tale.pipeline import *
+from tale.objects import *
 
 MODELS = 10
 
 program = '''
-order token 5 : token.
-order node 4 : node.
-order node 4 : vertex.
-order token 5 : vertex.
-order lv 5 : level.
+order n 6 : node.
+order t 7 : token.
+
+order n 6 : vertex.
+order t 7 : vertex.
+
+var a, b, c : vertex.
+var n, m, o : node.
+var t, s, w : token.
 
 let left : node -> vertex.
 let right : node -> vertex.
-let parent : vertex -> node.
-let level : node -> level.
 
-var t, s : node.
-var a, b : vertex. 
-var n, m : level.
+left (a, a) -> False.
+right (a, a) -> False.
 
-not left (t, t).
-not right (t, t).
-left (t, a) -> not right (t, a).
-right (t, a) -> not left (t, a).
+left (t, a) -> False.
+right (t, a) -> False.
 
-left (t, a) -> parent (a, t).
-right (t, a) -> parent (a, t).
+left (a, b), right (a, b) -> False.
 
-left (t, s) -> not left (s, t).
-right (t, s) -> not right (s, t).
+left (a, b), right (c, b) -> False.
+left (a, b), left (c, b), a != c -> False.
+right (a, b), right (c, b), a != c -> False.
 
-level (t, n), right (t, s) -> level (s, n.next).
-level (t, n), left (t, s) -> level (s, n.next).
+left (a, b) -> below (a, b).
+right (a, b) -> below (a, b).
 
-level (t, lv0) -> parent (t, t).
-level (node0, lv0).
+below (a, b), below (b, c) -> below (a, c).
+below (a, a) -> False.
+below (a, b), below (b, a) -> False.
 
-before (n, n.next).
-before (n, m) -> before (n, m.next).
-not before (n, n).
-before (n, m) -> not before (m, n).
+below (a, n0) -> False.
+not below (n0, a), a != n0 -> False.
+
+left (a, b), left (a, c), b != c -> False.
+right (a, b), right (a, c), b != c -> False.
+
+not below (n0, a), a != n0 -> False.
+not above (a, n0), a != n0 -> False.
+
+below (a, b) -> above (b, a).
+above (a, b), above (b, c) -> above (a, c).
+above (a, b), above (b, a) -> False.
+above (a, a) -> False.
+
+not someRight (n) -> False.
+not someLeft (n) -> False.
+
 '''
 
+def test_trees():
+    models = pipeline(program)
+    
+    if not models:
+        print("Instance is not satisfiable")
+        assert False
+    
+    for index, model in zip(range(MODELS), models):
+        try:
+            tree = getTree(model)
+            print(tree.show(), '\n')
+        except BrokenPrecondition:
+            assert False
 
-def test_pipeline():
-    for index, model in zip(range(MODELS), pipeline(program)):
-        for a in sorted(list(model)):
-            print(a)
-        print("")
-    assert False
