@@ -126,13 +126,13 @@ def pipeline(program, log=0):
                 atomForms.add(comparison.show())
             for clause in comparison.clausify(dimacs):
                 solver.add_clause(clause)
-                logger.log(CLAUSES, clause)
+                logger.log(CLAUSES, (clause, comparison.show()))
 
     for clauseSet in functionClauses(index, _values):
         logger.log(GROUNDRULES, clauseSet.show())
         for clause in clauseSet.clausify(dimacs):
             solver.add_clause(clause)
-            logger.log(CLAUSES, clause)
+            logger.log(CLAUSES, (clause, clauseSet.show()))
 
     for rule in rules:
         source = rule.collect(index)
@@ -146,16 +146,16 @@ def pipeline(program, log=0):
                         logger.log(ATOMS, atom.show())
                 for clause in groundRule.clausify(dimacs):
                     solver.add_clause(clause)
-                    logger.log(CLAUSES, clause)
+                    logger.log(CLAUSES, (clause, groundRule.show()))
         else:
             solver.add_clause(rule.clausify(dimacs))
-            logger.log(CLAUSES, rule.clausify(dimacs))
+            logger.log(CLAUSES, (rule.clausify(dimacs), rule.show()))
 
     for clauseSet in negation(atoms):
         logger.log(GROUNDRULES, clauseSet.show())
         for clause in clauseSet.clausify(dimacs):
             solver.add_clause(clause)
-            logger.log(CLAUSES, clause)
+            logger.log(CLAUSES, (clause, clauseSet.show()))
 
     for model in solver.enum_models():
         yield showModel(model, dimacs)
