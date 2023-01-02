@@ -4,11 +4,11 @@ from tale.objects import *
 MODELS = 10
 
 program = '''
-order n 6 : node.
-order t 7 : token.
+order n 9 : node.
+order t 10 : token.
 
-order n 6 : vertex.
-order t 7 : vertex.
+order n 9 : vertex.
+order t 10 : vertex.
 
 var a, b, c : vertex.
 var n, m, o : node.
@@ -49,9 +49,6 @@ below (a, b) -> above (b, a).
 above (a, b), above (b, c) -> above (a, c).
 above (a, b), above (b, a) -> False.
 above (a, a) -> False.
-
-not someRight (n) -> False.
-not someLeft (n) -> False.
 
 '''
 
