@@ -102,11 +102,6 @@ def getTree(model):
 
     isLeft = lambda s: s[0:5] == 'left('
     isRight = lambda s: s[0:6] == 'right('
-    
-    print("Literals:")
-    for literal in sorted(model):
-        if 'left' in literal or 'right' in literal:
-            print(literal)
             
     leftCandidates = {literal for literal in model if 'left' in literal}
     rightCandidates = {literal for literal in model if 'right' in literal}
