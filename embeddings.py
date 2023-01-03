@@ -78,7 +78,7 @@ def unfold(rule, index):
 def oneOf(imageSort, domainSorts, label=''):
 
     imageSize = len(imageSort)
-    logSize = (ceil(log(imageSize, 2)))
+    logSize = ceil(log(imageSize, 2))
     bottom = 2**logSize
 
     for i, image in enumerate(imageSort):
