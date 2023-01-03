@@ -30,6 +30,25 @@ class Log:
     def log(self, field, data):
         self.data[field].append(data)
 
+# When unfolding a rule with variables
+class EmptySort(Exception):
+    pass
+
+# In rules
+# In function declarations with let
+class UndefinedSort(Exception):
+    pass
+
+# Undefined variables will always be treated as constants
+
+# Maybe there should be some mechanism for detecting potential typos
+# (Even if it's just edit distance and the message is shown only
+# with a debugging flag)
+
+# When accessing const.fun
+class UndefinedFunction(Exception):
+    pass
+
 
 logger = Log()
 
