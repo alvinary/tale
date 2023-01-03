@@ -1,8 +1,8 @@
-order n 9 : node.
-order t 10 : token.
+order n 20 : node.
+order t 21 : token.
 
-order n 6 : vertex.
-order t 7 : vertex.
+order n 20 : vertex.
+order t 21 : vertex.
 
 var a, b, c : vertex.
 var n, m, o : node.
@@ -43,6 +43,3 @@ below (a, b) -> above (b, a).
 above (a, b), above (b, c) -> above (a, c).
 above (a, b), above (b, a) -> False.
 above (a, a) -> False.
-
-not someRight (n) -> False.
-not someLeft (n) -> False.
