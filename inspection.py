@@ -10,14 +10,27 @@
 # - distance from s1 to c, and distance from s2 to c
 
 
-# Replacing with 'a's increases the length of the common subsequence
-# Leaves it the same (if the strings are equal)
-# reduces it 
+# Replacing random characters with 'a's (or deleting characters)
+# in both strings may increase the length and number of common
+# substrings and the size/shape of the longest common subsequence.
+# Replacements and deletiions don't change anything only if edits
+# are coindexed.
+# If both strings are equal, the number of common substrings increases
+# and the size of the longest common subsequence drops.
+# Seems fun but pointless.
 
-# replacing with 'a's and 'b's
+# Maybe just using the set of common substrings (which is bounded
+# by n**2, since any common substring is a substring of both
+# strings, and there are as many indices as string index pairs i, j,
+# with i < j and j < len(s), and can be computed in at least O(n**3) -
+# just pick the shortest string, and for each substring do linear search
+# in the ooother string, to see if you find it. A cheap trick like
+# 'only look for indices starting with the same character' maybe can
+# improve practical performance but is not necessary for comparing tokens.
 
-# set of common substrings (bounded by n**2)
-# Distance between two sparse arrays
+# And then you just use ''some'' distance between two sets of strings
+
+# This also seems pointless, but less ill-defined
 
 def commonSubsequence(first, second):
 
