@@ -24,11 +24,15 @@ POSITIVE_COMPARISONS = ["=", "<", "<="]
 
 class Log:
 
-    def __init__(self):
+    def __init__(self, level=0):
         self.data = defaultdict(lambda: [])
+        self.level = level
 
-    def log(self, field, data):
-        self.data[field].append(data)
+    def log(self, field, data, priority):
+        if priority .= self.level:
+            self.data[field].append(data)
+
+defaultLogger = Log()
 
 # When unfolding a rule with variables
 class EmptySort(Exception):
@@ -48,10 +52,6 @@ class UndefinedSort(Exception):
 # When accessing const.fun
 class UndefinedFunction(Exception):
     pass
-
-
-logger = Log()
-
 
 def argumentParser():
     parser = argparse.ArgumentParser(description=DESCRIPTION, epilog=EPILOG)
@@ -119,16 +119,14 @@ def functionClauses(index, functions):
             yield clause
 
 
-def pipeline(program, log=0):
+def pipeline(program, logLevel=0, logger=defaultLogger):
 
-    if log > 0:
-        global logger
+    logger.level = logLevel
 
     _sorts, _variables, _values, _functions, rules = parseProgram(program)
 
-    if log > 0:
-        for r in rules:
-            logger.log(RULES, r.show())
+    for r in rules:
+        logger.log(RULES, r.show(), 1)
 
     index = Index(sorts=_sorts, variables=_variables, functions=_functions)
     dimacs = DimacsIndex([])
@@ -145,36 +143,36 @@ def pipeline(program, log=0):
                 atomForms.add(comparison.show())
             for clause in comparison.clausify(dimacs):
                 solver.add_clause(clause)
-                logger.log(CLAUSES, (clause, comparison.show()))
+                logger.log(CLAUSES, (clause, comparison.show()), 2)
 
     for clauseSet in functionClauses(index, _values):
-        logger.log(GROUNDRULES, clauseSet.show())
+        logger.log(GROUNDRULES, clauseSet.show(), 2)
         for clause in clauseSet.clausify(dimacs):
             solver.add_clause(clause)
-            logger.log(CLAUSES, (clause, clauseSet.show()))
+            logger.log(CLAUSES, (clause, clauseSet.show()), 2)
 
     for rule in rules:
         source = rule.collect(index)
         if unfold(rule, index):
             for groundRule in unfold(rule, index):
-                logger.log(GROUNDRULES, groundRule.show())
+                logger.log(GROUNDRULES, groundRule.show(), 2)
                 for atom in groundRule.atoms():
                     if atom.show() not in atomForms and isPositive(atom):
                         atomForms.add(atom.show())
                         atoms.append(atom)
-                        logger.log(ATOMS, atom.show())
+                        logger.log(ATOMS, atom.show(), 2)
                 for clause in groundRule.clausify(dimacs):
                     solver.add_clause(clause)
-                    logger.log(CLAUSES, (clause, groundRule.show()))
+                    logger.log(CLAUSES, (clause, groundRule.show()), 2)
         else:
             solver.add_clause(rule.clausify(dimacs))
-            logger.log(CLAUSES, (rule.clausify(dimacs), rule.show()))
+            logger.log(CLAUSES, (rule.clausify(dimacs), rule.show()), 2)
 
     for clauseSet in negation(atoms):
         logger.log(GROUNDRULES, clauseSet.show())
         for clause in clauseSet.clausify(dimacs):
             solver.add_clause(clause)
-            logger.log(CLAUSES, (clause, clauseSet.show()))
+            logger.log(CLAUSES, (clause, clauseSet.show()), 3)
 
     for model in solver.enum_models():
         yield showModel(model, dimacs)
@@ -198,7 +196,7 @@ if __name__ == '__main__':
     chatty = int(chatty)
     count = 1
 
-    models = pipeline(programText, log=chatty)
+    models = pipeline(programText, logLevel=chatty)
 
     if models:
         print("The input program is satisfiable.")
@@ -214,25 +212,7 @@ if __name__ == '__main__':
         printModel(m)
         print("\n\n")
 
-    if chatty > 0:
-        print("Rules: ")
-        for r in logger.data[RULES]:
-            print(r)
-        print("")
-
-    if chatty > 1:
-        print("Ground rules: ")
-        for r in logger.data[GROUNDRULES]:
-            print(r)
-        print("")
-
-        print("Atoms: ")
-        for a in logger.data[ATOMS]:
-            print(a)
-        print("")
-
-    if chatty > 2:
-        print("DIMACS clauses: ")
-        for c in logger.data[CLAUSES]:
-            print(c)
-        print("")
+    for key in defaultLogger.keys():
+        print(key, ":")
+        print("\n".join(defaultLogger.data[key]))
+        print("\n\n\n")
