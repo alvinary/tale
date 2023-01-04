@@ -103,8 +103,8 @@ def getTree(model):
     isLeft = lambda s: s[0:5] == 'left('
     isRight = lambda s: s[0:6] == 'right('
             
-    leftCandidates = {literal for literal in model if 'left' in literal}
-    rightCandidates = {literal for literal in model if 'right' in literal}
+    leftCandidates = {literal for literal in model if 'left(' in literal}
+    rightCandidates = {literal for literal in model if 'right(' in literal}
     
     leftEdges = {extract(literal) for literal in leftCandidates if isLeft(literal)}
     rightEdges = {extract(literal) for literal in rightCandidates if isRight(literal)}
@@ -118,6 +118,14 @@ def getTree(model):
     cycleVertices = [v for v in vertices if reachesBack(v, edges)]
 
     rooted = len(roots) == 1
+    noRoot = len(roots) == 0
+
+    if noRoot:
+        raise BrokenPrecondition(f"There is no root")
+
+    if not rooted:
+        raise BrokenPrecondition(f"{edges} do not specify a tree - more than one root (check nodes {' '.join(roots)}).")
+
     acyclic = len(cycleVertices) == 0
 
     isTree = acyclic and rooted
@@ -133,5 +141,3 @@ def getTree(model):
         
     elif not acyclic:
         raise BrokenPrecondition(f"{edges} do not specify a tree - there are cycles (check nodes {' '.join(cycleVertices)}).")
-    elif not rooted:
-        raise BrokenPrecondition(f"{edges} do not specify a tree - more than one root (check nodes {' '.join(roots)}).")
