@@ -29,7 +29,7 @@ class Log:
         self.level = level
 
     def log(self, field, data, priority):
-        if priority .= self.level:
+        if priority == self.level:
             self.data[field].append(data)
 
 defaultLogger = Log()
@@ -169,7 +169,7 @@ def pipeline(program, logLevel=0, logger=defaultLogger):
             logger.log(CLAUSES, (rule.clausify(dimacs), rule.show()), 2)
 
     for clauseSet in negation(atoms):
-        logger.log(GROUNDRULES, clauseSet.show())
+        logger.log(GROUNDRULES, clauseSet.show(), 2)
         for clause in clauseSet.clausify(dimacs):
             solver.add_clause(clause)
             logger.log(CLAUSES, (clause, clauseSet.show()), 3)
