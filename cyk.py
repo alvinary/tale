@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-index = lambda: defaultdict(lambda: [])
+inventory = lambda : defaultdict(lambda : set())
 
 PUNCTUATION = set(";->!=(),<")
 IDENTITY = lambda x: x
@@ -46,59 +46,113 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
     # 1                    -> (DIGIT, decimal digits)
     #         ...          ->         ...
 
-
     notVisited = set()
-    endsAt = index()
-    beginsAt = index()
+    endsAt = inventory()
+    beginsAt = inventory()
 
     spans = set()
 
-    tokenLabels = [tokenizer(elem) for elem in sequence]
+    oldSpans = set()
+
+    tokens = [tokenizer(elem) for elem in sequence]
     # This might require a function argument to be more general
 
     for index, token in enumerate(tokens):
-        tokenSpan = (index, index, label, TOKEN)
-        endsAt[index].append(tokenSpan)
-        beginsAt[index].append(tokenSpan)
-        spans.add((label, tokens[index:index+1]))
+        tokenSpan = (index, index, token, TOKEN)
+        endsAt[index].add(tokenSpan)
+        beginsAt[index].add(tokenSpan)
+        notVisited.add(tokenSpan)
+        spans.add((token, " ".join(sequence[index:index+1])))
 
     while notVisited:
 
         currentSpan = notVisited.pop()
 
-        rightBegin = leftEnd + 1
-        leftEnd = spanBegin - 1
-
         leftBegin, leftEnd, leftLabel, leftRule = currentSpan
-        candidates = beginsAt[rightBegin]
+        
+        if leftLabel in ruleTriggers.keys():
+            for pair in ruleTriggers[leftLabel]:
+                newLabel, newRule = pair
+                newSpan = (leftBegin, leftEnd, newLabel, newRule)
+                endsAt[leftEnd].add(newSpan)
+                beginsAt[leftBegin].add(newSpan)
+                notVisited.add(newSpan)
+                spans.add((newLabel, " ".join(sequence[leftBegin:leftEnd+1])))
+                # what if something you just added to unvisited could have some
+                # other preterminal? You should do this same loop whenever you
+                # add something
+
+        candidates = set(beginsAt[leftEnd + 1])
 
         # (1) Why not have rulesByLeft and rulesByRight?
         for candidate in candidates:
             rightBegin, rightEnd, rightLabel, rightRule = candidate
             production = (leftLabel, rightLabel)
-            for newLabel, newRule in ruleTriggers[production]:
+            if production in ruleTriggers.keys():
+                for newLabel, newRule in ruleTriggers[production]:
                 # This (ruleTriggers[production]) can be empty, so no need for (1)
-                newSpan = (leftBegin, rightEnd, newLabel, newRule)
-                beginsAt[newBegin].append(newSpan)
-                endsAt[newEnd].append(newSpan)
-                notVisited.add(newSpan)
-                spans.add((newLabel, tokens[leftBegin:rightEnd+1]))
+                    newSpan = (leftBegin, rightEnd, newLabel, newRule)
+                    beginsAt[leftBegin].add(newSpan)
+                    endsAt[rightEnd].add(newSpan)
+                    notVisited.add(newSpan)
+                    spans.add((newLabel, " ".join(sequence[leftBegin:rightEnd+1])))
 
                 # But there is duplicate code below, which would
                 # not be necessary with 'productions by direction'
 
         rightBegin, rightEnd, rightLabel, rightRule = currentSpan
-        candidates = endsAt[leftEnd]
+        candidates = set(endsAt[rightBegin - 1])
 
         for candidate in candidates:
             leftBegin, leftEnd, leftLabel, leftRule = candidate
             production = (leftLabel, rightLabel)
-            for newLabel, newRule in ruleTriggers[production]:
-                newSpan = (leftBegin, rightEnd, newLabel, newRule)
-                beginsAt[newBegin].append(newSpan)
-                endsAt[newEnd].append(newSpan)
-                notVisited.add(newSpan)
-                spans.add((newLabel, tokens[leftBegin:rightEnd+1]))
+            if production in ruleTriggers.keys():
+                for newLabel, newRule in ruleTriggers[production]:
+                    newSpan = (leftBegin, rightEnd, newLabel, newRule)
+                    beginsAt[leftBegin].add(newSpan)
+                    endsAt[rightEnd].add(newSpan)
+                    notVisited.add(newSpan)
+                    spans.add((newLabel, " ".join(sequence[leftBegin:rightEnd+1])))
+
+        newSpans = set(spans - oldSpans)
+        oldSpans = set(spans)
+
+        print("SPANS:")
+        for s, p in newSpans:
+            print(s, p)
+        print("Unvisited:")
+        for s in notVisited:
+            print(s)
+        print("\n\n")
+
+        for k in endsAt.keys():
+            print(k, " ".join([str(t) for t in endsAt[k]]))
+        for k in beginsAt.keys():
+            print(k, " ".join([str(t) for t in endsAt[k]]))
 
     return spans
 
+def testCYK():
+
+    tokens = "- ( 5 + 4 ) + 1".split()
+
+    grammar = {
+               '5' : [("NUMBER", "Single digit")],
+               '4' : [("NUMBER", "Single digit")],
+               '1' : [("NUMBER", "Single digit")],
+               '(' : [("LPAREN", "( symbol")],
+               ')' : [("RPAREN", ") symbol")],
+               '+' : [("PLUS", "+ symbol")],
+               '-' : [("MINUS", "- symbol")],
+               ('PLUS', 'NUMBER') : [("PLUSNUMBER", "Addition")], 
+               ('MINUS', 'NUMBER') : [("NUMBER", "Additive inverse")],
+               ('NUMBER', 'PLUSNUMBER') : [("NUMBER", "Sum")],
+               ('LPAREN', 'PARENNUMBER') : [("NUMBER", "Closing parentheses")],
+               ('NUMBER', 'RPAREN') : [("PARENNUMBER", "Opening parentheses")]
+            }
+
+    for span in cyk(tokens, grammar):
+        spanLabel, spanText = span
+        print(spanLabel, spanText)
+
+testCYK()
