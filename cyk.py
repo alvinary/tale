@@ -60,6 +60,7 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
         tokenSpan = (index, index, label, TOKEN)
         endsAt[index].append(tokenSpan)
         beginsAt[index].append(tokenSpan)
+        spans.add((label, tokens[index:index+1]))
 
     while notVisited:
 
@@ -81,7 +82,7 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
                 beginsAt[newBegin].append(newSpan)
                 endsAt[newEnd].append(newSpan)
                 notVisited.add(newSpan)
-                spans.add(newSpan)
+                spans.add((newLabel, tokens[leftBegin:rightEnd+1]))
 
                 # But there is duplicate code below, which would
                 # not be necessary with 'productions by direction'
@@ -97,8 +98,7 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
                 beginsAt[newBegin].append(newSpan)
                 endsAt[newEnd].append(newSpan)
                 notVisited.add(newSpan)
-                spans.add(newSpan)
+                spans.add((newLabel, tokens[leftBegin:rightEnd+1]))
 
     return spans
-
 
