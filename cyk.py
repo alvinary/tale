@@ -11,9 +11,9 @@ def isPunctuation(character):
 
 # Write a function that turns grammars with rules
 # whose right hand side has more than two preterminals
-# (currying rules with more than two productions),
-# since it's horrible to write grammars with only
-# binary rules
+# (currying rules with more than two productions) into
+# grammars with unary and binary rules, since it's 
+# horrible to write grammars with only binary rules
 
 def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
 
@@ -78,27 +78,19 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
                 beginsAt[leftBegin].add(newSpan)
                 notVisited.add(newSpan)
                 spans.add((newLabel, " ".join(sequence[leftBegin:leftEnd+1])))
-                # what if something you just added to unvisited could have some
-                # other preterminal? You should do this same loop whenever you
-                # add something
 
         candidates = set(beginsAt[leftEnd + 1])
 
-        # (1) Why not have rulesByLeft and rulesByRight?
         for candidate in candidates:
             rightBegin, rightEnd, rightLabel, rightRule = candidate
             production = (leftLabel, rightLabel)
             if production in ruleTriggers.keys():
                 for newLabel, newRule in ruleTriggers[production]:
-                # This (ruleTriggers[production]) can be empty, so no need for (1)
                     newSpan = (leftBegin, rightEnd, newLabel, newRule)
                     beginsAt[leftBegin].add(newSpan)
                     endsAt[rightEnd].add(newSpan)
                     notVisited.add(newSpan)
                     spans.add((newLabel, " ".join(sequence[leftBegin:rightEnd+1])))
-
-                # But there is duplicate code below, which would
-                # not be necessary with 'productions by direction'
 
         rightBegin, rightEnd, rightLabel, rightRule = currentSpan
         candidates = set(endsAt[rightBegin - 1])
@@ -113,22 +105,6 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
                     endsAt[rightEnd].add(newSpan)
                     notVisited.add(newSpan)
                     spans.add((newLabel, " ".join(sequence[leftBegin:rightEnd+1])))
-
-        newSpans = set(spans - oldSpans)
-        oldSpans = set(spans)
-
-        print("SPANS:")
-        for s, p in newSpans:
-            print(s, p)
-        print("Unvisited:")
-        for s in notVisited:
-            print(s)
-        print("\n\n")
-
-        for k in endsAt.keys():
-            print(k, " ".join([str(t) for t in endsAt[k]]))
-        for k in beginsAt.keys():
-            print(k, " ".join([str(t) for t in endsAt[k]]))
 
     return spans
 
