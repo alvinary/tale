@@ -6,8 +6,73 @@ PUNCTUATION = set(";->!=(),<")
 IDENTITY = lambda x: x
 TOKEN = 'token label'
 
+def ignore(*args):
+    return []
+
+class ParseTree():
+    def __init__(self):
+        pass
+
+class BinaryNode(ParseTree):
+    def __init__(self, left, right, apply):
+        self.left = left
+        self.right = right
+        self.apply = apply
+
+    def evaluate(self):
+        arguments = self.left.evaluate() + self.right.evaluate()
+        return self.apply(*arguments)
+
+class UnaryNode(ParseTree):
+    def __init__(self, branch, apply):
+        self.branch = branch
+        self.apply = apply
+
+    def evaluate(self):
+        return self.apply(self.branch.evaluate())
+
+class Leaf(ParseTree):
+    def __init__(self, data, apply):
+        self.data = data
+        self.apply = apply
+
+    def evaluate(self):
+        return self.apply(self.data)
+
 def isPunctuation(character):
     return character in PUNCTUATION
+
+def curryRule(left, right, name):
+    auxiliaryRules = []
+    # A -> B C D  (name)
+    # A -> B A[name 1]
+    # A[name 1] -> C D
+    #
+    # 1 -> 2 3 4 5 (name)
+    # 1 -> 2 1[name, 1]
+    # 1[name, 1] -> 3 1[2]
+    # 1[name, 2] -> 4 5
+
+    # apply = [] + []
+
+    return auxiliaryRules
+
+def readGrammar(text, functionMap):
+    '''
+    map rule names to functions
+
+    lambda x: f(x)
+    lambda x, y : f (x, y)
+
+    vs
+
+    f(args)
+
+    dynamic checks?
+
+    '''
+    rules = []
+    return rules
 
 # Write a function that turns grammars with rules
 # whose right hand side has more than two preterminals
@@ -51,8 +116,6 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
     beginsAt = inventory()
 
     spans = set()
-
-    oldSpans = set()
 
     tokens = [tokenizer(elem) for elem in sequence]
     # This might require a function argument to be more general
