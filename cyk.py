@@ -57,7 +57,7 @@ def curryRule(left, right, name):
 
     return auxiliaryRules
 
-def readGrammar(text, functionMap):
+def grammarToRules(text, functionMap):
     '''
     map rule names to functions
 
@@ -73,6 +73,56 @@ def readGrammar(text, functionMap):
     '''
     rules = []
     return rules
+
+def lineToRules(line):
+    rule(tokens(line))
+
+def lineToTokens(line):
+    split
+    ignore
+    return
+
+def tokensToRules(tokens, name):
+    if len(tokens) == 3:
+        head, left, right = tuple(tokens)
+        return binary(head, left, right, name)
+    if len(tokens) == 2:
+        head, branch = tuple(tokens)
+        return unary(head, branch, name)
+    if len(tokens) > 3:
+        return nary(tokens, name)
+
+def binary(head, left, right, name):
+    return ((left, right), (head, name))
+
+def unary(head, branch, name):
+    return (branch, (head, name))
+
+def nary(tokens, name):
+
+    rules = []
+    count = 0
+
+    head = tokens.pop(0)
+    left = tokens.pop(0)
+    
+    while tokens:
+        count += 1
+        auxiliaryRight = f"{name}[{count}]"
+        if len(tokens) == 1:
+            right = tokens.pop(0)
+            rule = binary(head, left, right, auxiliaryRight)
+            rules.append(rule)
+        else:
+            rule = binary(head, left, auxiliaryRight, auxiliaryRight)
+            rules.append(rule)
+            head = auxiliaryRight
+            left = tokens.pop(0)
+        
+    return rules
+
+def spansToNode(spansMap):
+    pass
 
 # Write a function that turns grammars with rules
 # whose right hand side has more than two preterminals
