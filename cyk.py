@@ -5,6 +5,7 @@ inventory = lambda : defaultdict(lambda : set())
 PUNCTUATION = set(";->!=(),<")
 IDENTITY = lambda x: x
 TOKEN = 'token label'
+MUTE = "mute"
 
 def ignore(*args):
     return []
@@ -58,7 +59,9 @@ def curryRule(left, right, name):
     return auxiliaryRules
 
 def grammarToRules(text, functionMap):
+    
     '''
+
     map rule names to functions
 
     lambda x: f(x)
@@ -71,16 +74,25 @@ def grammarToRules(text, functionMap):
     dynamic checks?
 
     '''
+
     rules = []
+    lines = [l.strip() for l in text.split("\n")]
+    for line in lines:
+        rules += lineToRules(line)
     return rules
 
 def lineToRules(line):
-    rule(tokens(line))
+    tokens = lineToTokens(line)
+    return tokensToRules(tokens)
 
 def lineToTokens(line):
-    split
-    ignore
-    return
+    assert "->" in line and ')' in line and '(' in line # to be sure
+    line = line[:-1] # Remove ')'
+    tokens, name = tuple(line.split("(")) # 
+    preTokens = [p.strip() for p in tokens.split()]
+    head = pretokens[0:1]
+    tokens = tokens[2:] # Ignore '->'
+    return head + tokens, name
 
 def tokensToRules(tokens, name):
     if len(tokens) == 3:
