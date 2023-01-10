@@ -43,21 +43,6 @@ class Leaf(ParseTree):
 def isPunctuation(character):
     return character in PUNCTUATION
 
-def curryRule(left, right, name):
-    auxiliaryRules = []
-    # A -> B C D  (name)
-    # A -> B A[name 1]
-    # A[name 1] -> C D
-    #
-    # 1 -> 2 3 4 5 (name)
-    # 1 -> 2 1[name, 1]
-    # 1[name, 1] -> 3 1[2]
-    # 1[name, 2] -> 4 5
-
-    # apply = [] + []
-
-    return auxiliaryRules
-
 def grammarToRules(text, functionMap):
     
     '''
