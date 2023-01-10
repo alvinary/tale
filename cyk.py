@@ -2,10 +2,10 @@ from collections import defaultdict
 
 inventory = lambda : defaultdict(lambda : set())
 
-PUNCTUATION = set(";->!=(),<")
+PUNCTUATION = set("; -> != = ( ) , <".split())
 IDENTITY = lambda x: x
 TOKEN = 'token label'
-MUTE = "mute"
+MUTE = 'mute'
 
 def ignore(*args):
     return []
@@ -73,7 +73,10 @@ def lineToRules(line):
 def lineToTokens(line):
     assert "->" in line and ')' in line and '(' in line # to be sure
     line = line[:-1] # Remove ')'
-    tokens, name = tuple(line.split("(")) # 
+    tokens, name = tuple(line.split("("))
+
+    # Handle punctuation here
+
     preTokens = [p.strip() for p in tokens.split()]
     head = pretokens[0:1]
     tokens = tokens[2:] # Ignore '->'
@@ -104,12 +107,15 @@ def nary(tokens, name):
     left = tokens.pop(0)
     
     while tokens:
+
         count += 1
         auxiliaryRight = f"{name}[{count}]"
+        
         if len(tokens) == 1:
             right = tokens.pop(0)
             rule = binary(head, left, right, auxiliaryRight)
             rules.append(rule)
+        
         else:
             rule = binary(head, left, auxiliaryRight, auxiliaryRight)
             rules.append(rule)
