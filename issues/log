@@ -1,4 +1,57 @@
+EMBEDDING
+
 - When you declare a function f with let, but then add some other rule (like p x y -> f x y), f ceases to behave like a function.
-It might be an issue with Either.clausify, a problem with the embedding, a more problem with how negation is being handled, or something else entirely.
+It might be an issue with Either.clausify, a problem with the embedding, a more general problem with how negation is being handled, or something else entirely.
 
 - Total orders with 'next' leave lots of 'hanging' facts about the out-of-bounds constant next of the last element.
+
+GRID
+
+- I got stuck with the visualization / verification part.
+
+- The approach taken with objects.py (first write procedural
+  tests checking if a certain Python object has a property,
+  then write a function that turns a relational specification
+  into that Python object, and check it using a testing framework,
+  which allows very fast, repeatable and hassle-free iteration)
+  worked, so we should try that again (maybe using some of the
+  same functions for trees).
+
+FUNCTIONS
+
+- I got stuck with the debugging part (is the logic program
+  wrong, is there a bug in the program, or is there a bug
+  in some assumption there? - some issue with negation, or
+  an incomplete translation)
+
+- So far these are working in lots of contexts
+
+- Equality and 'actual functions' can be implemented using
+  these. You can have a function assign : A' -> A, and since
+  each a' is assigned exactly one a, that can be used as some
+  form of equality (together with p(a'), assign(a', a) <-> p (a))
+
+  The arity of predicates and rules can be reduced using that
+  kind of workaround, which reduces the size of embeddings, since
+  assign (a.f, b) lets you assert stuff about b without explicit
+  references to anything other than a (unfolding iterates only
+  over a's sort, as in 'p(a), q(a.f), r(a.g), s(a.f, a.g) -> t(a, a.g)',
+  which will be especially useful when using DRTs and working
+  with local properties of nodes that involve lots of arguments.
+
+SYMMETRY BREAKING
+
+- using totally ordered sorts works as long as there are no
+  'loose' predicates that can be true or false for the same
+  model, when you only consider 'structurally relevant' predicates.
+  In the example of trees, many models did not differ in who
+  was left of whom, but did differ in some of the 'auxiliary' predicates
+
+
+INTERFACE / COUPLING / MODULARITY
+
+The current interface does not let you use pysat's 'solve with'
+(you cannot say 'hey, give me a model using the current state, but
+temporarily add the literals in L to it. Give me just one model, then
+forget'). I don't think pysat lets you iterate over more than one model
+that way.
