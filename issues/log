@@ -49,7 +49,9 @@ SYMMETRY BREAKING
   'loose' predicates that can be true or false for the same
   model, when you only consider 'structurally relevant' predicates.
   In the example of trees, many models did not differ in who
-  was left of whom, but did differ in some of the 'auxiliary' predicates
+  was left of whom, but did differ in some of the 'auxiliary' predicates,
+  so their trees were isomorphic, but showed up more than once while
+  enumerating models.
 
 
 INTERFACE / COUPLING / MODULARITY
