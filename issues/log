@@ -1,9 +1,13 @@
 EMBEDDING
 
-- When you declare a function f with let, but then add some other rule (like p x y -> f x y), f ceases to behave like a function.
-It might be an issue with Either.clausify, a problem with the embedding, a more general problem with how negation is being handled, or something else entirely.
+- When you declare a function f with let, but then add some other
+  rule (like p x y -> f x y), f ceases to behave like a function.
+  It might be an issue with Either.clausify, a problem with the
+  embedding, a more general problem with how negation is being
+  handled, or something else entirely, so we'll have to be patient.
 
-- Total orders with 'next' leave lots of 'hanging' facts about the out-of-bounds constant next of the last element.
+- Total orders with 'next' leave lots of 'hanging' facts about the
+  out-of-bounds constant next of the last element.
 
 GRID
 
@@ -55,3 +59,25 @@ The current interface does not let you use pysat's 'solve with'
 temporarily add the literals in L to it. Give me just one model, then
 forget'). I don't think pysat lets you iterate over more than one model
 that way.
+
+MODELING
+
+- The relational specification of parsing tilings / 2D strings is
+  still very sketchy. Using a leveled DAG looks promising, as well
+  as 'storing semantic data' (same as DRT, but a bit simpler), but
+  I'm not sure how to properly represent spatial information.
+  
+  A possible workaround is to 'hardcode' spatial hierarchy data
+  ('A large area is a rectangle with NM tiles. Large areas may
+  contain small and mid areas, and all areas within a large
+  area must be mutually accessible', and so on). Since only valid
+  tilings should be produced, and no valid large area should have
+  just one small child, this could be made to work, although it is
+  very ad-hoc.
+  
+  Using corners seems like a more general alternative ('all children
+  of an area must be within the bounds of its corners'), and probably
+  could be generalized to convex shapes very easily. Corner data could
+  be 'stored' in a vertex's DRS, and reasoning about total orders is
+  easy with what we already have (and we want to model arithmetic anyway,
+  so that should be ready at some point).
