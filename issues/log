@@ -64,7 +64,7 @@ that way.
 
 MODELING
 
-- The relational specification of parsing tilings / 2D strings is
+- The relational specification for tiling / 2D string parsing is
   still very sketchy. Using a leveled DAG looks promising, as well
   as 'storing semantic data' (same as DRT, but a bit simpler), but
   I'm not sure how to properly represent spatial information.
@@ -83,3 +83,28 @@ MODELING
   be 'stored' in a vertex's DRS, and reasoning about total orders is
   easy with what we already have (and we want to model arithmetic anyway,
   so that should be ready at some point).
+
+ARITHMETIC
+
+- Addition is straightforward to model with carries and 'bitwise logic',
+  but other operations are not that straightforward, so it is best to
+  take the 'truth table -> conjunctive normal form -> minimized function'
+  approach. Even if the resulting function requires nesting, it can be
+  hardcoded with predicates directly (no need for any generality there),
+  like with context free grammar parsing when the grammar is fixed.
+
+- Other alternatives seem far worse.
+
+  With multiplication and addition for natural numbers and rationals 
+  and their operations defined on pairs of naturals, maybe we could
+  handle small numbers
+
+  * a / b + c / d = (a' + b') / [bd], where
+        [bd] = lcm(b, d),
+        a' = a * [bd] / b,
+        b' = b * [bd] / d
+
+  * (a / b) * (c / d) = ((a * [bd] / b) * (c * [bd] / d)) / [bd]
+
+  But factorization is not straightforward, so the best thing
+  is to implement division and substraction as separate operations.
