@@ -84,6 +84,43 @@ MODELING
   easy with what we already have (and we want to model arithmetic anyway,
   so that should be ready at some point).
 
+NEGATIVE FEEDBACK
+
+- I tried modeling some problems with stable marriages.
+  
+  The end goal was to be able to come up with preference configurations
+  that never end in a stable configuration.
+
+  With preferences yielding periodic changes, and never having anyone
+  stay with the same person during even one turn, this seems possible:
+  you make sure b.next is like a cyclic linked list, and state
+  `with (g, b), with (g.next, b.next) -> False`.
+
+  But more complex situations seem hard to model.
+
+  One option is to be able to tell when any couple has changed (parts
+  can remain stable, but some couple has to split).
+
+  This can be done used one of the 'cheap, awkward tricks' we used
+  with artale (the 'any' macro, or something a bit more general, like
+  using a list, A+, A-, etc).
+
+  But it has the same 'blind spot' quantifier nesting issue program
+  synthesis has (You cannot synthezise a program aiming for the 
+  instance to be satisfiable and at the same time say 'the instance
+  is unsatisfiable is there is one input that...', because you either
+  get a satisfying assignment or you don't, and with no satisfying
+  assignment, there is no program).
+
+  Ultimately, this is not relevant, but shows many of the limitations
+  of the approach.
+  
+  prefer (g, b),
+  with (g, b'),
+  b != b',
+  available (b', g),
+  with (g.next, b.next) -> False.
+
 ARITHMETIC
 
 - Addition is straightforward to model with carries and 'bitwise logic',
