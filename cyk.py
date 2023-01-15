@@ -43,7 +43,7 @@ class Leaf(ParseTree):
 def isPunctuation(character):
     return character in PUNCTUATION
 
-def grammarToRules(text, functionMap):
+def grammarToRules(text):
     
     '''
 
@@ -54,49 +54,57 @@ def grammarToRules(text, functionMap):
 
     vs
 
-    f(args)
+    f(*args)
 
-    dynamic checks?
+    Auxiliary nodes only ignore or append arguments.
+    'Real' nodes call their apply method on the list
+    of arguments assembled bottom-up.
 
     '''
 
     rules = []
     lines = [l.strip() for l in text.split("\n")]
     for line in lines:
-        rules += lineToRules(line)
+        if line:
+            rules += lineToRules(line)
     return rules
 
 def lineToRules(line):
-    tokens = lineToTokens(line)
-    return tokensToRules(tokens)
+    tokens, name = lineToTokens(line)
+    return tokensToRules(tokens, name)
 
 def lineToTokens(line):
+
     assert "->" in line and ')' in line and '(' in line # to be sure
+    
     line = line[:-1] # Remove ')'
     tokens, name = tuple(line.split("("))
 
     # Handle punctuation here
 
-    preTokens = [p.strip() for p in tokens.split()]
+    pretokens = [p.strip() for p in tokens.split()]
     head = pretokens[0:1]
-    tokens = tokens[2:] # Ignore '->'
+    tokens = pretokens[2:] # Ignore '->'
     return head + tokens, name
 
 def tokensToRules(tokens, name):
+
     if len(tokens) == 3:
         head, left, right = tuple(tokens)
         return binary(head, left, right, name)
+    
     if len(tokens) == 2:
         head, branch = tuple(tokens)
         return unary(head, branch, name)
+    
     if len(tokens) > 3:
         return nary(tokens, name)
 
 def binary(head, left, right, name):
-    return ((left, right), (head, name))
+    return [((left, right), (head, name))]
 
 def unary(head, branch, name):
-    return (branch, (head, name))
+    return [(branch, (head, name))]
 
 def nary(tokens, name):
 
@@ -247,4 +255,26 @@ def testCYK():
         spanLabel, spanText = span
         print(spanLabel, spanText)
 
+def testGrammarToRules():
+    grammar = '''
+    NUMBER -> DIGITS                     (n-ary number)
+    NUMBER -> [LPAREN] NUMBER [RPAREN]   (Parenthesis)
+    NUMBER -> NUMBER PLUS NUMBER         (Addition)
+    NUMBER -> NUMBER MINUS NUMBER        (Substraction)
+    NUMBER -> MINUS NUMBER               (Additive inverse)
+    NUMBER -> NUMBER TIMES NUMBER        (Multiplication)
+    DIGIT -> 0                           (Binary digit)
+    DIGIT -> 1                           (Binary digit)
+    DIGITS -> DIGIT                      (Single digit)
+    DIGITS -> DIGIT DIGITS               (Several digits)
+    PLUS -> +                            (Plus symbol)
+    MINUS -> -                           (Minus symbol)
+    TIMES -> *                           (Times symbol)
+    '''
+
+    print('\nRules:\n')
+    for rule in grammarToRules(grammar):
+        print(rule)
+
 testCYK()
+testGrammarToRules()
