@@ -7,6 +7,16 @@ IDENTITY = lambda x: x
 TOKEN = 'token label'
 MUTE = 'mute'
 
+# Ignored arguments now have []. How do we handle that?
+# While creating auxiliary rules, one can create auxiliary
+# semantic actions. So one should return those.
+
+# Since the set of auxiliary and real rules are disjoint,
+# it's not necessary to pass the whole map of semantic actions:
+# Auxiliary rules either ignore or append, which means you don't
+# need any information about the implementation of the functions
+# used by 'real' nodes.
+
 def ignore(*args):
     return []
 
