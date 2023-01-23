@@ -286,5 +286,63 @@ def testGrammarToRules():
     for rule in grammarToRules(grammar):
         print(rule)
 
+def checkSilent(token):
+    if token[0] == "[" and token[-1] == "]":
+        return token[1:-1], True
+    else:
+        return token, False
+
+def semantics(grammar, triggers):
+
+    encapsulate = lambda x : [x]
+    ignoreLeft = lambda x, y : y
+    ignoreRight = lambda x, y : x
+    ignoreBoth = lambda x, y : []
+    includeBoth = lambda x, y : x + y
+
+    actions = {}
+
+    for rule in grammar:
+        
+        rhs, lhs = rule
+        head, actionName = rhs
+
+        isBinary = len(rhs) == 2
+        isUnary = len(rhs) == 1
+
+        if isBinary:
+
+            left, right = rhs
+            left, leftIsMute = checkSilent(left)
+            right, rightIsMute = checkSilent(right)
+            semanticAction = triggers[actionName]
+
+            if leftIsMute and rightIsMute:
+                argumentAction = ignoreBoth
+            if leftIsMute and not rightIsMute:
+                argumentAction = ignoreLeft
+            if not leftIsMute and rightIsMute:
+                argumentAction = ignoreRight
+            if not leftIsMute and not rightIsMute:
+                argumentAction = includeBoth
+            
+            actions[left, right] = (head, semanticAction, argumentAction)
+
+        if isUnary:
+
+            production, mute = checkSilent(rhs)
+            semanticAction = triggers[actionName]
+
+            if mute:
+                argumentAction = lambda x: []
+            else:
+                argumentAction = lambda x: [x]
+
+            actions[production] = (head, semanticAction, argumentAction)
+
+    return actions
+
 testCYK()
 testGrammarToRules()
+testSemantics()
+testEvaluation()
