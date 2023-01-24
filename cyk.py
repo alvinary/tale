@@ -342,6 +342,47 @@ def semantics(grammar, triggers):
 
     return actions
 
+def evaluate(spans, semantics, l=START, i=0, j=0):
+    '''
+    semantics[ruleName] = lambda x, y : f (x, y)
+
+    spans[i, j] = [(label, rule, apply, leftLabel, rightLabel, i, k, j)]
+                + [(label, rule, apply, branchLabel, i, j)]
+    '''
+
+    # if i and j are not specified...
+
+    minIndex = min([leftIndex(span) for _, span in spans])
+    maxIndex = max([rightIndex(span) for _, span in spans])
+
+    fullSpan = minIndex, maxIndex
+
+    for span in spans[i, j] if label(span) == targetLabel:
+
+        # unary = ?(span)
+        # binary = ?(span)
+        # leaf = ?(span)
+
+        if leaf:
+            # apply, token = ?(span)
+            yield apply(token)
+
+        if unary:
+            feasible = evaluate(spans, semantics, l=branchLabel, i=i, j=j)
+            for branch in feasible:
+                # apply = ?(span)
+                yield apply(branch)
+
+        if binary:
+            # k, leftLabel, rightLabel = ?(span)
+            leftSpans =  evaluate(spans, semantics, l=leftLabel, i=i, j=k)
+            rightSpans = evaluate(spans, semantics, l=rightLabel, i=k, j=j)
+            for left, right in product(leftSpans, rightSpans):
+                # apply = ?(span)
+                yield apply(left, right)
+
+
+
 testCYK()
 testGrammarToRules()
 testSemantics()
