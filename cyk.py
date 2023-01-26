@@ -144,6 +144,21 @@ def nary(tokens, name):
 
 def spansToNode(spansMap):
     pass
+    
+def grammarFromRules(rules):
+    grammar = {}
+    for rule in rules:
+        rhs, lhs = rule
+        if isUnary(rhs):
+            rhs, _ = checkSilent(rhs)
+            grammar[rhs] = lhs
+        if isBinary(rhs):
+            left, right = rhs
+            left, _ = checkSilent(left)
+            right, _ = checkSilent(right)
+            rhs = left, right
+            grammar[rhs] = lhs
+    return grammar 
 
 # Write a function that turns grammars with rules
 # whose right hand side has more than two preterminals
