@@ -334,10 +334,7 @@ def semantics(grammar, triggers):
         rhs, lhs = rule
         head, actionName = rhs
 
-        isBinary = len(rhs) == 2
-        isUnary = len(rhs) == 1
-
-        if isBinary:
+        if isBinary(rhs):
 
             left, right = rhs
             left, leftIsMute = checkSilent(left)
@@ -355,7 +352,7 @@ def semantics(grammar, triggers):
             
             actions[left, right] = (head, semanticAction, argumentAction)
 
-        if isUnary:
+        if isUnary(rhs):
 
             production, mute = checkSilent(rhs)
             semanticAction = triggers[actionName]
