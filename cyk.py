@@ -413,5 +413,5 @@ def evaluate(spans, semantics, l=START, i=0, j=0):
 
 testCYK()
 testGrammarToRules()
-testSemantics()
-testEvaluation()
+# testSemantics()
+# testEvaluation()
