@@ -8,15 +8,17 @@ TOKEN = 'token label'
 MUTE = 'mute'
 START = 'START'
 
-# Ignored arguments now have []. How do we handle that?
-# While creating auxiliary rules, one can create auxiliary
-# semantic actions. So one should return those.
+# TODO: to ensure parses terminate, we can
+# keep track of which rules have been applied to each span
+# so that, if you have A -> B (r1) and B -> A (r2), and span [i, j] is
+# A, it will become B 'just once', with rule r2.
+# But that's not sound.
+# Because then it should become A again with rule r1.
 
-# Since the set of auxiliary and real rules are disjoint,
-# it's not necessary to pass the whole map of semantic actions:
-# Auxiliary rules either ignore or append, which means you don't
-# need any information about the implementation of the functions
-# used by 'real' nodes.
+# In terms of syntax that does not matter (that just means the two
+# preterminals are interchangeable - that are As are also Bs, and viceversa)
+# but when adding semantics, endless applications of f(g(f(g(...)))) have
+# no reason to converge to anything.
 
 def parsableGrammar(grammarText, actionsMap):
     rules = textToRules(grammarText)
