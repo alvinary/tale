@@ -357,7 +357,9 @@ def evaluate(spans, semantics, l=START, i=0, j=0):
 
     fullSpan = minIndex, maxIndex
 
-    for span in spans[i, j] if label(span) == targetLabel:
+    feasibleSpans = [span for span in spans[i, j] if label(span) == targetLabel]
+
+    for span in feasibleSpans:
 
         # unary = ?(span)
         # binary = ?(span)
@@ -380,7 +382,6 @@ def evaluate(spans, semantics, l=START, i=0, j=0):
             for left, right in product(leftSpans, rightSpans):
                 # apply = ?(span)
                 yield apply(left, right)
-
 
 
 testCYK()
