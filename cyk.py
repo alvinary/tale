@@ -92,9 +92,9 @@ def lineToTokens(line):
 
     # Handle punctuation here
 
-    pretokens = [p.strip() for p in tokens.split()]
-    head = pretokens[0:1]
-    tokens = pretokens[2:] # Ignore '->'
+    tokens = [p.strip() for p in tokens.split()]
+    head = tokens[0:1]
+    tokens = tokens[2:] # Ignore '->'
     return head + tokens, name
 
 def tokensToRules(tokens, name):
