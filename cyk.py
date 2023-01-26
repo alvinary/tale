@@ -6,6 +6,7 @@ PUNCTUATION = set("; -> != = ( ) , <".split())
 IDENTITY = lambda x: x
 TOKEN = 'token label'
 MUTE = 'mute'
+START = 'START'
 
 # Ignored arguments now have []. How do we handle that?
 # While creating auxiliary rules, one can create auxiliary
