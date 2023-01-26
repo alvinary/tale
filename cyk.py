@@ -341,6 +341,9 @@ def semantics(grammar, triggers):
             actions[production] = (head, semanticAction, argumentAction)
 
     return actions
+    
+def label(span):
+    return span[0]
 
 def evaluate(spans, semantics, l=START, i=0, j=0):
     '''
