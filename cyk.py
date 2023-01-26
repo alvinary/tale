@@ -168,11 +168,6 @@ def grammarFromRules(rules):
             grammar[rhs] = lhs
     return grammar 
 
-# Write a function that turns grammars with rules
-# whose right hand side has more than two preterminals
-# (currying rules with more than two productions) into
-# grammars with unary and binary rules, since it's 
-# horrible to write grammars with only binary rules
 
 def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
 
