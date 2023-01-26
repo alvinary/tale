@@ -126,15 +126,14 @@ def unary(head, branch, name):
 def nary(tokens, name):
 
     rules = []
-    count = 0
+    size = len(tokens) + 1
 
     head = tokens.pop(0)
     left = tokens.pop(0)
     
     while tokens:
 
-        count += 1
-        auxiliaryRight = f"{name}[{count}]"
+        auxiliaryRight = f"{name}[{size - len(tokens)}]"
         
         if len(tokens) == 1:
             right = tokens.pop(0)
