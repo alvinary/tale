@@ -17,6 +17,12 @@ MUTE = 'mute'
 # need any information about the implementation of the functions
 # used by 'real' nodes.
 
+def parsableGrammar(grammarText, actionsMap):
+    rules = textToRules(grammarText)
+    grammar = grammarFromRules(rules)
+    actions = semantics(rules, actionsMap)
+    return grammar, actions
+
 def ignore(*args):
     return []
 
