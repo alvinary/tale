@@ -168,6 +168,12 @@ def grammarFromRules(rules):
             grammar[rhs] = lhs
     return grammar 
 
+# spanRules[i, j] = {r1, r2, ..., rn}
+# if rule in spanRules[i, j]:
+#     pass
+
+# TODO: refactor this module, so it's less redundant and coupled
+# and makes more sense.
 
 def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
 
@@ -207,7 +213,8 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
     spans = set()
 
     tokens = [tokenizer(elem) for elem in sequence]
-    # This might require a function argument to be more general
+
+    # Handle leaves
 
     for index, token in enumerate(tokens):
         tokenSpan = (index, index, token, TOKEN)
@@ -216,12 +223,16 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
         notVisited.add(tokenSpan)
         spans.add((token, " ".join(sequence[index:index+1])))
 
+    # Parse token sequence
+
     while notVisited:
 
         currentSpan = notVisited.pop()
 
         leftBegin, leftEnd, leftLabel, leftRule = currentSpan
-        
+
+        # Handle unary rules
+
         if leftLabel in ruleTriggers.keys():
             for pair in ruleTriggers[leftLabel]:
                 newLabel, newRule = pair
@@ -230,6 +241,8 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
                 beginsAt[leftBegin].add(newSpan)
                 notVisited.add(newSpan)
                 spans.add((newLabel, " ".join(sequence[leftBegin:leftEnd+1])))
+
+        # Handle binary rules (left case)
 
         candidates = set(beginsAt[leftEnd + 1])
 
@@ -243,6 +256,8 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
                     endsAt[rightEnd].add(newSpan)
                     notVisited.add(newSpan)
                     spans.add((newLabel, " ".join(sequence[leftBegin:rightEnd+1])))
+
+        # Handle binary rules (right case)
 
         rightBegin, rightEnd, rightLabel, rightRule = currentSpan
         candidates = set(endsAt[rightBegin - 1])
