@@ -26,9 +26,6 @@ def parsableGrammar(grammarText, actionsMap):
     actions = semantics(rules, actionsMap)
     return grammar, actions
 
-def ignore(*args):
-    return []
-
 class ParseTree():
     def __init__(self):
         pass
