@@ -291,6 +291,12 @@ def checkSilent(token):
         return token[1:-1], True
     else:
         return token, False
+        
+def isUnary(rhs):
+    return not isinstance(rhs, tuple)
+
+def isBinary(rhs):
+    return isinstance(rhs, tuple) and len(rhs) == 2
 
 def semantics(grammar, triggers):
 
