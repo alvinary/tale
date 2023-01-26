@@ -53,7 +53,7 @@ class Leaf(ParseTree):
 def isPunctuation(character):
     return character in PUNCTUATION
 
-def grammarToRules(text):
+def textToRules(text):
     
     '''
 
@@ -283,7 +283,7 @@ def testGrammarToRules():
     '''
 
     print('\nRules:\n')
-    for rule in grammarToRules(grammar):
+    for rule in textToRules(grammar):
         print(rule)
 
 def checkSilent(token):
