@@ -207,7 +207,8 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
     endsAt = inventory()
     beginsAt = inventory()
 
-    spans = set()
+    readableSpans = set()
+    spans = inventory()
 
     tokens = [tokenizer(elem) for elem in sequence]
 
@@ -218,7 +219,8 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
         endsAt[index].add(tokenSpan)
         beginsAt[index].add(tokenSpan)
         notVisited.add(tokenSpan)
-        spans.add((token, " ".join(sequence[index:index+1])))
+        readableSpans.add((token, " ".join(sequence[index:index+1])))
+        spans[index, index].add((token, TOKEN, (token,)))
 
     # Parse token sequence
 
@@ -237,7 +239,9 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
                 endsAt[leftEnd].add(newSpan)
                 beginsAt[leftBegin].add(newSpan)
                 notVisited.add(newSpan)
-                spans.add((newLabel, " ".join(sequence[leftBegin:leftEnd+1])))
+                spanSequence = tuple(sequence[leftBegin:leftEnd+1])
+                readableSpans.add((newLabel, " ".join(spanSequence)))
+                spans[leftBegin, leftEnd].add((newLabel, newRule, spanSequence))
 
         # Handle binary rules (left case)
 
@@ -252,7 +256,13 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
                     beginsAt[leftBegin].add(newSpan)
                     endsAt[rightEnd].add(newSpan)
                     notVisited.add(newSpan)
-                    spans.add((newLabel, " ".join(sequence[leftBegin:rightEnd+1])))
+                    
+                    spanSequence = tuple(sequence[leftBegin:rightEnd+1])
+                    leftSequence = tuple(sequence[leftBegin:leftEnd+1])
+                    rightSequence = tuple(sequence[rightBegin:rightEnd+1])
+
+                    readableSpans.add((newLabel, " ".join(spanSequence)))
+                    spans[leftBegin, rightEnd].add((newLabel, newRule, leftSequence, rightSequence))
 
         # Handle binary rules (right case)
 
@@ -268,9 +278,17 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
                     beginsAt[leftBegin].add(newSpan)
                     endsAt[rightEnd].add(newSpan)
                     notVisited.add(newSpan)
-                    spans.add((newLabel, " ".join(sequence[leftBegin:rightEnd+1])))
 
-    return spans
+                    spanSequence = tuple(sequence[leftBegin:rightEnd+1])
+                    readableSpans.add((newLabel, " ".join(spanSequence)))
+
+                    leftSequence = tuple(sequence[leftBegin:leftEnd+1])
+                    rightSequence = tuple(sequence[rightBegin:rightEnd+1])
+
+                    readableSpans.add((newLabel, " ".join(spanSequence)))
+                    spans[leftBegin, rightEnd].add((newLabel, newRule, leftSequence, rightSequence))
+
+    return spans, readableSpans
 
 def testCYK():
 
@@ -291,7 +309,9 @@ def testCYK():
                ('NUMBER', 'RPAREN') : [("PARENNUMBER", "Opening parentheses")]
             }
 
-    for span in cyk(tokens, grammar):
+    spans, readable = cyk(tokens, grammar)
+
+    for span in readable:
         spanLabel, spanText = span
         print(spanLabel, spanText)
 
