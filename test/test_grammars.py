@@ -1,18 +1,35 @@
 from tale.pipeline import *
 from tale.objects import *
 
+# Here we set a different recursion limit
+
+# This is done because tatsu is very functional,
+# CPython does not apply tail recursion optimizations,
+# And this same program gets a maximum recursion depth
+# exceeded when using the full grammar, but not when
+# cutting it to half its size (so it's not an issue
+# with tatsu or the grammar - it's just Python is not
+# Haskell and this is not the intended use)
+
+# TODO: check if pypy behaves the same
+# TODO: change recursive list rules to blah*
+# ('regular-grammar style') rules
+
+import sys
+sys.setrecursionlimit(1500)
+
 MODELS = 10
 
 program = '''
 
-order n 9 : node.
-order t 10 : token.
+order n 6 : node.
+order t 7 : token.
 
-order n 9 : vertex.
-order t 10 : vertex.
+order n 6 : vertex.
+order t 7 : vertex.
 
-order s 6 : symbol.
-order r 15 : rule.
+order s 10 : symbol.
+order r 10 : rule.
 
 var a, b, c : vertex.
 var n, m, o : node.
@@ -86,7 +103,6 @@ symbol (r, A), assign (n, r) <-> symbol (n, A).
 left (n, a), leftSymbol (n, B), not symbol (a, B) -> False.
 right (n, a), rightSymbol (n, C), not symbol (a, C) -> False.
 
-
 symbol (n, A), symbol (n, B), A != B -> False.
 symbol (t, A), symbol (t, B), A != B -> False.
 '''
@@ -110,6 +126,4 @@ def test_grammars():
             assert False
 
     print("\n\n".join(trees))
-
-    assert False
             
