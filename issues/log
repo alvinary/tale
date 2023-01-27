@@ -145,3 +145,25 @@ ARITHMETIC
 
   But factorization is not straightforward, so the best thing
   is to implement division and substraction as separate operations.
+
+OPTIMIZATION
+
+- Define a feasible region
+- Define criteria for sufficiency
+- Define criteria for order
+
+- Test cases (proof of concept / sanity check)
+	- string length and some string property
+	- lexicographic order and some string property
+	  (shortest string that is part of a regular
+           language, and so on)
+        - Shortest arithmetic expression evaluating to n,
+          using just one as 'leaf value'
+          (this one is fun)
+
+- Test cases (toy):
+	Referring expressions
+	Propisitional proofs
+
+- Test cases (serious):
+	Synthesis of mapreduce programs
