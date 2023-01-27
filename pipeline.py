@@ -212,7 +212,7 @@ if __name__ == '__main__':
         printModel(m)
         print("\n\n")
 
-    for key in defaultLogger.keys():
+    for key in defaultLogger.data.keys():
         print(key, ":")
         print("\n".join(defaultLogger.data[key]))
         print("\n\n\n")
