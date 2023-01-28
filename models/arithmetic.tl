@@ -1,5 +1,4 @@
 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 : digit.
-
 order n 6 : number.
 
 var i, j : digit.
@@ -46,7 +45,7 @@ carry(5, 3, 0).
 sum(5, 3, 8).
 carry(5, 4, 0).
 sum(5, 4, 9).
-carry(5, 5, 10).
+carry(5, 5, 1).
 sum(5, 5, 0).
 carry(6, 0, 0).
 sum(6, 0, 6).
@@ -56,11 +55,11 @@ carry(6, 2, 0).
 sum(6, 2, 8).
 carry(6, 3, 0).
 sum(6, 3, 9).
-carry(6, 4, 10).
+carry(6, 4, 1).
 sum(6, 4, 0).
-carry(6, 5, 10).
+carry(6, 5, 1).
 sum(6, 5, 1).
-carry(6, 6, 10).
+carry(6, 6, 1).
 sum(6, 6, 2).
 carry(7, 0, 0).
 sum(7, 0, 7).
@@ -68,53 +67,53 @@ carry(7, 1, 0).
 sum(7, 1, 8).
 carry(7, 2, 0).
 sum(7, 2, 9).
-carry(7, 3, 10).
+carry(7, 3, 1).
 sum(7, 3, 0).
-carry(7, 4, 10).
+carry(7, 4, 1).
 sum(7, 4, 1).
-carry(7, 5, 10).
+carry(7, 5, 1).
 sum(7, 5, 2).
-carry(7, 6, 10).
+carry(7, 6, 1).
 sum(7, 6, 3).
-carry(7, 7, 10).
+carry(7, 7, 1).
 sum(7, 7, 4).
 carry(8, 0, 0).
 sum(8, 0, 8).
 carry(8, 1, 0).
 sum(8, 1, 9).
-carry(8, 2, 10).
+carry(8, 2, 1).
 sum(8, 2, 0).
-carry(8, 3, 10).
+carry(8, 3, 1).
 sum(8, 3, 1).
-carry(8, 4, 10).
+carry(8, 4, 1).
 sum(8, 4, 2).
-carry(8, 5, 10).
+carry(8, 5, 1).
 sum(8, 5, 3).
-carry(8, 6, 10).
+carry(8, 6, 1).
 sum(8, 6, 4).
-carry(8, 7, 10).
+carry(8, 7, 1).
 sum(8, 7, 5).
-carry(8, 8, 10).
+carry(8, 8, 1).
 sum(8, 8, 6).
 carry(9, 0, 0).
 sum(9, 0, 9).
-carry(9, 1, 10).
+carry(9, 1, 1).
 sum(9, 1, 0).
-carry(9, 2, 10).
+carry(9, 2, 1).
 sum(9, 2, 1).
-carry(9, 3, 10).
+carry(9, 3, 1).
 sum(9, 3, 2).
-carry(9, 4, 10).
+carry(9, 4, 1).
 sum(9, 4, 3).
-carry(9, 5, 10).
+carry(9, 5, 1).
 sum(9, 5, 4).
-carry(9, 6, 10).
+carry(9, 6, 1).
 sum(9, 6, 5).
-carry(9, 7, 10).
+carry(9, 7, 1).
 sum(9, 7, 6).
-carry(9, 8, 10).
+carry(9, 8, 1).
 sum(9, 8, 7).
-carry(9, 9, 10).
+carry(9, 9, 1).
 sum(9, 9, 8).
 
 sum(d, e, f) -> sum (e, d, f).
