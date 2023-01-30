@@ -124,7 +124,6 @@ def induce(baseTheory, positive, negative, step=DEFAULT_STEP):
     while not stop:
 
         extend(currentTheory, positive, negative)
-        instance = solver(currentTheory)
         
         for i in range(step):
             results = models(currentTheory)
