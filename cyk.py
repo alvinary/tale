@@ -232,6 +232,10 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
         leftBegin, leftEnd, leftLabel, leftRule = currentSpan
 
         # Handle unary rules
+        
+        print('Rule triggers')
+        for k in ruleTriggers:
+            print(k, ":", ruleTriggers[k])
 
         if leftLabel in ruleTriggers.keys():
             for pair in ruleTriggers[leftLabel]:
@@ -383,11 +387,11 @@ def semantics(grammar, triggers):
 def label(span):
     return span[0]
 
-def evaluate(spans, semantics, l=START, i=0, j=0):
+def evaluate(spans, actions, l=START, i=0, j=0):
     '''
-    semantics[ruleName] = lambda x, y : f (x, y)
+    actions[ruleName] = lambda x, y : f (x, y)
 
-    semantics[ruleName] = head, sem, args
+    actions[ruleName] = head, sem, args
 
     spans[i, j] = [(label, rule, apply, leftLabel, rightLabel, i, k, j)]
                 + [(label, rule, apply, branchLabel, i, j)]
@@ -410,18 +414,19 @@ def evaluate(spans, semantics, l=START, i=0, j=0):
 
         if leaf:
             label, rule, token = span
+            head, sem, args = actions[rule]
             yield sem(*arg(token))
 
         if unary:
-            feasible = evaluate(spans, semantics, l=branchLabel, i=i, j=j)
+            feasible = evaluate(spans, actions, l=branchLabel, i=i, j=j)
             for branch in feasible:
                 yield sem(*arg(branch))
 
         if binary:
             label, rule, _, _ = span
             # k, leftLabel, rightLabel = ?(span)
-            leftSpans =  evaluate(spans, semantics, l=leftLabel, i=i, j=k)
-            rightSpans = evaluate(spans, semantics, l=rightLabel, i=k, j=j)
+            leftSpans =  evaluate(spans, actions, l=leftLabel, i=i, j=k)
+            rightSpans = evaluate(spans, actions, l=rightLabel, i=k, j=j)
             for left, right in product(leftSpans, rightSpans):
                 # apply = ?(span)
                 yield sem(*arg(left, right))
@@ -440,7 +445,8 @@ testTriggers = {
         'Several digits' : lambda x, y: x + y,
         'Plus symbol' : identity,
         'Minus symbol' : identity,
-        'Times symbol' : identity
+        'Times symbol' : identity,
+        TOKEN : identity
         }
 
                 
@@ -471,6 +477,7 @@ def testGrammarToRules():
         
 def testSemantics():
     grammar, actions = parsableGrammar(testGrammar, testTriggers)
+    
     for actionName in actions.keys():
         print("Action ", actionName, ":", actions[actionName])
     
