@@ -136,12 +136,12 @@ def nary(tokens, name):
         
         if len(tokens) == 1:
             right = tokens.pop(0)
-            rule = binary(head, left, right, auxiliaryRight)
-            rules.append(rule)
+            newRules = binary(head, left, right, auxiliaryRight)
+            rules += newRules
         
         else:
-            rule = binary(head, left, auxiliaryRight, auxiliaryRight)
-            rules.append(rule)
+            newRule = binary(head, left, auxiliaryRight, auxiliaryRight)
+            rules += newRules
             head = auxiliaryRight
             left = tokens.pop(0)
         
