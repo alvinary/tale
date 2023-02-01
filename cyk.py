@@ -461,6 +461,16 @@ def testGrammarToRules():
     rules = textToRules(testGrammar)
     for rule in rules:
         print(rule)
+        
+def testSemantics():
+    grammar, actions = parsableGrammar(testGrammar, testTriggers)
+    for actionName in actions.keys():
+        print("Action ", actionName, ":", actions[actionName])
+    
+    tokens = "- ( 5 + 4 ) + 1".split()
+    spans, _ = cyk(grammar, tokens)
+    result = evaluate(grammar, actions)
+    print("Result: ", result)
 
 testCYK()
 testGrammarToRules()
