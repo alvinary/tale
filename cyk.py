@@ -341,14 +341,19 @@ def semantics(grammar, triggers):
     for rule in grammar:
         
         rhs, lhs = rule
-        head, actionName = rhs
+        # You should use the name of the rule, not the label of the head
+        head, actionName = lhs
 
         if isBinary(rhs):
 
             left, right = rhs
             left, leftIsMute = checkSilent(left)
             right, rightIsMute = checkSilent(right)
-            semanticAction = triggers[actionName]
+            
+            if actionName in triggers.keys():
+                semanticAction = triggers[actionName]
+            else:
+                semanticAction = lambda x: x
 
             if leftIsMute and rightIsMute:
                 argumentAction = ignoreBoth
