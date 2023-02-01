@@ -484,9 +484,10 @@ def testSemantics():
     
     tokens = "- ( 5 + 4 ) + 1".split()
     spans, _ = cyk(tokens, grammar)
-    result = evaluate(grammar, actions)
-    
-    print("Result: ", result)
+    result = evaluate(spans, actions)
+
+    for r in zip([0],result):
+        print("Result: ", r)
 
 testCYK()
 testGrammarToRules()
