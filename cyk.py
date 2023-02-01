@@ -152,18 +152,18 @@ def spansToNode(spansMap):
     pass
     
 def grammarFromRules(rules):
-    grammar = {}
+    grammar = defaultdict(lambda: [])
     for rule in rules:
         rhs, lhs = rule
         if isUnary(rhs):
             rhs, _ = checkSilent(rhs)
-            grammar[rhs] = lhs
+            grammar[rhs].append(lhs)
         if isBinary(rhs):
             left, right = rhs
             left, _ = checkSilent(left)
             right, _ = checkSilent(right)
             rhs = left, right
-            grammar[rhs] = lhs
+            grammar[rhs].append(lhs)
     return grammar 
 
 # spanRules[i, j] = {r1, r2, ..., rn}
@@ -476,6 +476,7 @@ def testGrammarToRules():
         print(rule)
         
 def testSemantics():
+
     grammar, actions = parsableGrammar(testGrammar, testTriggers)
     
     for actionName in actions.keys():
@@ -484,6 +485,7 @@ def testSemantics():
     tokens = "- ( 5 + 4 ) + 1".split()
     spans, _ = cyk(tokens, grammar)
     result = evaluate(grammar, actions)
+    
     print("Result: ", result)
 
 testCYK()
