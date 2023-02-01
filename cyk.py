@@ -220,7 +220,7 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
         endsAt[index].add(tokenSpan)
         beginsAt[index].add(tokenSpan)
         notVisited.add(tokenSpan)
-        readableSpans.add((token, " ".join(sequence[index:index+1])))
+        readableSpans.add((token, token))
         spans[index, index].add((token, TOKEN, (token,)))
 
     # Parse token sequence
@@ -475,11 +475,11 @@ def testSemantics():
         print("Action ", actionName, ":", actions[actionName])
     
     tokens = "- ( 5 + 4 ) + 1".split()
-    spans, _ = cyk(grammar, tokens)
+    spans, _ = cyk(tokens, grammar)
     result = evaluate(grammar, actions)
     print("Result: ", result)
 
 testCYK()
 testGrammarToRules()
-# testSemantics()
+testSemantics()
 # testEvaluation()
