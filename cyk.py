@@ -419,6 +419,24 @@ def evaluate(spans, semantics, l=START, i=0, j=0):
                 # apply = ?(span)
                 yield apply(left, right)
                 
+identity = lambda x: x
+
+testTriggers = {
+        'n-ary number' : lambda x: int(x),
+        'Parenthesis' : identity,
+        'Addition' : lambda x, y: x + y,
+        'Substraction' : lambda x, y: x - y,
+        'Additive inverse' : lambda x: -x,
+        'Multiplication' : lambda x, y: x * y,
+        'Decimal digit' : identity,
+        'Single digit' : identity,
+        'Several digits' : lambda x, y: x + y,
+        'Plus symbol' : identity,
+        'Minus symbol' : identity,
+        'Times symbol' : identity
+        }
+
+                
 testGrammar = '''
     NUMBER -> DIGITS                     (n-ary number)
     NUMBER -> [LPAREN] NUMBER [RPAREN]   (Parenthesis)
