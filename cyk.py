@@ -80,9 +80,10 @@ def textToRules(text):
 
     rules = []
     lines = [l.strip() for l in text.split("\n")]
+    lines = [l for l in lines if l]
     for line in lines:
-        if line:
-            rules += lineToRules(line)
+        newRules = lineToRules(line)
+        rules += newRules
     return rules
 
 def lineToRules(line):
