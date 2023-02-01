@@ -316,27 +316,6 @@ def testCYK():
         spanLabel, spanText = span
         print(spanLabel, spanText)
 
-def testGrammarToRules():
-    grammar = '''
-    NUMBER -> DIGITS                     (n-ary number)
-    NUMBER -> [LPAREN] NUMBER [RPAREN]   (Parenthesis)
-    NUMBER -> NUMBER PLUS NUMBER         (Addition)
-    NUMBER -> NUMBER MINUS NUMBER        (Substraction)
-    NUMBER -> MINUS NUMBER               (Additive inverse)
-    NUMBER -> NUMBER TIMES NUMBER        (Multiplication)
-    DIGIT -> 0                           (Binary digit)
-    DIGIT -> 1                           (Binary digit)
-    DIGITS -> DIGIT                      (Single digit)
-    DIGITS -> DIGIT DIGITS               (Several digits)
-    PLUS -> +                            (Plus symbol)
-    MINUS -> -                           (Minus symbol)
-    TIMES -> *                           (Times symbol)
-    '''
-
-    print('\nRules:\n')
-    for rule in textToRules(grammar):
-        print(rule)
-
 def checkSilent(token):
     if token[0] == "[" and token[-1] == "]":
         return token[1:-1], True
@@ -439,7 +418,31 @@ def evaluate(spans, semantics, l=START, i=0, j=0):
             for left, right in product(leftSpans, rightSpans):
                 # apply = ?(span)
                 yield apply(left, right)
+                
+testGrammar = '''
+    NUMBER -> DIGITS                     (n-ary number)
+    NUMBER -> [LPAREN] NUMBER [RPAREN]   (Parenthesis)
+    NUMBER -> NUMBER [PLUS] NUMBER       (Addition)
+    NUMBER -> NUMBER [MINUS] NUMBER      (Substraction)
+    NUMBER -> [MINUS] NUMBER             (Additive inverse)
+    NUMBER -> NUMBER [TIMES] NUMBER      (Multiplication)
+    DIGIT -> 0                           (Decimal digit)
+    DIGIT -> 1                           (Decimal digit)
+    DIGIT -> 2                           (Decimal digit)
+    DIGIT -> 3                           (Decimal digit)
+    DIGIT -> 4                           (Decimal digit)
+    DIGITS -> DIGIT                      (Single digit)
+    DIGITS -> DIGIT DIGITS               (Several digits)
+    PLUS -> +                            (Plus symbol)
+    MINUS -> -                           (Minus symbol)
+    TIMES -> *                           (Times symbol)
+'''
 
+def testGrammarToRules():
+    print('\nRules:\n')
+    rules = textToRules(testGrammar)
+    for rule in rules:
+        print(rule)
 
 testCYK()
 testGrammarToRules()
