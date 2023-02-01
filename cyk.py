@@ -232,10 +232,6 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
         leftBegin, leftEnd, leftLabel, leftRule = currentSpan
 
         # Handle unary rules
-        
-        print('Rule triggers')
-        for k in ruleTriggers:
-            print(k, ":", ruleTriggers[k])
 
         if leftLabel in ruleTriggers.keys():
             for pair in ruleTriggers[leftLabel]:
@@ -474,13 +470,11 @@ def testGrammarToRules():
     rules = textToRules(testGrammar)
     for rule in rules:
         print(rule)
+    print("")
         
 def testSemantics():
 
     grammar, actions = parsableGrammar(testGrammar, testTriggers)
-    
-    for actionName in actions.keys():
-        print("Action ", actionName, ":", actions[actionName])
     
     tokens = "- ( 5 + 4 ) + 1".split()
     spans, _ = cyk(tokens, grammar)
