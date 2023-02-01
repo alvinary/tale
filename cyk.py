@@ -397,11 +397,11 @@ def evaluate(spans, actions, l=START, i=0, j=0):
                 + [(label, rule, apply, branchLabel, i, j)]
     '''
 
-    if i == 0 and j == 0:
-        j = max([end for _, end in spans.keys()])
+    minIndex = min([begin for begin, _ in spans.keys()])
+    maxIndex = max([end for _, end in spans])
 
-    minIndex = min([leftIndex(span) for _, span in spans])
-    maxIndex = max([rightIndex(span) for _, span in spans])
+    if i == 0 and j == 0:
+        j = maxIndex
 
     fullSpan = minIndex, maxIndex
 
