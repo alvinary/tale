@@ -1,5 +1,4 @@
 from collections import defaultdict
-import ipdb
 
 inventory = lambda : defaultdict(lambda : set())
 
@@ -295,10 +294,6 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
                     readableSpans.add((newLabel, leftBegin, rightEnd, " ".join(spanSequence)))
                     binarySpan = (newLabel, leftLabel, rightLabel, newRule, leftBegin, leftEnd, rightBegin, rightEnd)
                     spans[leftBegin, rightEnd].add(binarySpan)
-
-    print("SPANS")
-    for k in spans:
-        print(k, spans[k])
 
     return spans, readableSpans
 
