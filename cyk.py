@@ -1,4 +1,5 @@
 from collections import defaultdict
+import ipdb
 
 inventory = lambda : defaultdict(lambda : set())
 
@@ -94,15 +95,17 @@ def lineToTokens(line):
 
     assert "->" in line and ')' in line and '(' in line # to be sure
     
-    line = line[:-1] # Remove ')'
-    tokens, name = tuple(line.split("("))
+    rparenIndex = -1 # Index of the last )
+    lparenIndex = line.rfind("(")
+    line = line[:rparenIndex] # String up to the last (
+    
+    tokens = [t.strip() for t in line[:lparenIndex].split()]
+    tokens = tokens[0:1] + tokens[2:] # Ignore '->'
 
+    name = line[lparenIndex+1:]
     # Handle punctuation here
 
-    tokens = [p.strip() for p in tokens.split()]
-    head = tokens[0:1]
-    tokens = tokens[2:] # Ignore '->'
-    return head + tokens, name
+    return tokens, name
 
 def tokensToRules(tokens, name):
 
@@ -220,8 +223,9 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
         endsAt[index].add(tokenSpan)
         beginsAt[index].add(tokenSpan)
         notVisited.add(tokenSpan)
-        readableSpans.add((token, token))
-        spans[index, index].add((token, TOKEN, (token,)))
+        readableSpans.add((token, index, index, token))
+        leafSpan = (token, TOKEN, index)
+        spans[index, index].add(leafSpan)
 
     # Parse token sequence
 
@@ -241,8 +245,9 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
                 beginsAt[leftBegin].add(newSpan)
                 notVisited.add(newSpan)
                 spanSequence = tuple(sequence[leftBegin:leftEnd+1])
-                readableSpans.add((newLabel, " ".join(spanSequence)))
-                spans[leftBegin, leftEnd].add((newLabel, newRule, spanSequence))
+                readableSpans.add((newLabel, leftEnd, leftBegin, " ".join(spanSequence)))
+                unarySpan = (newLabel, newRule, leftBegin, leftEnd)
+                spans[leftBegin, leftEnd].add(unarySpan)
 
         # Handle binary rules (left case)
 
@@ -262,8 +267,10 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
                     leftSequence = tuple(sequence[leftBegin:leftEnd+1])
                     rightSequence = tuple(sequence[rightBegin:rightEnd+1])
 
-                    readableSpans.add((newLabel, " ".join(spanSequence)))
-                    spans[leftBegin, rightEnd].add((newLabel, newRule, leftSequence, rightSequence))
+                    readableSpans.add((newLabel, leftBegin, rightEnd, " ".join(spanSequence)))
+
+                    binarySpan = binarySpan = (newLabel, leftLabel, rightLabel, newRule, leftBegin, leftEnd, rightBegin, rightEnd)
+                    spans[leftBegin, rightEnd].add(binarySpan)
 
         # Handle binary rules (right case)
 
@@ -275,19 +282,23 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
             production = (leftLabel, rightLabel)
             if production in ruleTriggers.keys():
                 for newLabel, newRule in ruleTriggers[production]:
+
                     newSpan = (leftBegin, rightEnd, newLabel, newRule)
                     beginsAt[leftBegin].add(newSpan)
                     endsAt[rightEnd].add(newSpan)
                     notVisited.add(newSpan)
 
-                    spanSequence = tuple(sequence[leftBegin:rightEnd+1])
-                    readableSpans.add((newLabel, " ".join(spanSequence)))
-
                     leftSequence = tuple(sequence[leftBegin:leftEnd+1])
                     rightSequence = tuple(sequence[rightBegin:rightEnd+1])
+                    spanSequence = tuple(sequence[leftBegin:rightEnd+1])
 
-                    readableSpans.add((newLabel, " ".join(spanSequence)))
-                    spans[leftBegin, rightEnd].add((newLabel, newRule, leftSequence, rightSequence))
+                    readableSpans.add((newLabel, leftBegin, rightEnd, " ".join(spanSequence)))
+                    binarySpan = (newLabel, leftLabel, rightLabel, newRule, leftBegin, leftEnd, rightBegin, rightEnd)
+                    spans[leftBegin, rightEnd].add(binarySpan)
+
+    print("SPANS")
+    for k in spans:
+        print(k, spans[k])
 
     return spans, readableSpans
 
@@ -313,8 +324,8 @@ def testCYK():
     spans, readable = cyk(tokens, grammar)
 
     for span in readable:
-        spanLabel, spanText = span
-        print(spanLabel, spanText)
+        spanLabel, l, r, spanText = span
+        print(spanLabel, l, r, spanText)
 
 def checkSilent(token):
     if token[0] == "[" and token[-1] == "]":
@@ -379,9 +390,6 @@ def semantics(grammar, triggers):
             actions[production] = (head, semanticAction, argumentAction)
 
     return actions
-    
-def label(span):
-    return span[0]
 
 def evaluate(spans, actions, l=START, i=0, j=0):
     '''
@@ -401,30 +409,32 @@ def evaluate(spans, actions, l=START, i=0, j=0):
 
     fullSpan = minIndex, maxIndex
 
-    feasibleSpans = [span for span in spans[i, j] if label(span) == targetLabel]
+    targetLabel = l
+    feasibleSpans = [span for span in spans[i, j] if span[0] == targetLabel]
 
     for span in feasibleSpans:
-        # unary = ?(span)
-        # binary = ?(span)
-        # leaf = i == j
+        unary = len(span) == 4 # TODO: magic booleans, not modular
+        binary = len(span) == 6
+        leaf = len(span) == 3
 
         if leaf:
-            label, rule, token = span
+            token, rule, index = span
             head, sem, args = actions[rule]
             yield sem(*arg(token))
 
         if unary:
-            feasible = evaluate(spans, actions, l=branchLabel, i=i, j=j)
+            label, rule, left, right = span
+            head, sem, args = actions[rule]
+            feasible = evaluate(spans, actions, l=label, i=i, j=j)
             for branch in feasible:
                 yield sem(*arg(branch))
 
         if binary:
-            label, rule, _, _ = span
-            # k, leftLabel, rightLabel = ?(span)
-            leftSpans =  evaluate(spans, actions, l=leftLabel, i=i, j=k)
-            rightSpans = evaluate(spans, actions, l=rightLabel, i=k, j=j)
+            label, leftLabel, rightLabel, rule, ll, lr, rl, rr = span
+            head, sem, args = actions[rule]
+            leftSpans =  evaluate(spans, actions, l=leftLabel, i=ll, j=lr)
+            rightSpans = evaluate(spans, actions, l=rightLabel, i=rl, j=rr)
             for left, right in product(leftSpans, rightSpans):
-                # apply = ?(span)
                 yield sem(*arg(left, right))
                 
 identity = lambda x: x
@@ -442,6 +452,8 @@ testTriggers = {
         'Plus symbol' : identity,
         'Minus symbol' : identity,
         'Times symbol' : identity,
+        'Left parenthesis' : identity,
+        'Right parenthesis' : identity,
         TOKEN : identity
         }
 
@@ -453,11 +465,14 @@ testGrammar = '''
     NUMBER -> NUMBER [MINUS] NUMBER      (Substraction)
     NUMBER -> [MINUS] NUMBER             (Additive inverse)
     NUMBER -> NUMBER [TIMES] NUMBER      (Multiplication)
+    LPAREN -> (                          (Left parenthesis)
+    RPAREN -> )                          (Right parenthesis)
     DIGIT -> 0                           (Decimal digit)
     DIGIT -> 1                           (Decimal digit)
     DIGIT -> 2                           (Decimal digit)
     DIGIT -> 3                           (Decimal digit)
     DIGIT -> 4                           (Decimal digit)
+    DIGIT -> 5                           (Decimal digit)
     DIGITS -> DIGIT                      (Single digit)
     DIGITS -> DIGIT DIGITS               (Several digits)
     PLUS -> +                            (Plus symbol)
@@ -478,7 +493,7 @@ def testSemantics():
     
     tokens = "- ( 5 + 4 ) + 1".split()
     spans, _ = cyk(tokens, grammar)
-    result = evaluate(spans, actions)
+    result = evaluate(spans, actions, l="NUMBER")
 
     for r in zip([0],result):
         print("Result: ", r)
