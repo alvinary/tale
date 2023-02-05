@@ -7,16 +7,16 @@ SEPARATOR = ";"
 model1 = ["left(a, b)", "left(d, e)", "right(a, c)", "right(d, f)", "left(f, g)", "right(f, h)"]
 
 # One short cycle
-model2 = "left(a, b) ; right(a, c) ; left(c, a) ; right (c, d)".split(SEPARATOR)
+model2 = [s.strip() for s in "left(a, b) ; right(a, c) ; left(c, a) ; right(c, d)".split(SEPARATOR)]
 
 # Longer cycles
-model3 = "left(a, b) ; right(a, c) ; left(c, e) ; right (c, d) ; left (e, a) ; right (e, b)".split(SEPARATOR)
+model3 = [s.strip() for s in "left(a, b) ; right(a, c) ; left(c, e) ; right(c, d) ; left(e, a) ; right(e, b)".split(SEPARATOR)]
 
 # No left
-model4 = "left(a, b) ; right (a, c) ; right (c, d) ; left (b, e) ; right (b, f)".split(SEPARATOR)
+model4 = [s.strip() for s in "left(a, b) ; right(a, c) ; right(c, d) ; left(b, e) ; right(b, f)".split(SEPARATOR)]
 
 # A tree
-model5 = "left (1, 2) ; right (1, 3) ; left (3, 4); right (3, 5)".split(SEPARATOR)
+model5 = [s.strip() for s in "left(A, B) ; right(A, C) ; left(C, D); right(C, E)".split(SEPARATOR)]
 
 def test_trees():
     try:
@@ -45,4 +45,4 @@ def test_trees():
 
     assert getTree(model5)
 
-    assert getTree(model5).show() == "(2 (4 5))"
+    assert getTree(model5).show() == "(B (D E))"

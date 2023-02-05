@@ -7,7 +7,7 @@ from functools import reduce
 union = lambda x, y: x | y
 
 
-def reverseComp(comparison):
+def reverseComparison(comparison):
     if comparison == '=':
         return '!='
     if comparison == '!=':
@@ -21,9 +21,18 @@ def reverseComp(comparison):
     if comparison == '</':
         return '<'
 
+def isNegative(term):
+    if 'not ' in term.term:
+        return term.term[0:5] == 'not '
+    else:
+        return False
 
 def reverseNot(term):
-    return Term(f'not {term.term}', term.functions)
+    if isNegative(term):
+        positiveTerm = term.term[4:]
+        return Term(positiveTerm, term.functions)
+    else:
+        return Term(f'not {term.term}', term.functions)
 
 
 class Ok(Exception):
@@ -274,7 +283,7 @@ class Comparison:
         return [[index.getLiteral(self)]]
 
     def negate(self):
-        return Comparison(reverseComp(self.comparison), self.left, self.right)
+        return Comparison(reverseComparison(self.comparison), self.left, self.right)
 
     def collect(self, index):
         variables = set()

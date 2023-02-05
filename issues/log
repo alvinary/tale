@@ -1,0 +1,169 @@
+EMBEDDING
+
+- When you declare a function f with let, but then add some other
+  rule (like p x y -> f x y), f ceases to behave like a function.
+  It might be an issue with Either.clausify, a problem with the
+  embedding, a more general problem with how negation is being
+  handled, or something else entirely, so we'll have to be patient.
+
+- Total orders with 'next' leave lots of 'hanging' facts about the
+  out-of-bounds constant next of the last element.
+
+GRID
+
+- I got stuck with the visualization / verification part.
+
+- The approach taken with objects.py (first write procedural
+  tests checking if a certain Python object has a property,
+  then write a function that turns a relational specification
+  into that Python object, and check it using a testing framework,
+  which allows very fast, repeatable and hassle-free iteration)
+  worked, so we should try that again (maybe using some of the
+  same functions for trees).
+
+FUNCTIONS
+
+- I got stuck with the debugging part (is the logic program
+  wrong, is there a bug in the program, or is there a bug
+  in some assumption there? - some issue with negation, or
+  an incomplete translation)
+
+- So far these are working in lots of contexts
+
+- Equality and 'actual functions' can be implemented using
+  these. You can have a function assign : A' -> A, and since
+  each a' is assigned exactly one a, that can be used as some
+  form of equality (together with p(a'), assign(a', a) <-> p (a))
+
+  The arity of predicates and rules can be reduced using that
+  kind of workaround, which reduces the size of embeddings, since
+  assign (a.f, b) lets you assert stuff about b without explicit
+  references to anything other than a (unfolding iterates only
+  over a's sort, as in 'p(a), q(a.f), r(a.g), s(a.f, a.g) -> t(a, a.g)',
+  which will be especially useful when using DRTs and working
+  with local properties of nodes that involve lots of arguments.
+
+SYMMETRY BREAKING
+
+- using totally ordered sorts works as long as there are no
+  'loose' predicates that can be true or false for the same
+  model, when you only consider 'structurally relevant' predicates.
+  In the example of trees, many models did not differ in who
+  was left of whom, but did differ in some of the 'auxiliary' predicates,
+  so their trees were isomorphic, but showed up more than once while
+  enumerating models.
+
+
+INTERFACE / COUPLING / MODULARITY
+
+The current interface does not let you use pysat's 'solve with'
+(you cannot say 'hey, give me a model using the current state, but
+temporarily add the literals in L to it. Give me just one model, then
+forget'). I don't think pysat lets you iterate over more than one model
+that way.
+
+MODELING
+
+- The relational specification for tiling / 2D string parsing is
+  still very sketchy. Using a leveled DAG looks promising, as well
+  as 'storing semantic data' (same as DRT, but a bit simpler), but
+  I'm not sure how to properly represent spatial information.
+  
+  A possible workaround is to 'hardcode' spatial hierarchy data
+  ('A large area is a rectangle with NM tiles. Large areas may
+  contain small and mid areas, and all areas within a large
+  area must be mutually accessible', and so on). Since only valid
+  tilings should be produced, and no valid large area should have
+  just one small child, this could be made to work, although it is
+  very ad-hoc.
+  
+  Using corners seems like a more general alternative ('all children
+  of an area must be within the bounds of its corners'), and probably
+  could be generalized to convex shapes very easily. Corner data could
+  be 'stored' in a vertex's DRS, and reasoning about total orders is
+  easy with what we already have (and we want to model arithmetic anyway,
+  so that should be ready at some point).
+
+NEGATIVE FEEDBACK
+
+- I tried modeling some problems with stable marriages.
+  
+  The end goal was to be able to come up with preference configurations
+  that never end in a stable configuration.
+
+  With preferences yielding periodic changes, and never having anyone
+  stay with the same person during even one turn, this seems possible:
+  you make sure b.next is like a cyclic linked list, and state
+  `with (g, b), with (g.next, b.next) -> False`.
+
+  But more complex situations seem hard to model.
+
+  One option is to be able to tell when any couple has changed (parts
+  can remain stable, but some couple has to split).
+
+  This can be done used one of the 'cheap, awkward tricks' we used
+  with artale (the 'any' macro, or something a bit more general, like
+  using a list, A+, A-, etc).
+
+  But it has the same 'blind spot' quantifier nesting issue program
+  synthesis has (You cannot synthezise a program aiming for the 
+  instance to be satisfiable and at the same time say 'the instance
+  is unsatisfiable is there is one input that...', because you either
+  get a satisfying assignment or you don't, and with no satisfying
+  assignment, there is no program).
+
+  Ultimately, this is not relevant, but shows many of the limitations
+  of the approach.
+  
+  prefer (g, b),
+  with (g, b'),
+  b != b',
+  available (b', g),
+  with (g.next, b.next) -> False.
+
+ARITHMETIC
+
+- Addition is straightforward to model with carries and 'bitwise logic',
+  but other operations are not that straightforward, so it is best to
+  take the 'truth table -> conjunctive normal form -> minimized function'
+  approach. Even if the resulting function requires nesting, it can be
+  hardcoded with predicates directly (no need for any generality there),
+  like with context free grammar parsing when the grammar is fixed.
+
+- Other alternatives seem far worse.
+
+  With multiplication and addition for natural numbers and rationals 
+  and their operations defined on pairs of naturals, maybe we could
+  handle small numbers
+
+  * a / b + c / d = (a' + b') / [bd], where
+        [bd] = lcm(b, d),
+        a' = a * [bd] / b,
+        b' = b * [bd] / d
+
+  * (a / b) * (c / d) = ((a * [bd] / b) * (c * [bd] / d)) / [bd]
+
+  But factorization is not straightforward, so the best thing
+  is to implement division and substraction as separate operations.
+
+OPTIMIZATION
+
+- Define a feasible region
+- Define criteria for sufficiency
+- Define criteria for order
+
+- Test cases (proof of concept / sanity check)
+	- string length and some string property
+	- lexicographic order and some string property
+	  (shortest string that is part of a regular
+           language, and so on)
+        - Shortest arithmetic expression evaluating to n,
+          using just one as 'leaf value'
+          (this one is fun)
+
+- Test cases (toy):
+	Referring expressions
+	Propisitional proofs
+
+- Test cases (serious):
+	Synthesis of mapreduce programs

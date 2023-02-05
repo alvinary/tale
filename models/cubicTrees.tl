@@ -1,14 +1,8 @@
-from tale.pipeline import *
-from tale.objects import *
+order n 20 : node.
+order t 21 : token.
 
-MODELS = 10
-
-program = '''
-order n 9 : node.
-order t 10 : token.
-
-order n 9 : vertex.
-order t 10 : vertex.
+order n 20 : vertex.
+order t 21 : vertex.
 
 var a, b, c : vertex.
 var n, m, o : node.
@@ -49,20 +43,3 @@ below (a, b) -> above (b, a).
 above (a, b), above (b, c) -> above (a, c).
 above (a, b), above (b, a) -> False.
 above (a, a) -> False.
-
-'''
-
-def test_trees():
-    models = pipeline(program)
-    
-    if not models:
-        print("Instance is not satisfiable")
-        assert False
-    
-    for index, model in zip(range(MODELS), models):
-        try:
-            tree = getTree(model)
-            print(tree.show(), '\n')
-        except BrokenPrecondition:
-            assert False
-

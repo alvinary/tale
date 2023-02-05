@@ -19,9 +19,9 @@ def termify(*args):
     return [Term(a, []) for a in args]
 
 
-def bitAtom(label, bit, elem):
+def bitAtom(label, index, bit, elem):
     elemTerms = [e.term for e in elem]
-    return Atom(termify(label, bit, *elemTerms))
+    return Atom(termify(label, index, bit, *elemTerms))
 
 
 def flip(bit):
@@ -31,25 +31,26 @@ def flip(bit):
 
 
 def pad(word, length, char='0'):
+    assert len(word) <= length
     return char * (length - len(word)) + word
 
 
 def chooseOne(p, q, a):
-    return Either([Atom([p, a]), Atom([p, q])])
+    return Either([Atom([p, a]), Atom([q, a])])
 
 
 def imageBits(index, image, args, label, padding):
-    allBits = []
-    argumentTerms = [elem.term for elem in args]
+    elementBits = []
+    argumentTerms = [arg.term for arg in args]
     elemHasImage = Atom(termify(label, *argumentTerms, image.term))
     for i, b in enumerate(pad(bits(index), padding)):
         stringIndex = str(i)
-        bit = Atom(termify(f'{label} bit', stringIndex, b, *argumentTerms))
-        negatedBit = Atom(
-            termify(f'{label} bit', stringIndex, flip(b), *argumentTerms))
-        allBits.append(bit)
+        labelBit = f'{label} bit'
+        bit = bitAtom(labelBit, stringIndex, b, args)
+        negatedBit = bitAtom(labelBit, stringIndex, flip(b), args)
+        elementBits.append(bit)
         yield Either([bit, negatedBit])
-    yield Iff(allBits, [elemHasImage])
+    yield Iff(elementBits, [elemHasImage])
 
 
 def forbid(index, padding, args, label=''):
@@ -77,7 +78,7 @@ def unfold(rule, index):
 def oneOf(imageSort, domainSorts, label=''):
 
     imageSize = len(imageSort)
-    logSize = (ceil(log(imageSize, 2)))
+    logSize = ceil(log(imageSize, 2))
     bottom = 2**logSize
 
     for i, image in enumerate(imageSort):
@@ -111,12 +112,12 @@ def totalOrder(size, prefix, sort):
 def uniqueNameAssumption(constants):
     size = len(constants)
     for i in range(size):
-        for j in range(i + 1):
+        for j in range(size):
             c1 = constants[i]
             c2 = constants[j]
             if c1 != c2:
                 yield Comparison('!=', c1, c2)
-            else:
+            elif c1 == c2:
                 yield Comparison('=', c1, c2)
 
 

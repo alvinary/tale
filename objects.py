@@ -100,23 +100,35 @@ def reachesBack(vertex, edges):
 
 def getTree(model):
 
-    isLeft = lambda s: "left" in s
-    isRight = lambda s: "right" in s
-    leftEdges = {extract(literal) for literal in model if isLeft(literal)}
-    rightEdges = {extract(literal) for literal in model if isRight(literal)}
+    isLeft = lambda s: s[0:5] == 'left('
+    isRight = lambda s: s[0:6] == 'right('
+            
+    leftCandidates = {literal for literal in model if 'left(' in literal}
+    rightCandidates = {literal for literal in model if 'right(' in literal}
+    
+    leftEdges = {extract(literal) for literal in leftCandidates if isLeft(literal)}
+    rightEdges = {extract(literal) for literal in rightCandidates if isRight(literal)}
 
     edges = leftEdges | rightEdges
     predecessors = {a for a, _ in edges}
     successors = {b for _, b in edges}
     vertices = predecessors | successors
 
-    roots = predecessors - successors
+    roots = {i for i in vertices if i not in successors}
     cycleVertices = [v for v in vertices if reachesBack(v, edges)]
 
     rooted = len(roots) == 1
+    noRoot = len(roots) == 0
+
+    if noRoot:
+        raise BrokenPrecondition(f"There is no root")
+
+    if not rooted:
+        raise BrokenPrecondition(f"{edges} do not specify a tree - more than one root (check nodes {' '.join(roots)}).")
+
     acyclic = len(cycleVertices) == 0
 
-    isTree = rooted and acyclic
+    isTree = acyclic and rooted
 
     # Lots of heap allocated data structures
     # when all this could be on the stack (or
@@ -127,5 +139,5 @@ def getTree(model):
         root = roots.pop()
         return bort(root, leftEdges, rightEdges)
         
-    else:
-        raise BrokenPrecondition(f"{edges} do not specify a tree.")
+    elif not acyclic:
+        raise BrokenPrecondition(f"{edges} do not specify a tree - there are cycles (check nodes {' '.join(cycleVertices)}).")
