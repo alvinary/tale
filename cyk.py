@@ -442,14 +442,26 @@ def testSemantics():
 
     grammar, actions = parsableGrammar(testGrammar, testTriggers)
     
+    for r in grammar:
+        print("Rule:", r, ":", grammar[r])
+        
+    print("")
+        
+    for a in actions:
+        print("Action:", a, ":", actions[a])
+        
+    print("")
+    
     tokens = "- ( 5 + 4 ) + 1".split()
     spans, _ = cyk(tokens, grammar)
-    result = evaluate(spans, actions, l="NUMBER")
+    # result = evaluate(spans, actions, label="NUMBER")
 
     for r in zip([0],result):
         print("Result: ", r)
         
-def memeval(targetSpan, spans, actions):
+    print("")
+        
+def evaluate(i, j, targetLabel, spans, actions):
     
     # values[span][label] = [list of values with label l at span i j]
     # requirements[span] = [pairs of span, label dependencies]
@@ -458,8 +470,11 @@ def memeval(targetSpan, spans, actions):
     
     # binarySpan = binarySpan = (newLabel, leftLabel, rightLabel, newRule, leftBegin, leftEnd, rightBegin, rightEnd)
 
-    currentSpan = targetSpan
+    currentSpan = (i, j, targetLabel)
+    
     values = defaultdict(lambda: defaultdict(lambda : []))
+    dependencies = defaultdict(lambda: defaultdict(lambda : []))
+    dependees = defaultdict(lambda: defaultdict(lambda : []))
 
     # Set up requirements map
     
@@ -498,7 +513,8 @@ def memeval(targetSpan, spans, actions):
             # Should dependencies be indexed by label
             # or by action name?
     
-    pending.append(targetSpan)
+    targetSpanCoordinates = ?(targetSpan)
+    pending.append(targetSpanCoordinates) # (i, j) or (i, j, label) or (i, j, action)
 
     while targetSpan not in values:
 
@@ -509,6 +525,7 @@ def memeval(targetSpan, spans, actions):
             pending += requirments
 
             currentSpan = pending[-1]
+            i, j, headLabel = ?(currentSpan)
 
             if dependenciesMet:
 
@@ -523,22 +540,26 @@ def memeval(targetSpan, spans, actions):
                 if binary:
                     leftBranch = ?(currentSpan)
                     rightBranch = ?(currentSpan)
-                    argumentValues = (values[leftBranch], values[rightBranch])
+                    leftValue = values[leftCoordinates][leftLabel]
+                    rightValue = values[rightCoordinates][rightLabel]
+                    
+                    argumentValues = (leftValue, rightValue)
 
                 # Compute head value
                 value = ?(argumentValues)
-                values[span] = value
+                values[span] = value # You need to know which action to call, so action name data is needed
+                # spans[i, j] contains all the required data, so in any case that can be recovered
 
                 # Update requirement queues and maps
 
                 # Remember to use span coordinates, and
                 # not the whole span
                 for dependee in dependees[currentSpan]:
-                    requirements[dependee].remove(currentSpan)
+                    requirements[dependee].remove((i, j))
 
                 # Pop fulfilled dependency
 
-                pending.remove(currentSpan)
+                pending.remove((i, j, headLabel))
 
             if not dependenciesMet:
 
@@ -555,4 +576,3 @@ def memeval(targetSpan, spans, actions):
 testCYK()
 testGrammarToRules()
 testSemantics()
-# testEvaluation()y	
