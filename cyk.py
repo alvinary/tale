@@ -387,52 +387,6 @@ def semantics(grammar, triggers):
             actions[actionName] = (head, semanticAction, argumentAction)
 
     return actions
-
-def evaluate(spans, actions, l=START, i=0, j=0):
-    '''
-    actions[ruleName] = lambda x, y : f (x, y)
-
-    actions[ruleName] = head, sem, args
-
-    spans[i, j] = [(label, rule, apply, leftLabel, rightLabel, i, k, j)]
-                + [(label, rule, apply, branchLabel, i, j)]
-    '''
-
-    minIndex = min([begin for begin, _ in spans.keys()])
-    maxIndex = max([end for _, end in spans])
-
-    if i == 0 and j == 0:
-        j = maxIndex
-
-    fullSpan = minIndex, maxIndex
-
-    targetLabel = l
-    feasibleSpans = [span for span in spans[i, j] if span[0] == targetLabel]
-
-    for span in feasibleSpans:
-        unary = len(span) == 5 # TODO: magic booleans, not modular
-        binary = len(span) == 8
-        leaf = len(span) == 3
-
-        if leaf:
-            token, rule, index = span
-            head, sem, args = actions[rule]
-            yield sem(*arg(token))
-
-        if unary:
-            label, rule, left, right = span
-            head, sem, args = actions[rule]
-            feasible = evaluate(spans, actions, l=label, i=i, j=j)
-            for branch in feasible:
-                yield sem(*arg(branch))
-
-        if binary:
-            label, leftLabel, rightLabel, rule, ll, lr, rl, rr = span
-            head, sem, args = actions[rule]
-            leftSpans =  evaluate(spans, actions, l=leftLabel, i=ll, j=lr)
-            rightSpans = evaluate(spans, actions, l=rightLabel, i=rl, j=rr)
-            for left, right in product(leftSpans, rightSpans):
-                yield sem(*arg(left, right))
                 
 identity = lambda x: x
 
