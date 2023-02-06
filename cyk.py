@@ -464,48 +464,89 @@ def memeval(targetSpan, spans, actions):
     # Set up requirements map
     
     for span in spans:
+
+        # track dependencies
         
         leaf = len(span) == 3
         unary = len(span) = 5
         binary = len(span) == 8
     
         if leaf:
+            # Leaves have no dependencies, and are always ready
+            # So we compute their value right away
             value[span] = ?( spans [span])
             
         if unary:
+            # The head span depends on the branch span
+            # The branch span tracks this head span depends on it
             headLabel, branchLabel, rule, i, j = spans[span]
-            dependencies[span][branchLabel].append((i, j)) 
+            dependencies[i, j][branchLabel].append((i, j))
+            dependees[i, j][headLabel].append((i, j))
         
         if binary:
-            head, leftLabel, rightLabel, rule, ll, lr, rl, rr = span
-            dependencies[span][leftLabel].append((ll, lr))
-            dependencies[span][rightLabel].append((rl, rr))
+            # Binary nodes depend on their left and right branches
+
+            headLabel, leftLabel, rightLabel, rule, ll, lr, rl, rr = span
+            
+            # Track dependency / dependee relations between
+            # the head span and its two branches
+            dependencies[ll, rr][leftLabel].append((ll, lr))
+            dependencies[ll, rr][rightLabel].append((rl, rr))
+            dependees[ll, lr][headLabel].append(ll, rr)
+            dependees[rl, rr][headLabel].append(ll, rr)
+
+            # Should dependencies be indexed by label
+            # or by action name?
     
     pending.append(targetSpan)
 
     while targetSpan not in values:
 
-        requirements = [span for span in dependencies[currentSpan] if span not in values]
-
-        pending += requirments
-
         while pending:
+
+            requirements = [span for span in dependencies[currentSpan] if span not in values]
+
+            pending += requirments
 
             currentSpan = pending[-1]
 
             if dependenciesMet:
 
-                # compute value
+                # Collect branch values
+                
+                if leaf:
+                    argumentValues = ?(currentSpan)
 
-                # update queues and maps
+                if unary:
+                    argumentValues = ?(currentSpan)
+                
+                if binary:
+                    leftBranch = ?(currentSpan)
+                    rightBranch = ?(currentSpan)
+                    argumentValues = (values[leftBranch], values[rightBranch])
 
-                pass
+                # Compute head value
+                value = ?(argumentValues)
+                values[span] = value
+
+                # Update requirement queues and maps
+
+                # Remember to use span coordinates, and
+                # not the whole span
+                for dependee in dependees[currentSpan]:
+                    requirements[dependee].remove(currentSpan)
+
+                # Pop fulfilled dependency
+
+                pending.remove(currentSpan)
 
             if not dependenciesMet:
 
+                # Add dependencies to pending
+
                 # update dependencies
 
-                pass
+                # next iteration
 
     value = values[fullSpan]
 
