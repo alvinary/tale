@@ -409,7 +409,7 @@ def evaluate(spans, actions, l=START, i=0, j=0):
 
     for span in feasibleSpans:
         unary = len(span) == 4 # TODO: magic booleans, not modular
-        binary = len(span) == 6
+        binary = len(span) == 8
         leaf = len(span) == 3
 
         if leaf:
@@ -496,4 +496,4 @@ def testSemantics():
 testCYK()
 testGrammarToRules()
 testSemantics()
-# testEvaluation()
+# testEvaluation()y	
