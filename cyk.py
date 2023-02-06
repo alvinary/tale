@@ -232,23 +232,25 @@ def cyk(sequence, ruleTriggers, tokenizer=IDENTITY):
 
         currentSpan = notVisited.pop()
 
-        leftBegin, leftEnd, leftLabel, leftRule = currentSpan
+        branchBegin, branchEnd, branchLabel, branchRule = currentSpan
 
         # Handle unary rules
 
-        if leftLabel in ruleTriggers.keys():
-            for pair in ruleTriggers[leftLabel]:
+        if branchLabel in ruleTriggers.keys():
+            for pair in ruleTriggers[branchLabel]:
                 newLabel, newRule = pair
-                newSpan = (leftBegin, leftEnd, newLabel, newRule)
-                endsAt[leftEnd].add(newSpan)
-                beginsAt[leftBegin].add(newSpan)
+                newSpan = (branchBegin, branchEnd, newLabel, newRule)
+                endsAt[branchEnd].add(newSpan)
+                beginsAt[branchBegin].add(newSpan)
                 notVisited.add(newSpan)
-                spanSequence = tuple(sequence[leftBegin:leftEnd+1])
-                readableSpans.add((newLabel, leftEnd, leftBegin, " ".join(spanSequence)))
-                unarySpan = (newLabel, newRule, leftBegin, leftEnd)
-                spans[leftBegin, leftEnd].add(unarySpan)
+                spanSequence = tuple(sequence[branchBegin:branchEnd+1])
+                readableSpans.add((newLabel, branchEnd, branchBegin, " ".join(spanSequence)))
+                unarySpan = (newLabel, branchLabel, newRule, branchBegin, branchEnd) # C2 add branch label data to span
+                spans[branchBegin, branchEnd].add(unarySpan)
 
         # Handle binary rules (left case)
+        
+        leftBegin, leftEnd, leftLabel, leftRule = currentSpan
 
         candidates = set(beginsAt[leftEnd + 1])
 
