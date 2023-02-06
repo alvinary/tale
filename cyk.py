@@ -410,7 +410,7 @@ def evaluate(spans, actions, l=START, i=0, j=0):
     feasibleSpans = [span for span in spans[i, j] if span[0] == targetLabel]
 
     for span in feasibleSpans:
-        unary = len(span) == 4 # TODO: magic booleans, not modular
+        unary = len(span) == 5 # TODO: magic booleans, not modular
         binary = len(span) == 8
         leaf = len(span) == 3
 
