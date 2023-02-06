@@ -370,7 +370,7 @@ def semantics(grammar, triggers):
             if not leftIsMute and not rightIsMute:
                 argumentAction = includeBoth
             
-            actions[left, right] = (head, semanticAction, argumentAction)
+            actions[actionName] = (head, semanticAction, argumentAction)
 
         if isUnary(rhs):
 
@@ -382,7 +382,7 @@ def semantics(grammar, triggers):
             else:
                 argumentAction = lambda x: [x]
 
-            actions[production] = (head, semanticAction, argumentAction)
+            actions[actionName] = (head, semanticAction, argumentAction)
 
     return actions
 
