@@ -494,6 +494,68 @@ def testSemantics():
 
     for r in zip([0],result):
         print("Result: ", r)
+        
+def memeval(targetSpan, spans, actions):
+    
+    # values[span][label] = [list of values with label l at span i j]
+    # requirements[span] = [pairs of span, label dependencies]
+
+    # pending = [a stack of spans for which you do not yet have a value]
+    
+    # binarySpan = binarySpan = (newLabel, leftLabel, rightLabel, newRule, leftBegin, leftEnd, rightBegin, rightEnd)
+
+    currentSpan = targetSpan
+    values = defaultdict(lambda: defaultdict(lambda : []))
+
+    # Set up requirements map
+    
+    for span in spans:
+        
+        leaf = len(span) == 3
+        unary = len(span) = 5
+        binary = len(span) == 8
+    
+        if leaf:
+            value[span] = ?( spans [span])
+            
+        if unary:
+            headLabel, branchLabel, rule, i, j = spans[span]
+            dependencies[span][branchLabel].append((i, j)) 
+        
+        if binary:
+            head, leftLabel, rightLabel, rule, ll, lr, rl, rr = span
+            dependencies[span][leftLabel].append((ll, lr))
+            dependencies[span][rightLabel].append((rl, rr))
+    
+    pending.append(targetSpan)
+
+    while targetSpan not in values:
+
+        requirements = [span for span in dependencies[currentSpan] if span not in values]
+
+        pending += requirments
+
+        while pending:
+
+            currentSpan = pending[-1]
+
+            if dependenciesMet:
+
+                # compute value
+
+                # update queues and maps
+
+                pass
+
+            if not dependenciesMet:
+
+                # update dependencies
+
+                pass
+
+    value = values[fullSpan]
+
+    return value, values
 
 testCYK()
 testGrammarToRules()
