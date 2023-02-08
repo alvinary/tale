@@ -148,3 +148,20 @@ def getTree(model):
         raise BrokenPrecondition(
             f"{edges} do not specify a tree - there are cycles (check nodes {' '.join(cycleVertices)})."
         )
+
+def stringSpecification(name, sequence):
+    facts = []
+    characters = set()
+    for index, char in enumerate(sequence):
+        facts.append(f'{char} ({name}, {index}, {index}).')
+    return name, facts, characters
+
+def makeStrings(strings):
+    allNames, allFacts, allCharacters = [], [], set()
+    for index, string in enumerate(strings):
+        name = '{STRING_PREFIX}{index}'
+        name, facts, characters = stringSpecification(string)
+        allNames.append(name)
+        allFacts += facts
+        allCharacters |= characters
+    return allNames, allFacts, allCharacters
