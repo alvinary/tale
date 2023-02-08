@@ -20,6 +20,10 @@ sys.setrecursionlimit(1500)
 
 MODELS = 5
 
+POSITIVE = 'x'
+NEGATIVE = 'z'
+QUIT = 'q'
+
 program = '''
 
 order n 6 : node.
@@ -115,11 +119,43 @@ def encode(structure, tag):
     facts = []
     return facts
 
+def ask():
+    choice = input()
+    return choice == QUIT
+
+def chooseTag():
+    choice = input()
+    if choice in [POSITIVE, NEGATIVE]:
+        return choice
+    else:
+        return chooseTag()
+
+def tag(sample):
+    show(sample)
+    tag = chooseTag()
+    if tag == POSITIVE:
+        positive = [sample]
+        negative = []
+    if tag == NEGATIVE:
+        positive = []
+        negative = [sample]
+    return positive, negative
+
+def extend(theory, positive, negative):
+    # This should be the same as pipeline(),
+    # but adding the decoded positive and negative
+    # examples to their respective sorts
+    newTheory = ''
+    return newTheory
+
 # TODO: handle branching and unsatisfiable cores
 def induce(baseTheory, positive, negative, step=DEFAULT_STEP):
     
     currentTheory = baseTheory
     samples = []
+
+    positive = []
+    negative = []
     
     while not stop:
 
@@ -128,7 +164,7 @@ def induce(baseTheory, positive, negative, step=DEFAULT_STEP):
         for i in range(step):
             results = models(currentTheory)
             newSamples = [decode(model) for model in results]
-            newSamples = *samples
+            newSamples = *newSamples
             samples += newSamples
 
         for sample in newSamples:
