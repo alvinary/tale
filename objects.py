@@ -1,5 +1,6 @@
 NEWLINE = "\n"
 
+
 class BrokenPrecondition(Exception):
 
     def __init__(self, message, data={}):
@@ -39,7 +40,7 @@ def bort(vertex, left, right):
     elif len(leftSuccessors) == 0:
         raise BrokenPrecondition(
             f"No left successor found for vertex {vertex}")
-            
+
     if len(rightSuccessors) == 1:
         rightChild = rightSuccessors.pop()
     elif len(rightSuccessors) > 1:
@@ -51,11 +52,7 @@ def bort(vertex, left, right):
 
     leftRemainder, rightRemainder = remainder(vertex, left, right)
 
-    return Node(vertex,
-                leftChild,
-                rightChild,
-                leftRemainder,
-                rightRemainder)
+    return Node(vertex, leftChild, rightChild, leftRemainder, rightRemainder)
 
 
 class Node():
@@ -64,7 +61,7 @@ class Node():
         self.vertex = vertex
         self.left = bort(left, leftEdges, rightEdges)
         self.right = bort(right, leftEdges, rightEdges)
-        
+
     def show(self):
         return f"({self.left.show()} {self.right.show()})"
 
@@ -73,7 +70,7 @@ class Leaf():
 
     def __init__(self, leaf):
         self.leaf = leaf
-        
+
     def show(self):
         return self.leaf
 
@@ -81,7 +78,7 @@ class Leaf():
 def extract(literal):
     leftParen = literal.index("(")
     rightParen = literal.index(")")
-    pairSpan = literal[leftParen + 1: rightParen]
+    pairSpan = literal[leftParen + 1:rightParen]
     a, b = pairSpan.split(",")
     a, b = a.strip(), b.strip()
     return a, b
@@ -102,12 +99,18 @@ def getTree(model):
 
     isLeft = lambda s: s[0:5] == 'left('
     isRight = lambda s: s[0:6] == 'right('
-            
+
     leftCandidates = {literal for literal in model if 'left(' in literal}
     rightCandidates = {literal for literal in model if 'right(' in literal}
-    
-    leftEdges = {extract(literal) for literal in leftCandidates if isLeft(literal)}
-    rightEdges = {extract(literal) for literal in rightCandidates if isRight(literal)}
+
+    leftEdges = {
+        extract(literal)
+        for literal in leftCandidates if isLeft(literal)
+    }
+    rightEdges = {
+        extract(literal)
+        for literal in rightCandidates if isRight(literal)
+    }
 
     edges = leftEdges | rightEdges
     predecessors = {a for a, _ in edges}
@@ -124,7 +127,9 @@ def getTree(model):
         raise BrokenPrecondition(f"There is no root")
 
     if not rooted:
-        raise BrokenPrecondition(f"{edges} do not specify a tree - more than one root (check nodes {' '.join(roots)}).")
+        raise BrokenPrecondition(
+            f"{edges} do not specify a tree - more than one root (check nodes {' '.join(roots)})."
+        )
 
     acyclic = len(cycleVertices) == 0
 
@@ -138,6 +143,8 @@ def getTree(model):
     if isTree:
         root = roots.pop()
         return bort(root, leftEdges, rightEdges)
-        
+
     elif not acyclic:
-        raise BrokenPrecondition(f"{edges} do not specify a tree - there are cycles (check nodes {' '.join(cycleVertices)}).")
+        raise BrokenPrecondition(
+            f"{edges} do not specify a tree - there are cycles (check nodes {' '.join(cycleVertices)})."
+        )

@@ -32,16 +32,20 @@ class Log:
         if priority == self.level:
             self.data[field].append(data)
 
+
 defaultLogger = Log()
+
 
 # When unfolding a rule with variables
 class EmptySort(Exception):
     pass
 
+
 # In rules
 # In function declarations with let
 class UndefinedSort(Exception):
     pass
+
 
 # Undefined variables will always be treated as constants
 
@@ -49,9 +53,11 @@ class UndefinedSort(Exception):
 # (Even if it's just edit distance and the message is shown only
 # with a debugging flag)
 
+
 # When accessing const.fun
 class UndefinedFunction(Exception):
     pass
+
 
 def argumentParser():
     parser = argparse.ArgumentParser(description=DESCRIPTION, epilog=EPILOG)

@@ -6,6 +6,10 @@ from tatsu.ast import AST
 from tale.formulas import *
 from tale.embeddings import *
 
+import sys
+
+sys.setrecursionlimit(2000)
+
 listMap = lambda: defaultdict(lambda: [])
 
 grammar = ''' 
@@ -61,6 +65,8 @@ grammar = '''
     application = fun:name ;
     several = fun:name "." rest:functions ;
 
+    predicate = predicate:term "(" args:arguments ")" ;
+
     rule
         =
         | never
@@ -86,8 +92,6 @@ grammar = '''
 
     negative = 'not ' pred:predicate ;
 
-    predicate = predicate:term "(" args:arguments ")" ;
-
     atoms
         =
         | manyatoms
@@ -101,21 +105,19 @@ grammar = '''
     manyd = head:atom "v" tail:atomd ;
     lastd = end:atom ;
 
-    arguments =
-              | manya 
-              | lasta ;
-
     manya = head:term "," tail:arguments ;
     lasta = end:term ;
 
-    comparison = left:term op:operator right:term ;
-
-    operator = nequals | equals | get | ge ;
+    arguments = manya | lasta ;
 
     nequals = '!=' ;
     equals = '=' ;
     get = '<=' ;
     ge = '<' ;
+
+    operator = nequals | equals | get | ge ;
+
+    comparison = left:term op:operator right:term ;
 
     statement = cont:rule "." ;
 '''

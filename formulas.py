@@ -8,6 +8,14 @@ union = lambda x, y: x | y
 
 
 def reverseComparison(comparison):
+    '''
+    Input a string representing a comparison operator and 
+    return its negation
+    '''
+
+    # Since the list of comparison operators is fixed,
+    # this should be an enumeration.
+
     if comparison == '=':
         return '!='
     if comparison == '!=':
@@ -21,18 +29,35 @@ def reverseComparison(comparison):
     if comparison == '</':
         return '<'
 
+
 def isNegative(term):
+    '''
+    Input a Term object, and return True if its term
+    attribute starts with 'not '
+    '''
+
+    # This is not very clean
+
     if 'not ' in term.term:
         return term.term[0:5] == 'not '
     else:
         return False
 
+
 def reverseNot(term):
+    '''
+    Input a term object, and return another term object
+    representing its negation
+    '''
     if isNegative(term):
         positiveTerm = term.term[4:]
         return Term(positiveTerm, term.functions)
     else:
         return Term(f'not {term.term}', term.functions)
+
+
+# Maybe we should have two separate classes
+# (predicate terms and non-predicate terms)
 
 
 class Ok(Exception):
@@ -283,7 +308,8 @@ class Comparison:
         return [[index.getLiteral(self)]]
 
     def negate(self):
-        return Comparison(reverseComparison(self.comparison), self.left, self.right)
+        return Comparison(reverseComparison(self.comparison), self.left,
+                          self.right)
 
     def collect(self, index):
         variables = set()
