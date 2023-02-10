@@ -8,7 +8,7 @@ inventory = lambda : defaultdict(lambda : set())
     
 def textToRules(grammarText):
     rules = []
-    lines = [l.strip() for l in text.split("\n")]
+    lines = [l.strip() for l in grammarText.split("\n")]
     lines = [l for l in lines if l]
     for line in lines:
         newRules = lineToRules(line)
@@ -16,7 +16,7 @@ def textToRules(grammarText):
     return rules
     
 def lineToRules(line):
-    tokens, name = lineToTokens(line)
+    tokens, name = lineToParts(line)
     return tokensToRules(tokens, name)
 
 def lineToParts(line):
@@ -86,11 +86,11 @@ def naryRule(tokens, name):
         
         if len(tokens) == 1:
             right = tokens.pop(0)
-            newRules = binary(head, left, right, auxiliaryRight)
+            newRules = binaryRule(head, left, right, auxiliaryRight)
             rules += newRules
         
         else:
-            newRules = binary(head, left, auxiliaryRight, auxiliaryRight)
+            newRules = binaryRule(head, left, auxiliaryRight, auxiliaryRight)
             rules += newRules
             head = auxiliaryRight
             left = tokens.pop(0)
@@ -196,6 +196,7 @@ class Parse:
         self.parser = parser
         self.tokens = tokens
         self.unvisited = set()
+        self.added = set()
         self.endAt = inventory()
         self.beginAt = inventory()
         self.spans = inventory()
@@ -203,42 +204,59 @@ class Parse:
         self.readable = set()
         
     def execute(self):
+    
         for index, token in enumerate(self.tokens):
             self.addToken(index, token)
+            self.spans[index, index].add((token, index, index, TOKEN))
              
         while self.unvisited:
             current = self.unvisited.pop()
+            label, begin, end, action = current 
             self.trigger(current)
-            left = self.endAt[begin]
-            right = self.beginAt[end]
+            
+            left = set(self.endAt[begin-1])
             for other in left:
                 self.triggerPair(other, current)
+                
+            right = set(self.beginAt[end+1])
             for other in right:
                 self.triggerPair(current, other)
                  
         return self
+        
+    def trigger(self, branch):
+        branchLabel, begin, end, branchAction = branch
+        if (branchLabel) in self.parser.grammar.keys():
+            for pair in self.parser.grammar[branchLabel]:
+                label, action = pair
+                self.addSpan(label, begin, end, action)
+                self.spans[begin, end].add((label, begin, end, action))
+        else:
+            pass
                  
     def triggerPair(self, left, right):
         lLabel = left[0]
         rLabel = right[0]
         begin = left[1]
         end = right[2]
-        if (lLabel, rLabel) in self.parser.grammar:
+        if (lLabel, rLabel) in self.parser.grammar.keys():
             for pair in self.parser.grammar[(lLabel, rLabel)]:
                 label, action = pair
-                self.addSpan(label, begin, end, action)
+                head = label, begin, end, action
+                self.addSpan(*head)
+                self.spans[begin, end].add((head, left, right))
         else:
             pass
      
     def addSpan(self, label, begin, end, action):
-        tokenData = (index, index, token, TOKEN)
         spanData = (label, begin, end, action)
         self.endAt[end].add(spanData)
         self.beginAt[begin].add(spanData)
-        self.unvisited.add(spanData)
+        if spanData not in self.added:
+            self.unvisited.add(spanData)
+            self.added.add(spanData)
         spanContent = tuple(self.tokens[begin:end+1])
-        self.readable.add((token, spanContent))
-        self.spans[i, j].add(spanData)
+        self.readable.add((label, spanContent))
         
     def addToken(self, index, token):
         self.addSpan(token, index, index, TOKEN)
