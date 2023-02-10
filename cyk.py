@@ -20,20 +20,6 @@ def lineToRules(line):
     return tokensToRules(tokens, name)
 
 def lineToParts(line):
-
-    '''
-       Input a grammar line and return a (tokens, name) tuple.
-    
-       Grammar lines must have this 'shape':
-       
-       <Left hand side> -> <Right Hand Side> (<Rule identifier>)
-       
-       A -> B (Unary rule name)
-       A -> B C
-       A -> B [C] D [E]
-       
-    '''
-
     assert "->" in line and ')' in line and '(' in line # to be sure
     
     rparenIndex = -1 # Index of the last )
