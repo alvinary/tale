@@ -70,6 +70,7 @@ def test_cyk():
 
     for span in parse.readable:
         print(span)
+        ('NUMBER', ('-', '(', '5', '+', '4', ')', '+', '1'))
         
     assert ('NUMBER', tokens) in parse.readable
     assert ('NUMBER', tokens[7:]) in parse.readable
@@ -87,12 +88,12 @@ def test_semantics():
     parser = Parser(test_grammar, test_triggers)
     
     for r in parser.grammar:
-        print("Rule:", r, ":", grammar[r])
+        print("Rule:", r, ":", parser.grammar[r])
         
     print("")
         
     for a in parser.actions:
-        print("Action:", a, ":", actions[a])
+        print("Action:", a, ":", parser.actions[a])
         
     print("")
 
