@@ -183,13 +183,13 @@ class Parser:
         self.grammar = grammarFromRules(rules)
         self.actions = semantics(rules, actions)
         
-     def parse(self, tokens):
-         return Parse(tokens, self).execute()
+    def parse(self, tokens):
+        return Parse(tokens, self).execute()
          
-     def value(self, tokens):
-         parse = Parser(tokens, self).execute()
-         result = None
-         return result
+    def value(self, tokens):
+        parse = Parser(tokens, self).execute()
+        result = None
+        return result
         
 class Parse:
     def __init__(self, tokens, parser):
@@ -202,46 +202,44 @@ class Parse:
         
         self.readable = set()
         
-     def execute(self):
-         for index, token in enumerate(self.tokens):
-             self.addToken(index, token)
+    def execute(self):
+        for index, token in enumerate(self.tokens):
+            self.addToken(index, token)
              
-         while self.unvisited:
-             current = self.unvisited.pop()
-             self.trigger(current)
-             left = self.endAt[begin]
-             right = self.beginAt[end]
-             for other in left:
-                 self.triggerPair(other, current)
-             for other in right:
-                 self.triggerPair(current, other)
+        while self.unvisited:
+            current = self.unvisited.pop()
+            self.trigger(current)
+            left = self.endAt[begin]
+            right = self.beginAt[end]
+            for other in left:
+                self.triggerPair(other, current)
+            for other in right:
+                self.triggerPair(current, other)
                  
-         return self
+        return self
                  
-     def triggerPair(self, left, right):
-         lLabel = left[0]
-         rLabel = right[0]
-         begin = left[1]
-         end = right[2]
-         if (lLabel, rLabel) in self.parser.grammar:
-             for pair in self.parser.grammar[(lLabel, rLabel)]
-                 label, action = pair
-                 self.addSpan(label, begin, end, action)
-         else:
-             pass
+    def triggerPair(self, left, right):
+        lLabel = left[0]
+        rLabel = right[0]
+        begin = left[1]
+        end = right[2]
+        if (lLabel, rLabel) in self.parser.grammar:
+            for pair in self.parser.grammar[(lLabel, rLabel)]:
+                label, action = pair
+                self.addSpan(label, begin, end, action)
+        else:
+            pass
      
-     def addSpan(self, label, begin, end, action):
-         tokenData = (index, index, token, TOKEN)
-         spanData = (label, begin, end, action)
-         self.endAt[end].add(spanData)
-         self.beginAt[begin].add(spanData)
-         self.unvisited.add(spanData)
-         spanContent = tuple(self.tokens[begin:end+1])
-         self.readable.add((token, spanContent))
-         self.spans[i, j].add(spanData)
-         
-     def addToken(self, index, token):
-         self.addSpan(token, index, index, TOKEN)
-         
-    
+    def addSpan(self, label, begin, end, action):
+        tokenData = (index, index, token, TOKEN)
+        spanData = (label, begin, end, action)
+        self.endAt[end].add(spanData)
+        self.beginAt[begin].add(spanData)
+        self.unvisited.add(spanData)
+        spanContent = tuple(self.tokens[begin:end+1])
+        self.readable.add((token, spanContent))
+        self.spans[i, j].add(spanData)
+        
+    def addToken(self, index, token):
+        self.addSpan(token, index, index, TOKEN)
 
