@@ -1,6 +1,8 @@
 from tale.programs import *
 
 testProgram = '''
+-- This is a comment.
+-- This is a comment too.
 fill c 4 : const.
 var a, b : const.
 var F : fun.
@@ -9,6 +11,9 @@ let g : const -> const.
 let f : const -> const.
 let h : const -> const.
 let y : const, const -> const.
+
+-- Mind you, there
+-- are no block comments.
 
 let a.h = b.
 let a.g = a.
