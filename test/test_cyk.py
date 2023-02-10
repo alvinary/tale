@@ -64,11 +64,16 @@ test_grammar_triggers = {
 def test_cyk():
 
     tokens = "- ( 5 + 4 ) + 1".split()
+    tokens = tuple(tokens)
     
     parse = Parser(test_grammar, test_triggers).parse(tokens)
 
-    for span in parse.spans:
-        print(parse.spans[span])
+    for span in parse.readable:
+        print(span)
+        
+    assert ('NUMBER', tokens) in parse.readable
+    assert ('NUMBER', tokens[7:]) in parse.readable
+    assert ('NUMBER', tokens[1:6]) in parse.readable
         
 def test_grammar_to_rules():
     print('\nRules:\n')
