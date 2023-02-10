@@ -182,7 +182,6 @@ class Parse:
         self.parser = parser
         self.tokens = tokens
         self.unvisited = set()
-        self.added = set()
         self.endAt = inventory()
         self.beginAt = inventory()
         self.spans = inventory()
@@ -238,9 +237,7 @@ class Parse:
         spanData = (label, begin, end, action)
         self.endAt[end].add(spanData)
         self.beginAt[begin].add(spanData)
-        if spanData not in self.added:
-            self.unvisited.add(spanData)
-            self.added.add(spanData)
+        self.unvisited.add(spanData)
         spanContent = tuple(self.tokens[begin:end+1])
         self.readable.add((label, spanContent))
         
