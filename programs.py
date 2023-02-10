@@ -313,6 +313,9 @@ class ProgramSemantics:
 
 
 def parseProgram(text):
+    lines = text.split('\n')
+    lines = [l for l in lines if l[0:2] != "--"]
+    text = "\n".join(lines)
     parser = tatsu.compile(grammar)
     interpretation = ProgramSemantics()
     return parser.parse(text, semantics=interpretation)
