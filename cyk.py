@@ -236,7 +236,7 @@ class Parse:
          self.endAt[end].add(spanData)
          self.beginAt[begin].add(spanData)
          self.unvisited.add(spanData)
-         spanContent = self.tokens[begin:end+1]
+         spanContent = tuple(self.tokens[begin:end+1])
          self.readable.add((token, spanContent))
          self.spans[i, j].add(spanData)
          
