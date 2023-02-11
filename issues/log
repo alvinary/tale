@@ -167,3 +167,27 @@ OPTIMIZATION
 
 - Test cases (serious):
 	Synthesis of mapreduce programs
+
+SEMANTICS FOR FUNCTIONS
+
+(A more detailed note on a comment above, under MODELING)
+
+B.f : A
+    * create a sort A' with |A| fresh constants
+    * declare a function assign from A' to A
+    * state P(a'), assign (a', a) <-> P(a)
+    * state
+        R(a', b), assign (a', a) -> R (a, b)
+        R(a, b), assign (a', a) -> R (a', b) 
+        R(a, b'), assign (b', b) -> R (a, b) 
+        R(a, b), assign (b', b) -> R (a, b')
+        
+        (for n-ary relations this is the same. 
+        Since you do it for a variable at a time,
+        it should be linear)
+        
+    That way you can have functions without needing
+    to specify both variables, and that may reduce
+    the size of embeddings a lot.
+    
+    Is this enough? Check it when you have the time
