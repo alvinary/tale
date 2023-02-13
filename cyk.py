@@ -195,15 +195,15 @@ class Parser:
             self.values[leaf] = leaf[0] # The token
             
         if check and isUnary:
-            action = self.actions[head[3]]
+            _, action, arg = self.actions[head[3]]
             argument = self.values[branch]
-            self.values[head] = action(argument)
+            self.values[head] = action(arg(argument))
         
         if check and isBinary:
-            action = self.actions[head[3]]
+            _, action, args = self.actions[head[3]]
             left = self.values[left]
             right = self.values[right]
-            self.values[head] = action(left, right)
+            self.values[head] = action(args(left, right))
         
         # TODO: add error messages so this function
         # provides useful information when something
