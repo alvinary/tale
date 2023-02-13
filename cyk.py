@@ -175,6 +175,9 @@ class Parser:
         
     def setValue(self, span):
     
+        if span in self.values:
+            return
+    
         arguments = []
     
         if isLeaf:
@@ -203,10 +206,10 @@ class Parser:
             left = self.values[left]
             right = self.values[right]
             self.values[head] = action(left, right)
-            
-        # This is dangerously lacking in exception handling
         
-        # TODO: make informative error messages
+        # TODO: add error messages so this function
+        # provides useful information when something
+        # goes wrong, instead of failing silently
          
     def value(self, tokens):
         
