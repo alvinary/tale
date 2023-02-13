@@ -168,13 +168,84 @@ class Parser:
         rules = textToRules(grammar)
         self.grammar = grammarFromRules(rules)
         self.actions = semantics(rules, actions)
+        self.values = {}
         
     def parse(self, tokens):
         return Parse(tokens, self).execute()
+        
+    def setValue(self, span):
+    
+        arguments = []
+    
+        if isLeaf:
+            leaf = span
+            check = True # The token
+
+        if isUnary:
+            head, branch = span
+            check = branch in self.values
+
+        if isBinary:
+            head, left, right = span
+            check = left in self.values
+            check = check and right in self.values
+        
+        if check and isLeaf:
+            self.values[leaf] = leaf[0] # The token
+            
+        if check and isUnary:
+            action = self.actions[head[3]]
+            argument = self.values[branch]
+            self.values[head] = action(argument)
+        
+        if check and isBinary:
+            action = self.actions[head[3]]
+            left = self.values[left]
+            right = self.values[right]
+            self.values[head] = action(left, right)
+            
+        # This is dangerously lacking in exception handling
+        
+        # TODO: make informative error messages
          
     def value(self, tokens):
+        
         parse = Parser(tokens, self).execute()
-        result = None
+        
+        distances = set()
+
+        leaves = defaultdict(lambda: [])
+        binary = defaultdict(lambda: [])
+        unary = defaultdict(lambda: [])
+        
+        for span in parse.spans.keys():
+            distance = span[1] - span[0]
+            data = parse.spans[span]
+            for d in data:
+                if len(d) == 1:
+                    leaves[distance].append(d)
+                if len(d) == 2:
+                    unary[distance].append(d)
+                if len(d) == 3:
+                    binary[distance].append(d)    
+            distances.add(distance)
+            
+        for k in leaves:
+            for span in leaves[k]:
+                self.setValue(span)
+        
+        for k in sorted(distances):
+            for s in binary[k]:
+                for t in binary[k]:
+                    self.setValue(t)
+                    
+            for s in unary[k]:
+                for t in unary[k]:
+                    self.setValue(t)
+
+        full = (0, max(distances))
+        result = self.values[full]
+        
         return result
         
 class Parse:
@@ -216,8 +287,6 @@ class Parse:
                 label, action = pair
                 self.addSpan(label, begin, end, action)
                 self.spans[begin, end].add((label, begin, end, action))
-        else:
-            pass
                  
     def triggerPair(self, left, right):
         lLabel = left[0]
@@ -230,8 +299,6 @@ class Parse:
                 head = label, begin, end, action
                 self.addSpan(*head)
                 self.spans[begin, end].add((head, left, right))
-        else:
-            pass
      
     def addSpan(self, label, begin, end, action):
         spanData = (label, begin, end, action)
