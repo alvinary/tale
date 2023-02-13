@@ -191,3 +191,80 @@ B.f : A
     the size of embeddings a lot.
     
     Is this enough? Check it when you have the time
+
+PARSING AND EVALUATION
+
+- Ta dah! The parser evaluates and parses -((5 + 4) + 1)
+  and (-(5 + 4)) + 1.
+
+- However, we're missing some comfort features, and at
+  least two absolutely essential ones:
+
+  ESSENTIAL
+
+  * Rule precedence
+
+  * Error messages
+
+  COMFORT
+
+  * EBNF goodies, like A -> B* or A -> <B, but n times>
+
+  * Defining semantics directly in the grammar, instead of
+    using rule names and providing a separate action map.
+    Something like a [+] b : lambda x, y : x + y
+    (named arguments and 'where' clauses seems like a lot).
+
+  * Token sets and disjunction.
+
+    Currently you have to write A -> a1, A -> a2, ..., A -> an,
+    instead of the infinitely more reasonable A -> a1 | a2 | a3 | ... | an.
+
+    It would be nice to have some predefined productions, like
+    for ascii, digits, alpha, and so on.
+    A -> {a b c d e f g h} could be used instead of |,
+    but deciding on sound syntax and semantics is a delicate task.
+    
+    For instance, unrestricted composition licenses
+    stuff like A -> {B C D E} A {G D A} | A A.
+    Do we want that?
+
+    In this case 'unfolding' to vanilla rules is simple, 
+    
+    A -> A A
+    A -> B C G
+    A -> B C D
+    A -> B C A
+    A -> C A G
+        ...
+    A -> S_i A T_j
+
+    (and so on, with our very well known and loved cartesian
+    product...), but nesting can make things blow up.
+
+  * Whitespace handling
+
+  * Allowing the use of preprocessors / tokenizer
+
+- We should include a check for sources of undefned behavior,
+  so as to directly disallow them, and good error messages.
+
+  Cycles in the graph of unary productions can be easily
+  detected, and are the one kind of productions that make
+  it possible to write semantics with nonterminating evaluation,
+  but I'm not sure what's a sound criterion for allowing and
+  disallowing cycles when binary productions are involved.
+
+  A -> B
+  B -> A
+
+- If you feel like wasting your entire life on this, maybe
+  prove some relation between LL(k) grammars and the worst
+  case complexity of parsing.
+ 
+  The worst worst you get is cubic (the parser is CYK, but
+  instead of blindly cycling through i, j, k, it adds new
+  nodes to a queue, and checks their neighbors for feasible
+  rule applications. So amortized complexity is lower or
+  equal than that of plain CYK, but we don't know how much).
+
