@@ -94,8 +94,16 @@ def test_semantics():
         
     for a in parser.actions:
         print("Action:", a, ":", parser.actions[a])
-        
-    print("")
+
+def test_value():
+    tokens = "- ( 5 + 4 ) + 1".split()
+    tokens = tuple(tokens)
+    
+    parser = Parser(test_grammar, test_triggers)
+    value = parser.value(tokens)
+    
+    assert (value == -8)
+    
 
 test_grammar_to_rules()    
 test_cyk()
