@@ -97,4 +97,3 @@ def test_pipeline():
         for a in sorted(list(model)):
             print(a)
         print("")
-    assert False

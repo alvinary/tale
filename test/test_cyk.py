@@ -96,13 +96,21 @@ def test_semantics():
 
 def test_value():
 
-    tokens = "- ( 5 + 4 ) + 1".split()
+    tokens = "( - ( 5 + 4 ) ) + 1".split()
     tokens = tuple(tokens)
     
     parser = Parser(test_grammar, test_triggers)
     values = parser.value(tokens)
     
     assert -8 in values
+    
+    tokens = "- ( ( 5 + 4 ) + 1 )".split()
+    tokens = tuple(tokens)
+    
+    parser = Parser(test_grammar, test_triggers)
+    values = parser.value(tokens)
+    
+    assert -10 in values
     
 
 test_grammar_to_rules()    
