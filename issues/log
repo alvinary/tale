@@ -195,7 +195,7 @@ B.f : A
 PARSING AND EVALUATION
 
 - Ta dah! The parser evaluates and parses -((5 + 4) + 1)
-  and (-(5 + 4)) + 1.
+  and (-(5 + 4)) + 1
 
 - However, we're missing some comfort features, and at
   least two absolutely essential ones:
@@ -212,7 +212,7 @@ PARSING AND EVALUATION
 
   * Defining semantics directly in the grammar, instead of
     using rule names and providing a separate action map.
-    Something like a [+] b : lambda x, y : x + y
+    Something like a [+] b := lambda x, y : x + y
     (named arguments and 'where' clauses seems like a lot).
 
   * Token sets and disjunction.
@@ -244,9 +244,9 @@ PARSING AND EVALUATION
 
   * Whitespace handling
 
-  * Allowing the use of preprocessors / tokenizer
+  * Allowing the use of preprocessors / tokenizers
 
-- We should include a check for sources of undefned behavior,
+- We should include a check for sources of undefined behavior,
   so as to directly disallow them, and good error messages.
 
   Cycles in the graph of unary productions can be easily
