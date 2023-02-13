@@ -178,8 +178,6 @@ class Parser:
         if span in self.values:
             return
     
-        arguments = []
-    
         if isLeaf:
             leaf = span
             check = True # The token
