@@ -113,7 +113,7 @@ def isBinary(rhs):
 
 def semantics(grammar, triggers):
 
-    encapsulate = lambda x : [x]
+    encapsulate = lambda x : x
     ignoreLeft = lambda x, y : y
     ignoreRight = lambda x, y : x
     ignoreBoth = lambda x, y : []
@@ -124,7 +124,6 @@ def semantics(grammar, triggers):
     for rule in grammar:
         
         rhs, lhs = rule
-        # You should use the name of the rule, not the label of the head
         head, actionName = lhs
 
         if isBinary(rhs):
@@ -157,7 +156,7 @@ def semantics(grammar, triggers):
             if mute:
                 argumentAction = lambda x: []
             else:
-                argumentAction = lambda x: [x]
+                argumentAction = lambda x: x
 
             actions[actionName] = (head, semanticAction, argumentAction)
 
@@ -175,11 +174,15 @@ class Parser:
         
     def setValue(self, span):
     
-        if span in self.values:
+        if span[0] in self.values: # Value is already stored
             return
+            
+        isLeaf = len(span) == 1
+        isUnary = len(span) == 2
+        isBinary = len(span) == 3
     
         if isLeaf:
-            leaf = span
+            leaf = span[0]
             check = True # The token
 
         if isUnary:
@@ -211,7 +214,7 @@ class Parser:
          
     def value(self, tokens):
         
-        parse = Parser(tokens, self).execute()
+        parse = self.parse(tokens)
         
         distances = set()
 
@@ -231,23 +234,39 @@ class Parser:
                     binary[distance].append(d)    
             distances.add(distance)
             
-        for k in leaves:
-            for span in leaves[k]:
-                self.setValue(span)
+        for span in leaves[0]:
+            self.setValue(span)
+            print(f"leaf {str(span)} has value {str(self.values[span[0]])}")
         
         for k in sorted(distances):
             for s in binary[k]:
                 for t in binary[k]:
                     self.setValue(t)
+            
+            for s in binary[k]:
+                head, _, _ = s
+                print(f"binary {str(head)} has value {str(self.values[head])}")
                     
             for s in unary[k]:
                 for t in unary[k]:
                     self.setValue(t)
+                    
+            for s in unary[k]:
+                head, _ = s
+                print(f"unary {str(head)} has value {str(self.values[head])}")
 
-        full = (0, max(distances))
-        result = self.values[full]
+        begin = 0
+        end = max(distances)
+                
+        print("|K| : ", len(self.values.keys()))
         
-        return result
+        fullSpans = [span for span in self.values if span[1] == begin and span[2] == end]
+        for k in self.values:
+            print('aber...', k, self.values[k])
+            
+        results = [self.values[k] for k in fullSpans]
+        
+        return results
         
 class Parse:
     def __init__(self, tokens, parser):
@@ -264,7 +283,7 @@ class Parse:
     
         for index, token in enumerate(self.tokens):
             self.addToken(index, token)
-            self.spans[index, index].add((token, index, index, TOKEN))
+            self.spans[index, index].add(((token, index, index, TOKEN),))
              
         while self.unvisited:
             current = self.unvisited.pop()
@@ -286,8 +305,9 @@ class Parse:
         if (branchLabel) in self.parser.grammar.keys():
             for pair in self.parser.grammar[branchLabel]:
                 label, action = pair
+                head = (label, begin, end, action)
                 self.addSpan(label, begin, end, action)
-                self.spans[begin, end].add((label, begin, end, action))
+                self.spans[begin, end].add((head, branch))
                  
     def triggerPair(self, left, right):
         lLabel = left[0]
@@ -311,4 +331,4 @@ class Parse:
         
     def addToken(self, index, token):
         self.addSpan(token, index, index, TOKEN)
-
+        

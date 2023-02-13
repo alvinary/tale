@@ -43,7 +43,7 @@ test_triggers = {
         'Times symbol' : identity,
         'Left parenthesis' : identity,
         'Right parenthesis' : identity,
-        TOKEN : identity
+        TOKEN : (lambda x: [x])
         }
 
 test_grammar_triggers = {
@@ -69,8 +69,7 @@ def test_cyk():
     parse = Parser(test_grammar, test_triggers).parse(tokens)
 
     for span in parse.readable:
-        print(span)
-        ('NUMBER', ('-', '(', '5', '+', '4', ')', '+', '1'))
+        print('span:', span)
         
     assert ('NUMBER', tokens) in parse.readable
     assert ('NUMBER', tokens[7:]) in parse.readable
@@ -96,13 +95,14 @@ def test_semantics():
         print("Action:", a, ":", parser.actions[a])
 
 def test_value():
+
     tokens = "- ( 5 + 4 ) + 1".split()
     tokens = tuple(tokens)
     
     parser = Parser(test_grammar, test_triggers)
-    value = parser.value(tokens)
+    values = parser.value(tokens)
     
-    assert (value == -8)
+    assert -8 in values
     
 
 test_grammar_to_rules()    
