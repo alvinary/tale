@@ -62,7 +62,6 @@ class UndefinedFunction(Exception):
 def argumentParser():
     parser = argparse.ArgumentParser(description=DESCRIPTION, epilog=EPILOG)
     parser.add_argument(
-        '-i',
         dest='inputProgram',
         default="",
         help='The input logic program, which should be a text file.')
@@ -75,6 +74,10 @@ def argumentParser():
                         dest='verbosityFlag',
                         default=0,
                         help='Verbosity level.')
+    parser.add_argument('-p',
+                        dest='predicates',
+                        nargs="+",
+                        type=str)
     return parser
 
 
@@ -102,8 +105,13 @@ def showModel(model, index):
         for literal in model if literal > 0
     }
 
+def atomRelation(atom):
+    endIndex = atom.find('(')
+    return atom[0:endIndex].strip()
 
-def printModel(model):
+def printModel(model, filters=set()):
+    if filters:
+        model = [l for l in model if atomRelation(l) in filters]
     print("\n".join(sorted(list(model))))
     print("\n")
 
@@ -192,6 +200,7 @@ if __name__ == '__main__':
     chatty = arguments["verbosityFlag"]
     program = arguments["inputProgram"]
     size = arguments["requestedModels"]
+    included = arguments["predicates"]
 
     programText = ""
     with open(program) as programFile:
@@ -201,6 +210,7 @@ if __name__ == '__main__':
     size = int(size)
     chatty = int(chatty)
     count = 1
+    included = set(included)
 
     models = pipeline(programText, logLevel=chatty)
 
@@ -214,8 +224,8 @@ if __name__ == '__main__':
         print("")
 
     for i, m in enumerate(iteratorslice(models, size)):
-        print(f"Model {i}:")
-        printModel(m)
+        print(f"Model {i + 1}:")
+        printModel(m, filters=included)
         print("\n\n")
 
     for key in defaultLogger.data.keys():
