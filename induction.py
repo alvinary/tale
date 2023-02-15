@@ -159,7 +159,7 @@ def induce(baseTheory, positive, negative, step=DEFAULT_STEP):
     
     while not stop:
 
-        extend(currentTheory, positive, negative)
+        currentTheory = extend(currentTheory, positive, negative)
         
         for i in range(step):
             results = models(currentTheory)
@@ -174,4 +174,4 @@ def induce(baseTheory, positive, negative, step=DEFAULT_STEP):
     
         stop = ask()
 
-    return currentTheory, samples
+    return currentTheory, positive, negative
