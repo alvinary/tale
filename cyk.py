@@ -3,6 +3,8 @@ from collections import defaultdict
 PUNCTUATION = set("; -> != = ( ) , <".split())
 TOKEN = 'token label'
 MUTE = 'mute'
+LBRACE = '{'
+RBRACE = '}'
 
 inventory = lambda : defaultdict(lambda : set())
     
@@ -40,6 +42,15 @@ def tokensToRules(tokens, name):
        Input a sequence of tokens and a rule
        name and return the corresponding rule.
     '''
+    
+    if tokens[1] == LBRACE and tokens[-1] == RBRACE:
+        rules = []
+        head = tokens[0]
+        members = tokens[2:-1] # ignore '{' and '}'
+        members = [s.strip() for s in ''.join(members).split(',')] # Remove commas
+        for leaf in members[1:]:
+            rules += unaryRule(head, leaf, name)
+        return rules
 
     if len(tokens) == 2:
         head, branch = tuple(tokens)
