@@ -224,7 +224,7 @@ if __name__ == '__main__':
         print("")
 
     for i, m in enumerate(iteratorslice(models, size)):
-        print(f"Model {i + 1}:")
+        print(f"Model {i + 1}:\n")
         printModel(m, filters=included)
         print("\n\n")
 
