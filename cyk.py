@@ -247,7 +247,6 @@ class Parser:
             
         for span in leaves[0]:
             self.setValue(span)
-            print(f"leaf {str(span)} has value {str(self.values[span[0]])}")
         
         for k in sorted(distances):
             for s in binary[k]:
@@ -256,7 +255,6 @@ class Parser:
             
             for s in binary[k]:
                 head, _, _ = s
-                print(f"binary {str(head)} has value {str(self.values[head])}")
                     
             for s in unary[k]:
                 for t in unary[k]:
@@ -264,16 +262,11 @@ class Parser:
                     
             for s in unary[k]:
                 head, _ = s
-                print(f"unary {str(head)} has value {str(self.values[head])}")
 
         begin = 0
         end = max(distances)
-                
-        print("|K| : ", len(self.values.keys()))
         
         fullSpans = [span for span in self.values if span[1] == begin and span[2] == end]
-        for k in self.values:
-            print('aber...', k, self.values[k])
             
         results = [self.values[k] for k in fullSpans]
         
