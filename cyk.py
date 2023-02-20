@@ -5,13 +5,41 @@ TOKEN = 'token label'
 MUTE = 'mute'
 LBRACE = '{'
 RBRACE = '}'
+NEWLINE = '\n'
+COMMENT = '--'
 
 inventory = lambda : defaultdict(lambda : set())
-    
+
+def getLines(text):
+    # The first line should be 'separator <separator>'
+    # This simply takes the first line, splits it at whitespace,
+    # and returns whatever it finds after the first token
+    firstLine = [l for l in text.split('\n') if l][0]
+    lines = text.split('\n')
+    lines = [line for line in lines if line and notComment(line)]
+    lines = lines[1:]
+    return firstLine.split()[1].strip(), lines
+
+def textToActions(grammarText):
+    actions = {}
+    separator, lines = getLines(grammarText)
+    lines = [l.split(separator)[1].strip() for l in lines]
+    for index, line in enumerate(lines):
+        actions[str(index)] = (lambda : eval('lambda ' + line)) ()
+    return actions
+
+def notComment(line):
+    return COMMENT != line[:len(COMMENT)]
+
 def textToRules(grammarText):
+    # The first line should be separator <separator>
+    separator, lines = getLines(grammarText)
     rules = []
-    lines = [l.strip() for l in grammarText.split("\n")]
-    lines = [l for l in lines if l]
+    lines = [l.split(separator)[0].strip() for l in lines]
+    lines = [l + f' ({i})' for i, l in enumerate(lines)]
+    print('LINES')
+    for line in lines:
+        print(line)
     for line in lines:
         newRules = lineToRules(line)
         rules += newRules
@@ -22,6 +50,7 @@ def lineToRules(line):
     return tokensToRules(tokens, name)
 
 def lineToParts(line):
+    print('la linea...', line)
     assert "->" in line and ')' in line and '(' in line # to be sure
     
     rparenIndex = -1 # Index of the last )
@@ -174,8 +203,10 @@ def semantics(grammar, triggers):
     return actions
     
 class Parser:
-    def __init__(self, grammar, actions):
+    def __init__(self, grammar):
         rules = textToRules(grammar)
+        actions = textToActions(grammar)
+        actions[TOKEN] = lambda x : [x]
         self.grammar = grammarFromRules(rules)
         self.actions = semantics(rules, actions)
         self.values = {}
@@ -335,4 +366,8 @@ class Parse:
         
     def addToken(self, index, token):
         self.addSpan(token, index, index, TOKEN)
-        
+
+# Where... 
+# TOKEN_name TOKEN_name
+# (y tenes un map que guarda eso, y la funcion usa el map de kwargs)
+# (y si pones TOKEN_name:, lo agrega a la coleccion del kwarg)
