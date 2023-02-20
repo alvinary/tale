@@ -1,41 +1,24 @@
 from tale.cyk import *
 
 test_grammar = '''
-    NUMBER -> DIGITS                           (n-ary number)
-    NUMBER -> [LPAREN] NUMBER [RPAREN]         (Parenthesis)
-    NUMBER -> NUMBER [PLUS] NUMBER             (Addition)
-    NUMBER -> NUMBER [MINUS] NUMBER            (Substraction)
-    NUMBER -> [MINUS] NUMBER                   (Additive inverse)
-    NUMBER -> NUMBER [TIMES] NUMBER            (Multiplication)
-    LPAREN -> (                                (Left parenthesis)
-    RPAREN -> )                                (Right parenthesis)
-    DIGIT -> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }  (Decimal digit)
-    DIGITS -> DIGIT                            (Single digit)
-    DIGITS -> DIGIT DIGITS                     (Several digits)
-    PLUS -> +                                  (Plus symbol)
-    MINUS -> -                                 (Minus symbol)
-    TIMES -> *                                 (Times symbol)
+    evaluate :=
+    NUMBER -> DIGITS                           := x : int(x)
+    NUMBER -> [LPAREN] NUMBER [RPAREN]         := x : x
+    NUMBER -> NUMBER [PLUS] NUMBER             := x, y : x + y
+    NUMBER -> NUMBER [MINUS] NUMBER            := x, y : x - y
+    NUMBER -> [MINUS] NUMBER                   := x : -x
+    NUMBER -> NUMBER [TIMES] NUMBER            := x, y : x * y
+    LPAREN -> (                                := x : x
+    RPAREN -> )                                := x : x
+    DIGIT -> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }  := x : x
+    DIGITS -> DIGIT                            := x : x
+    DIGITS -> DIGIT DIGITS                     := x, y : x + y
+    PLUS -> +                                  := x : x
+    MINUS -> -                                 := x : x
+    TIMES -> *                                 := x : x
 '''
 
 identity = lambda x: x
-
-test_triggers = {
-        'n-ary number' : lambda x: int(x),
-        'Parenthesis' : identity,
-        'Addition' : lambda x, y: x + y,
-        'Substraction' : lambda x, y: x - y,
-        'Additive inverse' : lambda x: -x,
-        'Multiplication' : lambda x, y: x * y,
-        'Decimal digit' : identity,
-        'Single digit' : identity,
-        'Several digits' : lambda x, y: x + y,
-        'Plus symbol' : identity,
-        'Minus symbol' : identity,
-        'Times symbol' : identity,
-        'Left parenthesis' : identity,
-        'Right parenthesis' : identity,
-        TOKEN : (lambda x: [x])
-        }
 
 test_grammar_triggers = {
     '5' : [("NUMBER", "Single digit")],
@@ -57,7 +40,7 @@ def test_cyk():
     tokens = "- ( 5 + 4 ) + 1".split()
     tokens = tuple(tokens)
     
-    parse = Parser(test_grammar, test_triggers).parse(tokens)
+    parse = Parser(test_grammar).parse(tokens)
 
     for span in parse.readable:
         print('span:', span)
@@ -75,7 +58,7 @@ def test_grammar_to_rules():
     
 def test_semantics():
 
-    parser = Parser(test_grammar, test_triggers)
+    parser = Parser(test_grammar)
     
     for r in parser.grammar:
         print("Rule:", r, ":", parser.grammar[r])
@@ -90,7 +73,7 @@ def test_value():
     tokens = "( - ( 5 + 4 ) ) + 1".split()
     tokens = tuple(tokens)
     
-    parser = Parser(test_grammar, test_triggers)
+    parser = Parser(test_grammar)
     values = parser.value(tokens)
     
     assert -8 in values
@@ -98,7 +81,7 @@ def test_value():
     tokens = "- ( ( 5 + 4 ) + 1 )".split()
     tokens = tuple(tokens)
     
-    parser = Parser(test_grammar, test_triggers)
+    parser = Parser(test_grammar)
     values = parser.value(tokens)
     
     assert -10 in values
