@@ -268,3 +268,48 @@ PARSING AND EVALUATION
   rule applications. So amortized complexity is lower or
   equal than that of plain CYK, but we don't know how much).
 
+PARAMETRIC CONTEXT-FREE GRAMMARS
+
+* A (n - 1) -> A (n) B (n)
+
+- Parsing is easy (you check if the parameters in a pair
+  of neighboring spans are such that they match some rule,
+  and set head parameters using some f)
+
+- This allows you to handle indentation and similar
+  properties without having to change things much.
+
+- Presentation will be a bit non-declarative, but oh well,
+  'users are not morons'
+
+MODELING IDIOMS
+
+Abstract predicates (similar to alloy's abstract sigs)
+
+- Suppose you want to say in the next state p(a), but p
+  must be one of p1, p2 and p3, not just p.
+  This is p <-> p1 v p2 v p3 and umhh, -p1, -p2, -p3 -> -p,
+  but what is p <-> p1 v p2 v p3 in horn clauses?
+  
+  p, -p1, -p2 -> p3
+  p, -p2, -p3 -> p1
+  p, -p1, -p3 -> p2
+
+  This could be made into something unfoldable
+
+  Humhh, soo
+  what is p1 v p2 v p3 <-> q1 v q2 v q3?
+
+  -p1, -p2, -p3 -> -q1, -q2, -q3
+  -q1, -q2, -q3 -> -p1, -p2, -p3
+  
+  -p1, -p2, qi -> p3 (e t c . . . )
+
+    /\         /\
+   /  \       /  \   -pi /\ qj -> pk
+  j: 1..|q|  i != k
+
+  Is there something missing?
+  ...
+
+- 
