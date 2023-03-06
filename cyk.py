@@ -7,20 +7,36 @@ LBRACE = '{'
 RBRACE = '}'
 NEWLINE = '\n'
 COMMENT = '--'
+UNORDERED = 1.0
 
 inventory = lambda : defaultdict(lambda : set())
 
 def getLines(text):
-    # The first line should be 'separator <separator>'
+    # The first line should be '<separator> <precedence>'
     # This simply takes the first line, splits it at whitespace,
     # and returns whatever it finds after the first token
     firstLine = [l for l in text.split('\n') if l][0]
     lines = text.split('\n')
     lines = [line for line in lines if line and notComment(line)]
     lines = lines[1:]
-    return firstLine.split()[1].strip(), lines
+    
+    evaluate = firstLine.split()[0].strip()
+    precedence = firstLine.split()[1].strip()
+    
+    return evaluate, precedence, lines
+    
+def linesToPrecedence(lines, separator, precedence):
+    order = {}
+    for index, line in enumerate(lines):
+        if precedence in line:
+            orderValues = [t for t in line.split() if t.startswith(precedence)]
+            orderValue = float(orderValues[0].replace(precedence, ""))
+            order[str(index)] = orderValue
+        else:
+            order[str(index)] = UNORDERED
+    return order
 
-def linesToActions(lines, separator):
+def linesToActions(lines, separator, precedence):
     actions = {}
     lines = [l.split(separator)[1].strip() for l in lines]
     for index, line in enumerate(lines):
@@ -29,11 +45,16 @@ def linesToActions(lines, separator):
 
 def notComment(line):
     return COMMENT != line[:len(COMMENT)]
-
-def linesToRules(lines, separator):
+    
+def removePrecedence(line, precedence):
+    if precedence not in line:
+        return line
+    return " ".join([t for t in line.split() if not t.startswith(precedence)])
+    
+def linesToRules(lines, separator, precedence):
     # The first line should be separator <separator>
     rules = []
-    lines = [l.split(separator)[0].strip() for l in lines]
+    lines = [removePrecedence(l, precedence).split(separator)[0].strip() for l in lines]
     lines = [l + f' ({i})' for i, l in enumerate(lines)]
     print('LINES')
     for line in lines:
@@ -201,13 +222,19 @@ def semantics(grammar, triggers):
     return actions
     
 class Parser:
-    def __init__(self, grammar):
-        separator, lines = getLines(grammar)
-        rules = linesToRules(lines, separator)
-        actions = linesToActions(lines, separator)
+    def __init__(self, grammar):    
+        separator, precedence, lines = getLines(grammar)
+    
+        rules = linesToRules(lines, separator, precedence)
+        actions = linesToActions(lines, separator, precedence)
+        order = linesToPrecedence(lines, separator, precedence)
+        
         actions[TOKEN] = lambda x : [x]
+        
+        self.precedence = order
         self.grammar = grammarFromRules(rules)
         self.actions = semantics(rules, actions)
+        
         self.values = {}
         
     def parse(self, tokens):
