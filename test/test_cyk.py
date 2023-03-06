@@ -51,7 +51,8 @@ def test_cyk():
         
 def test_grammar_to_rules():
     print('\nRules:\n')
-    rules = textToRules(test_grammar)
+    sep, lines = getLines(test_grammar)
+    rules = linesToRules(lines, sep)
     for rule in rules:
         print(rule)
     print("")

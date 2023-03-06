@@ -20,9 +20,8 @@ def getLines(text):
     lines = lines[1:]
     return firstLine.split()[1].strip(), lines
 
-def textToActions(grammarText):
+def linesToActions(lines, separator):
     actions = {}
-    separator, lines = getLines(grammarText)
     lines = [l.split(separator)[1].strip() for l in lines]
     for index, line in enumerate(lines):
         actions[str(index)] = (lambda : eval('lambda ' + line)) ()
@@ -31,9 +30,8 @@ def textToActions(grammarText):
 def notComment(line):
     return COMMENT != line[:len(COMMENT)]
 
-def textToRules(grammarText):
+def linesToRules(lines, separator):
     # The first line should be separator <separator>
-    separator, lines = getLines(grammarText)
     rules = []
     lines = [l.split(separator)[0].strip() for l in lines]
     lines = [l + f' ({i})' for i, l in enumerate(lines)]
@@ -204,8 +202,9 @@ def semantics(grammar, triggers):
     
 class Parser:
     def __init__(self, grammar):
-        rules = textToRules(grammar)
-        actions = textToActions(grammar)
+        separator, lines = getLines(grammar)
+        rules = linesToRules(lines, separator)
+        actions = linesToActions(lines, separator)
         actions[TOKEN] = lambda x : [x]
         self.grammar = grammarFromRules(rules)
         self.actions = semantics(rules, actions)
