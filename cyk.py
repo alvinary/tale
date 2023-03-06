@@ -56,9 +56,6 @@ def linesToRules(lines, separator, precedence):
     rules = []
     lines = [removePrecedence(l, precedence).split(separator)[0].strip() for l in lines]
     lines = [l + f' ({i})' for i, l in enumerate(lines)]
-    print('LINES')
-    for line in lines:
-        print(line)
     for line in lines:
         newRules = lineToRules(line)
         rules += newRules
