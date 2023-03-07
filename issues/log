@@ -268,6 +268,39 @@ PARSING AND EVALUATION
   rule applications. So amortized complexity is lower or
   equal than that of plain CYK, but we don't know how much).
 
+- When is precedence necessary?
+
+  a + bc is either (a + b)c or a + (bc), the intended reading.
+
+  So it is necessary to override a reading when it overlaps with
+  a reading of higher priority -
+  
+  a + b c
+  _____ 
+      ___
+
+  so we may get rid of all spans for the same.
+  Is that criterion enough? I never know ´_`
+
+  In any case, when you finish a parse, you can prune it,
+  and remove all branches having such overlap, and all
+  nodes depending on them.
+
+  That should be easy to do, provided spans[i, j] is annotated
+  with its priority level
+
+  That is...
+
+  ```
+  for index, token in tokens:
+      for label in labels:
+          conflicts = sorted(overlap(spans, index, label), key=getPrecedence)
+          # cut and leave the prefix up to the second highest precedence value
+  ```   
+
+  since every span data item should have a priority, it could
+  now be the first component.
+
 PARAMETRIC CONTEXT-FREE GRAMMARS
 
 * A (n - 1) -> A (n) B (n)
