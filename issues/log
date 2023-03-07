@@ -298,6 +298,15 @@ PARSING AND EVALUATION
       for label in labels:
           conflicts = sorted(overlap(spans, index, label), key=getPrecedence)
           # cut and leave the prefix up to the second highest precedence value
+          stay, leave = ?(conflicts)
+          remove |= leave
+
+  
+  for key in spans.pairs():
+      if remove & set(spans[key]):
+          remove.add(spans[key])
+
+  spans = spans - remove # so to speak
   ```   
 
   since every span data item should have a priority, it could
@@ -347,4 +356,9 @@ Abstract predicates (similar to alloy's abstract sigs)
   Is there something missing?
   ...
 
-- 
+TODOS
+
+* Check equality of a.f with assign
+* Check orders with levels : A -> index and r(a, b), a.index > b.index => False
+* DAGS
+* Arithmetic (parse the arithmetic file with the new parser) 
