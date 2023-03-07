@@ -268,7 +268,9 @@ PARSING AND EVALUATION
   rule applications. So amortized complexity is lower or
   equal than that of plain CYK, but we don't know how much).
 
-- When is precedence necessary?
+  PRECEDENCE
+
+  * When is precedence necessary?
 
   a + bc is either (a + b)c or a + (bc), the intended reading.
 
