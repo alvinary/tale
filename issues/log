@@ -21,6 +21,10 @@ GRID
   worked, so we should try that again (maybe using some of the
   same functions for trees).
 
+- This might have been superseded by 'functions plus levels'.
+  Obviousy checking specifications with procedural tests is
+  still a useful approach. p(x) <=> f(g(x)) = True, etc-
+
 FUNCTIONS
 
 - I got stuck with the debugging part (is the logic program
@@ -61,6 +65,11 @@ The current interface does not let you use pysat's 'solve with'
 temporarily add the literals in L to it. Give me just one model, then
 forget'). I don't think pysat lets you iterate over more than one model
 that way.
+
+SOLVING
+
+- Solve an instance with respect to a background theory (you unfold
+  all general facts once, and add instance facts with solve_with)
 
 MODELING
 
@@ -300,13 +309,21 @@ PARSING AND EVALUATION
           # cut and leave the prefix up to the second highest precedence value
           stay, leave = ?(conflicts)
           remove |= leave
-
   
   for key in spans.pairs():
       if remove & set(spans[key]):
           remove.add(spans[key])
 
   spans = spans - remove # so to speak
+  ```
+
+  ```
+  def overlap(i, j, k, l):
+      end = max(j, l)
+      if end == j:
+          return i <= l
+      if end == l:
+          return k <= j
   ```   
 
   since every span data item should have a priority, it could
