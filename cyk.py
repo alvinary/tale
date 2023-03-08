@@ -218,6 +218,13 @@ def semantics(grammar, triggers):
 
     return actions
     
+def overlap(i, j, k, l):
+    end = max(j, l)
+    if end == j:
+        return i <= l
+    if end == l:
+        return k <= j
+    
 class Parser:
     def __init__(self, grammar):    
         separator, precedence, lines = getLines(grammar)
@@ -355,6 +362,8 @@ class Parse:
             right = set(self.beginAt[end+1])
             for other in right:
                 self.triggerPair(current, other)
+                
+        self.prune()
                  
         return self
         
@@ -389,6 +398,9 @@ class Parse:
         
     def addToken(self, index, token):
         self.addSpan(token, index, index, TOKEN)
+        
+    def prune(self):
+        pass
 
 # Where... 
 # TOKEN_name TOKEN_name
