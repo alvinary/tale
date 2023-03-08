@@ -1,4 +1,4 @@
-### EMBEDDING
+### EMBEDDINGS
 
 - When you declare a function f with let, but then add some other
   rule (like p x y -> f x y), f ceases to behave like a function.
@@ -66,12 +66,12 @@ temporarily add the literals in L to it. Give me just one model, then
 forget'). I don't think pysat lets you iterate over more than one model
 that way.
 
-###SOLVING
+### SOLVING
 
 - Solve an instance with respect to a background theory (you unfold
   all general facts once, and add instance facts with solve_with)
 
-###MODELING
+### MODELING
 
 - The relational specification for tiling / 2D string parsing is
   still very sketchy. Using a leveled DAG looks promising, as well
@@ -132,7 +132,7 @@ that way.
   with (g.next, b.next) -> False.
   ```
 
-###ARITHMETIC
+### ARITHMETIC
 
 - Addition is straightforward to model with carries and 'bitwise logic',
   but other operations are not that straightforward, so it is best to
@@ -159,7 +159,7 @@ that way.
   But factorization is not straightforward, so the best thing
   is to implement division and substraction as separate operations.
 
-OPTIMIZATION
+### OPTIMIZATION
 
 - Define a feasible region
 - Define criteria for sufficiency
@@ -181,7 +181,7 @@ OPTIMIZATION
 - Test cases (serious):
 	Synthesis of mapreduce programs
 
-###SEMANTICS FOR FUNCTIONS
+### SEMANTICS FOR FUNCTIONS
 
 (A more detailed note on a comment above, under *MODELING*)
 
@@ -206,7 +206,7 @@ OPTIMIZATION
     
     Is this enough? Check it when you have the time
 
-###PARSING AND EVALUATION
+### PARSING AND EVALUATION
 
 - Ta dah! The parser evaluates and parses -((5 + 4) + 1)
   and (-(5 + 4)) + 1
@@ -214,13 +214,13 @@ OPTIMIZATION
 - However, we're missing some comfort features, and at
   least two absolutely essential ones:
 
-####ESSENTIAL
+#### ESSENTIAL
 
   * Rule precedence
 
   * Error messages
 
-####COMFORT
+#### COMFORT
 
   * EBNF goodies, like A -> B* or A -> <B, but n times>
 
@@ -286,7 +286,7 @@ OPTIMIZATION
   rule applications. So amortized complexity is lower or
   equal than that of plain CYK, but we don't know how much).
 
-  PRECEDENCE
+###  PRECEDENCE
 
   * When is precedence necessary?
 
@@ -340,7 +340,7 @@ OPTIMIZATION
   since every span data item should have a priority, it could
   now be the first component.
 
-PARAMETRIC CONTEXT-FREE GRAMMARS
+### PARAMETRIC CONTEXT-FREE GRAMMARS
 
 * `A (n - 1) -> A (n) B (n)`
 
@@ -354,7 +354,7 @@ PARAMETRIC CONTEXT-FREE GRAMMARS
 - Presentation will be a bit non-declarative, but oh well,
   'users are not morons'
 
-MODELING IDIOMS
+### MODELING IDIOMS
 
 Abstract predicates (similar to alloy's abstract sigs)
 
