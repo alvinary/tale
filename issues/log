@@ -1,4 +1,4 @@
-EMBEDDING
+### EMBEDDING
 
 - When you declare a function f with let, but then add some other
   rule (like p x y -> f x y), f ceases to behave like a function.
@@ -9,7 +9,7 @@ EMBEDDING
 - Total orders with 'next' leave lots of 'hanging' facts about the
   out-of-bounds constant next of the last element.
 
-GRID
+### GRID
 
 - I got stuck with the visualization / verification part.
 
@@ -25,7 +25,7 @@ GRID
   Obviousy checking specifications with procedural tests is
   still a useful approach. p(x) <=> f(g(x)) = True, etc-
 
-FUNCTIONS
+### FUNCTIONS
 
 - I got stuck with the debugging part (is the logic program
   wrong, is there a bug in the program, or is there a bug
@@ -47,7 +47,7 @@ FUNCTIONS
   which will be especially useful when using DRTs and working
   with local properties of nodes that involve lots of arguments.
 
-SYMMETRY BREAKING
+### SYMMETRY BREAKING
 
 - using totally ordered sorts works as long as there are no
   'loose' predicates that can be true or false for the same
@@ -58,7 +58,7 @@ SYMMETRY BREAKING
   enumerating models.
 
 
-INTERFACE / COUPLING / MODULARITY
+### INTERFACE / COUPLING / MODULARITY
 
 The current interface does not let you use pysat's 'solve with'
 (you cannot say 'hey, give me a model using the current state, but
@@ -66,12 +66,12 @@ temporarily add the literals in L to it. Give me just one model, then
 forget'). I don't think pysat lets you iterate over more than one model
 that way.
 
-SOLVING
+###SOLVING
 
 - Solve an instance with respect to a background theory (you unfold
   all general facts once, and add instance facts with solve_with)
 
-MODELING
+###MODELING
 
 - The relational specification for tiling / 2D string parsing is
   still very sketchy. Using a leveled DAG looks promising, as well
@@ -93,7 +93,7 @@ MODELING
   easy with what we already have (and we want to model arithmetic anyway,
   so that should be ready at some point).
 
-NEGATIVE FEEDBACK
+### NEGATIVE FEEDBACK
 
 - I tried modeling some problems with stable marriages.
   
@@ -123,14 +123,16 @@ NEGATIVE FEEDBACK
 
   Ultimately, this is not relevant, but shows many of the limitations
   of the approach.
-  
+
+  ```
   prefer (g, b),
   with (g, b'),
   b != b',
   available (b', g),
   with (g.next, b.next) -> False.
+  ```
 
-ARITHMETIC
+###ARITHMETIC
 
 - Addition is straightforward to model with carries and 'bitwise logic',
   but other operations are not that straightforward, so it is best to
@@ -145,12 +147,14 @@ ARITHMETIC
   and their operations defined on pairs of naturals, maybe we could
   handle small numbers
 
+  ```
   * a / b + c / d = (a' + b') / [bd], where
         [bd] = lcm(b, d),
         a' = a * [bd] / b,
         b' = b * [bd] / d
 
   * (a / b) * (c / d) = ((a * [bd] / b) * (c * [bd] / d)) / [bd]
+  ```
 
   But factorization is not straightforward, so the best thing
   is to implement division and substraction as separate operations.
@@ -177,20 +181,21 @@ OPTIMIZATION
 - Test cases (serious):
 	Synthesis of mapreduce programs
 
-SEMANTICS FOR FUNCTIONS
+###SEMANTICS FOR FUNCTIONS
 
-(A more detailed note on a comment above, under MODELING)
+(A more detailed note on a comment above, under *MODELING*)
 
-B.f : A
-    * create a sort A' with |A| fresh constants
-    * declare a function assign from A' to A
-    * state P(a'), assign (a', a) <-> P(a)
-    * state
+`B.f : A`
+    * Create a sort `A'` with `|A|` fresh constants
+    * Declare a function assign from `A'` to `A`
+    * State P(a'), assign (a', a) <-> P(a)
+    * State that
+        ```
         R(a', b), assign (a', a) -> R (a, b)
         R(a, b), assign (a', a) -> R (a', b) 
         R(a, b'), assign (b', b) -> R (a, b) 
         R(a, b), assign (b', b) -> R (a, b')
-        
+        ```
         (for n-ary relations this is the same. 
         Since you do it for a variable at a time,
         it should be linear)
@@ -201,7 +206,7 @@ B.f : A
     
     Is this enough? Check it when you have the time
 
-PARSING AND EVALUATION
+###PARSING AND EVALUATION
 
 - Ta dah! The parser evaluates and parses -((5 + 4) + 1)
   and (-(5 + 4)) + 1
@@ -209,13 +214,13 @@ PARSING AND EVALUATION
 - However, we're missing some comfort features, and at
   least two absolutely essential ones:
 
-  ESSENTIAL
+####ESSENTIAL
 
   * Rule precedence
 
   * Error messages
 
-  COMFORT
+####COMFORT
 
   * EBNF goodies, like A -> B* or A -> <B, but n times>
 
@@ -226,20 +231,20 @@ PARSING AND EVALUATION
 
   * Token sets and disjunction.
 
-    Currently you have to write A -> a1, A -> a2, ..., A -> an,
-    instead of the infinitely more reasonable A -> a1 | a2 | a3 | ... | an.
+    Currently you have to write `A -> a1, A -> a2, ..., A -> an`,
+    instead of the infinitely more reasonable `A -> a1 | a2 | a3 | ... | an`.
 
     It would be nice to have some predefined productions, like
     for ascii, digits, alpha, and so on.
-    A -> {a b c d e f g h} could be used instead of |,
+    `A -> {a b c d e f g h}` could be used instead of `|`,
     but deciding on sound syntax and semantics is a delicate task.
     
     For instance, unrestricted composition licenses
-    stuff like A -> {B C D E} A {G D A} | A A.
+    stuff like `A -> {B C D E} A {G D A} | A A`.
     Do we want that?
 
     In this case 'unfolding' to vanilla rules is simple, 
-    
+    ```
     A -> A A
     A -> B C G
     A -> B C D
@@ -247,9 +252,9 @@ PARSING AND EVALUATION
     A -> C A G
         ...
     A -> S_i A T_j
-
-    (and so on, with our very well known and loved cartesian
-    product...), but nesting can make things blow up.
+    ```
+    (and so on, as per our very well known and universally
+    loved cartesian product...), but nesting can make things blow up.
 
   * Whitespace handling
 
@@ -263,10 +268,14 @@ PARSING AND EVALUATION
   it possible to write semantics with nonterminating evaluation,
   but I'm not sure what's a sound criterion for allowing and
   disallowing cycles when binary productions are involved.
+   
+  They might not be necessary, since every application of
+  a binary rule 'consumes' at least one node.
 
+  ```
   A -> B
   B -> A
-
+  ```
 - If you feel like wasting your entire life on this, maybe
   prove some relation between LL(k) grammars and the worst
   case complexity of parsing.
@@ -281,14 +290,16 @@ PARSING AND EVALUATION
 
   * When is precedence necessary?
 
-  a + bc is either (a + b)c or a + (bc), the intended reading.
+  `a + bc` is either `(a + b)c` or `a + (bc)`, the intended reading.
 
   So it is necessary to override a reading when it overlaps with
   a reading of higher priority -
   
+  ```
   a + b c
   _____ 
       ___
+  ```
 
   so we may get rid of all spans for the same.
   Is that criterion enough? I never know ´_`
@@ -302,7 +313,7 @@ PARSING AND EVALUATION
 
   That is...
 
-  ```
+  ```python
   for index, token in tokens:
       for label in labels:
           conflicts = sorted(overlap(spans, index, label), key=getPrecedence)
@@ -317,7 +328,7 @@ PARSING AND EVALUATION
   spans = spans - remove # so to speak
   ```
 
-  ```
+  ```python
   def overlap(i, j, k, l):
       end = max(j, l)
       if end == j:
@@ -331,7 +342,7 @@ PARSING AND EVALUATION
 
 PARAMETRIC CONTEXT-FREE GRAMMARS
 
-* A (n - 1) -> A (n) B (n)
+* `A (n - 1) -> A (n) B (n)`
 
 - Parsing is easy (you check if the parameters in a pair
   of neighboring spans are such that they match some rule,
@@ -349,18 +360,21 @@ Abstract predicates (similar to alloy's abstract sigs)
 
 - Suppose you want to say in the next state p(a), but p
   must be one of p1, p2 and p3, not just p.
-  This is p <-> p1 v p2 v p3 and umhh, -p1, -p2, -p3 -> -p,
-  but what is p <-> p1 v p2 v p3 in horn clauses?
+  This is `p <-> p1 v p2 v p3` and umhh, `-p1, -p2, -p3 -> -p`,
+  but what is `p <-> p1 v p2 v p3` in horn clauses?
   
+  ```
   p, -p1, -p2 -> p3
   p, -p2, -p3 -> p1
   p, -p1, -p3 -> p2
+  ```
 
-  This could be made into something unfoldable
+  This could be made into something you can unfold
 
   Humhh, soo
-  what is p1 v p2 v p3 <-> q1 v q2 v q3?
+  what is `p1 v p2 v p3 <-> q1 v q2 v q3`?
 
+  ```
   -p1, -p2, -p3 -> -q1, -q2, -q3
   -q1, -q2, -q3 -> -p1, -p2, -p3
   
@@ -369,11 +383,11 @@ Abstract predicates (similar to alloy's abstract sigs)
     /\         /\
    /  \       /  \   -pi /\ qj -> pk
   j: 1..|q|  i != k
+  ```
 
   Is there something missing?
-  ...
 
-TODOS
+## TODOS
 
 * Check equality of a.f with assign
 * Check orders with levels : A -> index and r(a, b), a.index > b.index => False
