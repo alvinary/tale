@@ -96,6 +96,16 @@ def tokensToRules(tokens, name):
         for leaf in members[1:]:
             rules += unaryRule(head, leaf, name)
         return rules
+        
+    # Add rule precedence here
+    # use 'name' to retrieve it from the output of linesToPrecedence()
+    
+    # instead of each piece of data for a node (left, right, head, etc)
+    # being (label, begin, end, action), let it be (label, begin, end, action, precedence)
+    
+    # thus indices don't have to change, just length checks
+    
+    # then that piece of data can be used when pruning
 
     if len(tokens) == 2:
         head, branch = tuple(tokens)
@@ -333,6 +343,17 @@ class Parser:
         
         return results
         
+def compare(left, right):
+    leftLabel, i, j, leftAction, leftPrecedence = left
+    rightLabel, k, l, rightAction, rightPrecedence = right
+    if leftLabel == rightLabel and overlap(i, j, k, l) and leftPrecedence != rightPrecedence:
+        if leftPrecedence < rightPrecedence:
+            return right
+        if rightPrecedence < leftPrecedence:
+           return left
+    else:
+        return False 
+        
 class Parse:
     def __init__(self, tokens, parser):
         self.parser = parser
@@ -400,7 +421,25 @@ class Parse:
         self.addSpan(token, index, index, TOKEN)
         
     def prune(self):
-        pass
+    
+        remove = set()
+        overlapCandidates = {}
+        for n, m in pairs(nodes):
+            comparison = compare(n, m)
+            if comparison:
+                remove.add(comparison)
+
+        for indices in self.spans:
+            spanItems = self.spans[indices]
+            keep = []
+            for span in spanItems:
+                intersection = set(span) & remove:
+                if intersection:
+                    head = span[0] # Creo
+                    remove.add(head)
+                if not intersection:
+                    keep.append(span)
+            self.spans[indices] = keep
 
 # Where... 
 # TOKEN_name TOKEN_name
