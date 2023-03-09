@@ -147,6 +147,19 @@ def extend(theory, positive, negative):
     # examples to their respective sorts
     newTheory = ''
     return newTheory
+    
+def massUnfold(solver, rules, index, dimacs):
+    for rule in rules:
+        for clause in unfold(rule, index).clausify(dimacs):
+            solver.add_clause(clause)
+
+def applyRules(rules, objects, reader, sorter, solver=Solver(), dimacs=Dimacs()):
+    for obj in objects:
+        index = sorter(obj)
+        massUnfold(solver, rules, index, dimacs)
+        for fact in reader(obj):
+            addFact(solver, fact)
+    return solver
 
 # TODO: handle branching and unsatisfiable cores
 def induce(baseTheory, positive, negative, step=DEFAULT_STEP):

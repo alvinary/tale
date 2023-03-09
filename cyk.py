@@ -239,9 +239,10 @@ class Parser:
     def __init__(self, grammar):    
         separator, precedence, lines = getLines(grammar)
     
+        order = linesToPrecedence(lines, separator, precedence)
         rules = linesToRules(lines, separator, precedence)
         actions = linesToActions(lines, separator, precedence)
-        order = linesToPrecedence(lines, separator, precedence)
+        
         
         actions[TOKEN] = lambda x : [x]
         
@@ -391,8 +392,6 @@ class Parse:
             right = set(self.beginAt[end+1])
             for other in right:
                 self.triggerPair(current, other)
-                
-        self.prune()
                  
         return self
         
