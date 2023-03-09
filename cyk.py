@@ -96,16 +96,6 @@ def tokensToRules(tokens, name):
         for leaf in members[1:]:
             rules += unaryRule(head, leaf, name)
         return rules
-        
-    # Add rule precedence here
-    # use 'name' to retrieve it from the output of linesToPrecedence()
-    
-    # instead of each piece of data for a node (left, right, head, etc)
-    # being (label, begin, end, action), let it be (label, begin, end, action, precedence)
-    
-    # thus indices don't have to change, just length checks
-    
-    # then that piece of data can be used when pruning
 
     if len(tokens) == 2:
         head, branch = tuple(tokens)
@@ -281,7 +271,7 @@ class Parser:
             self.values[leaf] = leaf[0] # The token
             
         if check and isUnary:
-            _, action, arg = self.actions[head[3]]
+            _, action, arg = self.actions[head[3]] # Magic number 3
             argument = self.values[branch]
             self.values[head] = action(arg(argument))
         
@@ -343,17 +333,6 @@ class Parser:
         results = [self.values[k] for k in fullSpans]
         
         return results
-        
-def compare(left, right):
-    leftLabel, i, j, _, leftPrecedence = left
-    rightLabel, k, l, _, rightPrecedence = right
-    if leftLabel == rightLabel and overlap(i, j, k, l) and leftPrecedence != rightPrecedence:
-        if leftPrecedence < rightPrecedence:
-            return right
-        if rightPrecedence < leftPrecedence:
-            return left
-    else:
-        return False
 
 def pairs(sequence):
     for i in range(len(sequence)):
@@ -426,6 +405,19 @@ class Parse:
         
     def addToken(self, index, token):
         self.addSpan(token, index, index, TOKEN)
+
+    def compare(self, left, right):
+        leftLabel, i, j, name = left
+        rightLabel, k, l, name  = right
+        leftPrecedence = self.parser.precedence[name]
+        rightPrecedence = self.parser.precedence[name]
+        if leftLabel == rightLabel and overlap(i, j, k, l) and leftPrecedence != rightPrecedence:
+            if leftPrecedence < rightPrecedence:
+                return right
+            if rightPrecedence < leftPrecedence:
+                return left
+        else:
+            return False
         
     def prune(self):
     
@@ -437,7 +429,7 @@ class Parse:
             nodes += list(self.spans[span])
         
         for n, m in pairs(nodes):
-            comparison = compare(n, m)
+            comparison = self.compare(n, m)
             if comparison:
                 remove.add(comparison)
 
