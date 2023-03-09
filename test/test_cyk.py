@@ -1,13 +1,13 @@
 from tale.cyk import *
 
 test_grammar = '''
-    evaluate :=
+    := @
     NUMBER -> DIGITS                           := x : int(x)
     NUMBER -> [LPAREN] NUMBER [RPAREN]         := x : x
     NUMBER -> NUMBER [PLUS] NUMBER             := x, y : x + y
     NUMBER -> NUMBER [MINUS] NUMBER            := x, y : x - y
     NUMBER -> [MINUS] NUMBER                   := x : -x
-    NUMBER -> NUMBER [TIMES] NUMBER            := x, y : x * y
+    NUMBER -> NUMBER [TIMES] NUMBER @2         := x, y : x * y
     LPAREN -> (                                := x : x
     RPAREN -> )                                := x : x
     DIGIT -> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }  := x : x
@@ -51,8 +51,8 @@ def test_cyk():
         
 def test_grammar_to_rules():
     print('\nRules:\n')
-    sep, lines = getLines(test_grammar)
-    rules = linesToRules(lines, sep)
+    sep, prec, lines = getLines(test_grammar)
+    rules = linesToRules(lines, sep, prec)
     for rule in rules:
         print(rule)
     print("")
