@@ -412,9 +412,9 @@ class Parse:
         rightPrecedence = self.parser.precedence[name]
         if leftLabel == rightLabel and overlap(i, j, k, l) and leftPrecedence != rightPrecedence:
             if leftPrecedence < rightPrecedence:
-                return right
-            if rightPrecedence < leftPrecedence:
                 return left
+            if rightPrecedence < leftPrecedence:
+                return right
         else:
             return False
         
