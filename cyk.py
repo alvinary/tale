@@ -32,6 +32,7 @@ def linesToPrecedence(lines, separator, precedence):
             orderValues = [t for t in line.split() if t.startswith(precedence)]
             orderValue = float(orderValues[0].replace(precedence, ""))
             order[str(index)] = orderValue
+            order[str(index) + '[1]'] = orderValue
     return order
 
 def linesToActions(lines, separator, precedence):
@@ -114,14 +115,13 @@ def unaryRule(head, branch, name):
 def naryRule(tokens, name):
 
     rules = []
-    size = len(tokens) + 1
 
     head = tokens.pop(0)
     left = tokens.pop(0)
     
     while tokens:
 
-        auxiliaryRight = f"{name}[{size - len(tokens)}]"
+        auxiliaryRight = f"{name}[{len(tokens) - 1}]"
         
         if len(tokens) == 1:
             right = tokens.pop(0)
@@ -406,11 +406,11 @@ class Parse:
         self.addSpan(token, index, index, TOKEN)
 
     def compare(self, left, right):
-        leftLabel, i, j, name = left
-        rightLabel, k, l, name  = right
-        leftPrecedence = self.parser.precedence[name]
-        rightPrecedence = self.parser.precedence[name]
-        if leftLabel == rightLabel and overlap(i, j, k, l) and leftPrecedence != rightPrecedence:
+        leftLabel, i, j, leftName = left
+        rightLabel, k, l, rightName  = right
+        leftPrecedence = self.parser.precedence[leftName]
+        rightPrecedence = self.parser.precedence[rightName]
+        if leftLabel == rightLabel and i == k and j == l and leftPrecedence != rightPrecedence:
             if leftPrecedence < rightPrecedence:
                 return left
             if rightPrecedence < leftPrecedence:
@@ -445,4 +445,5 @@ class Parse:
                 if not intersection:
                     keep.append(span)
             self.spans[indices] = list(keep)
+            
 
