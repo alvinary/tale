@@ -26,14 +26,12 @@ def getLines(text):
     return evaluate, precedence, lines
     
 def linesToPrecedence(lines, separator, precedence):
-    order = {}
+    order = defaultdict(lambda: UNORDERED)
     for index, line in enumerate(lines):
         if precedence in line:
             orderValues = [t for t in line.split() if t.startswith(precedence)]
             orderValue = float(orderValues[0].replace(precedence, ""))
             order[str(index)] = orderValue
-        else:
-            order[str(index)] = UNORDERED
     return order
 
 def linesToActions(lines, separator, precedence):
@@ -424,11 +422,13 @@ class Parse:
     def prune(self):
     
         remove = set()
+        nodes = set()
 
-        nodes = []
+        for indices in self.spans:
+            for span in self.spans[indices]:
+                nodes |= set(span)
 
-        for span in self.spans:
-            nodes += list(self.spans[span])
+        nodes = list(nodes)
         
         for n, m in pairs(nodes):
             comparison = self.compare(n, m)
