@@ -7,7 +7,7 @@ LBRACE = '{'
 RBRACE = '}'
 NEWLINE = '\n'
 COMMENT = '--'
-UNORDERED = 1.0
+UNORDERED = 10.0
 
 inventory = lambda : defaultdict(lambda : set())
 
@@ -436,14 +436,7 @@ class Parse:
 
         for indices in self.spans:
             spanItems = self.spans[indices]
-            keep = []
-            for span in spanItems:
-                intersection = set(span) & remove
-                if intersection:
-                    head = getHead(span)
-                    remove.add(head)
-                if not intersection:
-                    keep.append(span)
-            self.spans[indices] = list(keep)
+            self.spans[indices] = [i for i in spanItems if i not in remove]
             
+
 
