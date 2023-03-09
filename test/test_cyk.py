@@ -7,7 +7,7 @@ test_grammar = '''
     NUMBER -> NUMBER [PLUS] NUMBER             := x, y : x + y
     NUMBER -> NUMBER [MINUS] NUMBER            := x, y : x - y
     NUMBER -> [MINUS] NUMBER                   := x : -x
-    NUMBER -> NUMBER [TIMES] NUMBER @2         := x, y : x * y
+    NUMBER -> NUMBER [TIMES] NUMBER @0.5       := x, y : x * y
     LPAREN -> (                                := x : x
     RPAREN -> )                                := x : x
     DIGIT -> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }  := x : x
@@ -86,6 +86,20 @@ def test_value():
     values = parser.value(tokens)
     
     assert -10 in values
+
+    tokens = "1 + 1 * 3".split()
+    tokens = tuple(tokens)
+    
+    parser = Parser(test_grammar)
+    parse = parser.parse(tokens)
+    for indices in parse.spans:
+        print(indices)
+        for span in parse.spans[indices]:
+            print(span)
+
+    values = parser.value(tokens)
+    
+    assert 4 in values and 6 not in values
     
 
 test_grammar_to_rules()    
