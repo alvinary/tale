@@ -64,7 +64,6 @@ def lineToRules(line):
     return tokensToRules(tokens, name)
 
 def lineToParts(line):
-    print('la linea...', line)
     assert "->" in line and ')' in line and '(' in line # to be sure
     
     rparenIndex = -1 # Index of the last )
