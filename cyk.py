@@ -340,7 +340,7 @@ def pairs(sequence):
             yield (sequence[i], sequence[j])
 
 def getHead(span):
-    return span[1]
+    return span[0]
         
 class Parse:
     def __init__(self, tokens, parser):
@@ -439,8 +439,9 @@ class Parse:
             for span in spanItems:
                 intersection = set(span) & remove
                 if intersection:
-                    head = getHead(span) # Creo
+                    head = getHead(span)
                     remove.add(head)
                 if not intersection:
                     keep.append(span)
             self.spans[indices] = keep
+
