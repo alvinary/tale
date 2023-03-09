@@ -371,6 +371,8 @@ class Parse:
             right = set(self.beginAt[end+1])
             for other in right:
                 self.triggerPair(current, other)
+
+        self.prune()
                  
         return self
         
@@ -443,5 +445,5 @@ class Parse:
                     remove.add(head)
                 if not intersection:
                     keep.append(span)
-            self.spans[indices] = keep
+            self.spans[indices] = list(keep)
 
