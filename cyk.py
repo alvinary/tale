@@ -350,7 +350,7 @@ def compare(left, right):
         if leftPrecedence < rightPrecedence:
             return right
         if rightPrecedence < leftPrecedence:
-           return left
+            return left
     else:
         return False 
         
