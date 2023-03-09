@@ -265,7 +265,7 @@ class Parser:
     
         if isLeaf:
             leaf = span[0]
-            check = True # The token
+            check = True # Because leaves already have a value
 
         if isUnary:
             head, branch = span
@@ -453,8 +453,3 @@ class Parse:
                 if not intersection:
                     keep.append(span)
             self.spans[indices] = keep
-
-# Where... 
-# TOKEN_name TOKEN_name
-# (y tenes un map que guarda eso, y la funcion usa el map de kwargs)
-# (y si pones TOKEN_name:, lo agrega a la coleccion del kwarg)
