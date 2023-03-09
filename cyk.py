@@ -344,15 +344,23 @@ class Parser:
         return results
         
 def compare(left, right):
-    leftLabel, i, j, leftAction, leftPrecedence = left
-    rightLabel, k, l, rightAction, rightPrecedence = right
+    leftLabel, i, j, _, leftPrecedence = left
+    rightLabel, k, l, _, rightPrecedence = right
     if leftLabel == rightLabel and overlap(i, j, k, l) and leftPrecedence != rightPrecedence:
         if leftPrecedence < rightPrecedence:
             return right
         if rightPrecedence < leftPrecedence:
             return left
     else:
-        return False 
+        return False
+
+def pairs(sequence):
+    for i in range(len(sequence)):
+        for j in range(i):
+            yield (sequence[i], sequence[j])
+
+def getHead(span):
+    return span[1]
         
 class Parse:
     def __init__(self, tokens, parser):
@@ -423,7 +431,12 @@ class Parse:
     def prune(self):
     
         remove = set()
-        overlapCandidates = {}
+
+        nodes = []
+
+        for span in self.spans:
+            nodes += list(self.spans[span])
+        
         for n, m in pairs(nodes):
             comparison = compare(n, m)
             if comparison:
@@ -433,9 +446,9 @@ class Parse:
             spanItems = self.spans[indices]
             keep = []
             for span in spanItems:
-                intersection = set(span) & remove:
+                intersection = set(span) & remove
                 if intersection:
-                    head = span[0] # Creo
+                    head = getHead(span) # Creo
                     remove.add(head)
                 if not intersection:
                     keep.append(span)
