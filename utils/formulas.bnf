@@ -1,0 +1,45 @@
+:= /
+
+Program -> Statement
+Program -> Statement [dot] Program
+
+Statement -> Declaration
+Statement -> Formula
+
+Formula -> Or
+Formula -> Rule
+Formula -> Iff
+Formula -> Contradiction
+
+Or -> Atom [or] Or
+or -> Atom
+
+Rule -> Formulas [Arrow] Formulas
+Iff -> Formulas [DoubleArrow] Formulas
+Contradiction -> Atoms [Implies] [False] 
+
+Formulas -> Formula
+Formulas -> Formula [,] Formulas
+
+Formula -> not Formula
+Formula -> Token [(] Tokens [)]
+Formula -> Token Comparison Token
+
+Tokens -> Token
+Tokens -> Token [,] Tokens
+
+comp -> equal
+comp -> notequal
+
+equal -> =
+notequal -> =!=
+
+Declaration -> Tokens [:] Token
+Declaration -> [order] Natural [:] Token
+Declaration -> Token [:] Tokens [->] Token
+
+Token -> Word
+Token -> Word [.] Token
+
+-- Word and Natural should be defined externally, and
+-- assigned to every token passed to Parser.parse()
