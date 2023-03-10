@@ -39,7 +39,10 @@ Declaration -> [order] Natural [:] Token
 Declaration -> Token [:] Tokens [->] Token
 
 Token -> Word
-Token -> Word [.] Token
+Token -> Word [.] Dotted
+
+Dotted -> Word
+Dotted -> Word [.] Dotted
 
 -- Word and Natural should be defined externally, and
 -- assigned to every token passed to Parser.parse()
