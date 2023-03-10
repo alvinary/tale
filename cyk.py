@@ -32,7 +32,6 @@ def linesToPrecedence(lines, separator, precedence):
             orderValues = [t for t in line.split() if t.startswith(precedence)]
             orderValue = float(orderValues[0].replace(precedence, ""))
             order[str(index)] = orderValue
-            order[str(index) + '[1]'] = orderValue
     return order
 
 def linesToActions(lines, separator, precedence):
@@ -40,7 +39,6 @@ def linesToActions(lines, separator, precedence):
     lines = [l.split(separator)[1].strip() for l in lines]
     for index, line in enumerate(lines):
         actions[str(index)] = (lambda: eval('lambda ' + line))()
-        # actions[str(index)+'[1]'] = lambda: eval('lambda ' + line)
     return actions
 
 def notComment(line):
@@ -119,12 +117,14 @@ def naryRule(tokens, name):
 
     head = tokens.pop(0)
     left = tokens.pop(0)
+    size = len(tokens)
     
     while tokens:
 
-        auxiliaryRight = f"{name}[{len(tokens) - 1}]"
+        auxiliaryRight = f"{name}[{size - len(tokens)}]"
         
         if len(tokens) == 1:
+        
             right = tokens.pop(0)
             newRules = binaryRule(head, left, right, auxiliaryRight)
             rules += newRules
@@ -189,6 +189,13 @@ def semantics(grammar, triggers):
             
             if actionName in triggers.keys():
                 semanticAction = triggers[actionName]
+                
+            elif '[0]' in actionName:
+                name = actionName.replace('[0]', '')
+                semanticAction = triggers[name]
+                
+            else:
+                semanticAction = lambda x: x
 
             if leftIsMute and rightIsMute:
                 argumentAction = ignoreBoth
@@ -263,7 +270,7 @@ class Parser:
             head, left, right = span
             check = left in self.values
             check = check and right in self.values
-        
+
         if check and isLeaf:
             self.values[leaf] = leaf[0] # The token
             
@@ -271,18 +278,18 @@ class Parser:
             _, action, arg = self.actions[head[3]] # Magic number 3
             argument = self.values[branch]
             arg = arg(argument)
-            self.values[head] = action(*arg)
+            self.values[head] = action(arg[0])
         
         if check and isBinary:
             _, action, args = self.actions[head[3]]
             left = self.values[left]
             right = self.values[right]
             args = args(left, right)
-            print(args)
-            self.values[head] = action(*args)
+            if len(args) == 1:
+                self.values[head] = action(args[0])
+            if len(args) == 2:
+                self.values[head] = action(args[0], args[1])
         
-        #for span in self.values:
-        #  print(span, self.values[span], type(self.values[span]))
         # TODO: add error messages so this function
         # provides useful information when something
         # goes wrong, instead of failing silently
