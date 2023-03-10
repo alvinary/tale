@@ -74,7 +74,7 @@ def test_value():
     tokens = "( - ( 5 + 4 ) ) + 1".split()
     tokens = tuple(tokens)
     
-    parser = Parser(test_grammar)
+    parser = parserFromGrammar(test_grammar)
     values = parser.value(tokens)
     
     assert -8 in values
@@ -82,7 +82,7 @@ def test_value():
     tokens = "- ( ( 5 + 4 ) + 1 )".split()
     tokens = tuple(tokens)
     
-    parser = Parser(test_grammar)
+    parser = parserFromGrammar(test_grammar)
     values = parser.value(tokens)
     
     assert -10 in values
@@ -90,7 +90,7 @@ def test_value():
     tokens = "- 2".split()
     tokens = tuple(tokens)
     
-    parser = Parser(test_grammar)
+    parser = parserFromGrammar(test_grammar)
     values = parser.value(tokens)
     
     assert -2 in values
@@ -98,7 +98,7 @@ def test_value():
     tokens = "( 1 + 1 * 3 ) + 6 * 3".split()
     tokens = tuple(tokens)
     
-    parser = Parser(test_grammar)
+    parser = parserFromGrammar(test_grammar)
     parse = parser.parse(tokens)
     for indices in parse.spans:
         print(indices)
@@ -112,7 +112,7 @@ def test_value():
     tokens = "2 * 3".split()
     tokens = tuple(tokens)
     
-    parser = Parser(test_grammar)
+    parser = parserFromGrammar(test_grammar)
     values = parser.value(tokens)
     
     assert 6 in values
