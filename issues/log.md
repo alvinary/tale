@@ -63,13 +63,13 @@
 The current interface does not let you use pysat's 'solve with'
 (you cannot say 'hey, give me a model using the current state, but
 temporarily add the literals in L to it. Give me just one model, then
-forget'). I don't think pysat lets you iterate over more than one model
-that way.
+forget'). Also, I don't think pysat lets you iterate over more than
+one model that way.
 
 ### SOLVING
 
 - Solve an instance with respect to a background theory (you unfold
-  all general facts once, and add instance facts with solve_with)
+  all general facts once, and add instance facts with `solve_with`)
 
 ### MODELING
 
@@ -392,4 +392,9 @@ Abstract predicates (similar to alloy's abstract sigs)
 * Check equality of a.f with assign
 * Check orders with levels : A -> index and r(a, b), a.index > b.index => False
 * DAGS
-* Arithmetic (parse the arithmetic file with the new parser) 
+* Arithmetic (parse the arithmetic file with the new parser)
+* Natural deduction
+* PDL planning
+* PDL planning with resources
+
+* Fix the parser (maybe rewrite it more sensibly, reducing nesting, which is error prone)
