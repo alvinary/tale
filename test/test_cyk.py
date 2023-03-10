@@ -40,7 +40,7 @@ def test_cyk():
     tokens = "- ( 5 + 4 ) + 1".split()
     tokens = tuple(tokens)
     
-    parse = Parser(test_grammar).parse(tokens)
+    parse = parserFromGrammar(test_grammar).parse(tokens)
 
     for span in parse.readable:
         print('span:', span)
@@ -59,7 +59,7 @@ def test_grammar_to_rules():
     
 def test_semantics():
 
-    parser = Parser(test_grammar)
+    parser = parserFromGrammar(test_grammar)
     
     for r in parser.grammar:
         print("Rule:", r, ":", parser.grammar[r])
