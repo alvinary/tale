@@ -76,7 +76,8 @@ def test_value():
     
     parser = parserFromGrammar(test_grammar)
     parser.actions['TOKEN'] = lambda x: x
-    print(parser.actions)
+    for a in parser.actions:
+        print("Action:", a, ":", parser.actions[a])
 
     values = parser.value(tokens)
     
@@ -95,13 +96,20 @@ def test_value():
     values = parser.value(tokens)
     
     assert -2 in values
+    
+    tokens = "2 * 6".split()
+    tokens = tuple(tokens)
+    
+    values = parser.value(tokens)
+    
+    assert 12 in values
 
-    tokens = "( 2 * 23 ) + 5".split()
+    tokens = "( 3 * 7 ) + 8".split()
     tokens = tuple(tokens)
 
     values = parser.value(tokens)
 
-    assert 51 in values
+    assert 19 in values
 
     tokens = "( 1 + 1 * 3 ) + 6 * 3".split()
     tokens = tuple(tokens)
