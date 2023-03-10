@@ -392,4 +392,9 @@ Abstract predicates (similar to alloy's abstract sigs)
 * Check equality of a.f with assign
 * Check orders with levels : A -> index and r(a, b), a.index > b.index => False
 * DAGS
-* Arithmetic (parse the arithmetic file with the new parser) 
+* Arithmetic (parse the arithmetic file with the new parser)
+* Natural deduction
+* PDL planning
+* PDL planning with resources
+
+* Fix the parser (maybe rewrite it more sensibly, reducing nesting, which is error prone)
