@@ -6,26 +6,29 @@ Program -> Statement [dot] Program
 Statement -> Declaration
 Statement -> Formula
 
-Formula -> Or
+Formula -> Or 
 Formula -> Rule
 Formula -> Iff
 Formula -> Contradiction
 
-Or -> Atom [or] Or
-Or -> Atom
-Rule -> Formulas [Arrow] Formulas
-Iff -> Formulas [DoubleArrow] Formulas
-Contradiction -> Atoms [Implies] [False] 
+Or -> OrAtoms                  		 := xs : Or(xs)			
+OrAtoms -> Atom [or] OrAtoms   		 := x, xs : [x] + xs		
+Or -> Atom	               		 := x : [x]
 
-Formulas -> Formula
-Formulas -> Formula [,] Formulas
+Rule -> Atoms [Arrow] Atoms	 	 := b, h : If(b, h)
 
-Formula -> not Formula
-Formula -> Token [(] Tokens [)]
-Formula -> Token Comparison Token
+Iff -> Atoms [DoubleArrow] Atoms	 := xs, ys : Iff(xs, ys)
 
-Tokens -> Token
-Tokens -> Token [,] Tokens
+Contradiction -> Atoms [Implies] [False] := xs : Never(xs)
+
+Atom -> [not] Atom 			 := x : x.negate()
+Atom -> Token Comparison Token
+Atom -> Token [(] Tokens [)] 		 := p, xs : Term([p] + xs)
+Atoms -> Atom				 := x : [x]
+Atoms -> Atom [,] Atoms			 := x, xs : [x] + [xs]
+
+Tokens -> Token			 	 := x : [x]
+Tokens -> Token [,] Tokens               := x, xs : [x] + xs
 
 comp -> equal
 comp -> notequal
@@ -37,11 +40,11 @@ Declaration -> Tokens [:] Token
 Declaration -> [order] Natural [:] Token
 Declaration -> Token [:] Tokens [->] Token
 
-Token -> Word
-Token -> Word [.] Dotted
+Token -> Word                            := x : Term(x, [])
+Token -> Word [.] Dotted                 := x, xs : Term(x, xs)
 
-Dotted -> Word
-Dotted -> Word [.] Dotted
+Dotted -> Word                           := x : [x]
+Dotted -> Word [.] Dotted                := x, xs : [x] + xs
 
 -- Word and Natural should be defined externally, and
 -- assigned to every token passed to Parser.parse()
