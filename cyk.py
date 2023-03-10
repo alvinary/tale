@@ -221,22 +221,22 @@ def overlap(i, j, k, l):
         return i <= l
     if end == l:
         return k <= j
+
+def parserFromGrammar(grammar):
+    separator, precedence, lines = getLines(grammar)
+    order = linesToPrecedence(lines, separator, precedence)
+    rules = linesToRules(lines, separator, precedence)
+    actions = linesToActions(lines, separator, precedence)
+    sem = semantics(rules, actions)
+    syn = grammarFromRules(rules)
+    return Parser(syn, sem, order)
+
     
 class Parser:
-    def __init__(self, grammar):    
-        separator, precedence, lines = getLines(grammar)
-    
-        order = linesToPrecedence(lines, separator, precedence)
-        rules = linesToRules(lines, separator, precedence)
-        actions = linesToActions(lines, separator, precedence)
-        
-        
-        actions[TOKEN] = lambda x : [x]
-        
+    def __init__(self, grammar, actions, order):
         self.precedence = order
         self.grammar = grammarFromRules(rules)
         self.actions = semantics(rules, actions)
-        
         self.values = {}
         
     def parse(self, tokens):
