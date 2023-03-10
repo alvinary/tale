@@ -12,8 +12,7 @@ Formula -> Iff
 Formula -> Contradiction
 
 Or -> Atom [or] Or
-or -> Atom
-
+Or -> Atom
 Rule -> Formulas [Arrow] Formulas
 Iff -> Formulas [DoubleArrow] Formulas
 Contradiction -> Atoms [Implies] [False] 
