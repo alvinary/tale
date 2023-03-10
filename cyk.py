@@ -235,8 +235,8 @@ def parserFromGrammar(grammar):
 class Parser:
     def __init__(self, grammar, actions, order):
         self.precedence = order
-        self.grammar = grammarFromRules(rules)
-        self.actions = semantics(rules, actions)
+        self.grammar = grammar
+        self.actions = actions
         self.values = {}
         
     def parse(self, tokens):
