@@ -39,7 +39,8 @@ def linesToActions(lines, separator, precedence):
     actions = {}
     lines = [l.split(separator)[1].strip() for l in lines]
     for index, line in enumerate(lines):
-        actions[str(index)] = (lambda : eval('lambda ' + line)) ()
+        actions[str(index)] = (lambda: eval('lambda ' + line))()
+        # actions[str(index)+'[1]'] = lambda: eval('lambda ' + line)
     return actions
 
 def notComment(line):
@@ -167,10 +168,11 @@ def isBinary(rhs):
 def semantics(grammar, triggers):
 
     encapsulate = lambda x : x
-    ignoreLeft = lambda x, y : y
-    ignoreRight = lambda x, y : x
+    ignoreLeft = lambda x, y : [y]
+    ignoreRight = lambda x, y : [x]
     ignoreBoth = lambda x, y : []
-    includeBoth = lambda x, y : x + y
+    includeBoth = lambda x, y : [x] + [y]
+    joinBoth = lambda x, y : [x] + y
 
     actions = {}
 
@@ -187,8 +189,6 @@ def semantics(grammar, triggers):
             
             if actionName in triggers.keys():
                 semanticAction = triggers[actionName]
-            else:
-                semanticAction = lambda x: x
 
             if leftIsMute and rightIsMute:
                 argumentAction = ignoreBoth
@@ -270,14 +270,19 @@ class Parser:
         if check and isUnary:
             _, action, arg = self.actions[head[3]] # Magic number 3
             argument = self.values[branch]
-            self.values[head] = action(arg(argument))
+            arg = arg(argument)
+            self.values[head] = action(*arg)
         
         if check and isBinary:
             _, action, args = self.actions[head[3]]
             left = self.values[left]
             right = self.values[right]
-            self.values[head] = action(args(left, right))
+            args = args(left, right)
+            print(args)
+            self.values[head] = action(*args)
         
+        #for span in self.values:
+        #  print(span, self.values[span], type(self.values[span]))
         # TODO: add error messages so this function
         # provides useful information when something
         # goes wrong, instead of failing silently

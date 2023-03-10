@@ -7,7 +7,7 @@ test_grammar = '''
     NUMBER -> NUMBER [PLUS] NUMBER             := x, y : x + y
     NUMBER -> NUMBER [MINUS] NUMBER            := x, y : x - y
     NUMBER -> [MINUS] NUMBER                   := x : -x
-    NUMBER -> NUMBER [TIMES] NUMBER @5         := x, y : x * x
+    NUMBER -> NUMBER [TIMES] NUMBER            := x, y : x * y
     LPAREN -> (                                := x : x
     RPAREN -> )                                := x : x
     DIGIT -> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }  := x : x
@@ -75,6 +75,9 @@ def test_value():
     tokens = tuple(tokens)
     
     parser = parserFromGrammar(test_grammar)
+    parser.actions['TOKEN'] = lambda x: x
+    print(parser.actions)
+
     values = parser.value(tokens)
     
     assert -8 in values
@@ -82,7 +85,6 @@ def test_value():
     tokens = "- ( ( 5 + 4 ) + 1 )".split()
     tokens = tuple(tokens)
     
-    parser = parserFromGrammar(test_grammar)
     values = parser.value(tokens)
     
     assert -10 in values
@@ -90,15 +92,20 @@ def test_value():
     tokens = "- 2".split()
     tokens = tuple(tokens)
     
-    parser = parserFromGrammar(test_grammar)
     values = parser.value(tokens)
     
     assert -2 in values
 
+    tokens = "( 2 * 23 ) + 5".split()
+    tokens = tuple(tokens)
+
+    values = parser.value(tokens)
+
+    assert 51 in values
+
     tokens = "( 1 + 1 * 3 ) + 6 * 3".split()
     tokens = tuple(tokens)
-    
-    parser = parserFromGrammar(test_grammar)
+
     parse = parser.parse(tokens)
     for indices in parse.spans:
         print(indices)
@@ -108,14 +115,6 @@ def test_value():
     values = parser.value(tokens)
     
     assert 22 in values and 30 not in values
-
-    tokens = "2 * 3".split()
-    tokens = tuple(tokens)
-    
-    parser = parserFromGrammar(test_grammar)
-    values = parser.value(tokens)
-    
-    assert 6 in values
  
 
 test_grammar_to_rules()    
