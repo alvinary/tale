@@ -396,5 +396,5 @@ Abstract predicates (similar to alloy's abstract sigs)
 * Natural deduction
 * PDL planning
 * PDL planning with resources
-
 * Fix the parser (maybe rewrite it more sensibly, reducing nesting, which is error prone)
+* Check if evaluation works when semantics are provided programatically instead of using the dsl. Drop the dsl if it does
