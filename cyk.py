@@ -38,7 +38,7 @@ def linesToActions(lines, separator, precedence):
     actions = {}
     lines = [l.split(separator)[1].strip() for l in lines]
     for index, line in enumerate(lines):
-        actions[str(index)] = (lambda: eval('lambda ' + line))()
+        actions[str(index)] = eval('lambda ' + line)
     return actions
 
 def notComment(line):
@@ -171,8 +171,7 @@ def semantics(grammar, triggers):
     ignoreLeft = lambda x, y : [y]
     ignoreRight = lambda x, y : [x]
     ignoreBoth = lambda x, y : []
-    includeBoth = lambda x, y : [x] + [y]
-    joinBoth = lambda x, y : [x] + y
+    includeBoth = lambda x, y : [x, y]
 
     actions = {}
 
@@ -296,6 +295,8 @@ class Parser:
          
     def value(self, tokens):
         
+        self.values = {}
+        
         parse = self.parse(tokens)
         
         distances = set()
@@ -340,6 +341,11 @@ class Parser:
         fullSpans = [span for span in self.values if span[1] == begin and span[2] == end]
             
         results = [self.values[k] for k in fullSpans]
+        
+        print("\n\n")
+        for s in self.values:
+            print('span: ', s, 'value: ', self.values[s])
+        print("\n\n")
         
         return results
 

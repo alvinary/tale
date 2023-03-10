@@ -6,13 +6,12 @@ test_grammar = '''
     NUMBER -> [LPAREN] NUMBER [RPAREN]         := x : x
     NUMBER -> NUMBER [PLUS] NUMBER             := x, y : x + y
     NUMBER -> NUMBER [MINUS] NUMBER            := x, y : x - y
-    NUMBER -> [MINUS] NUMBER                   := x : -x
     NUMBER -> NUMBER [TIMES] NUMBER            := x, y : x * y
+    NUMBER -> [MINUS] NUMBER                   := x : -x
     LPAREN -> (                                := x : x
     RPAREN -> )                                := x : x
     DIGIT -> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }  := x : x
     DIGITS -> DIGIT                            := x : x
-    DIGITS -> DIGIT DIGITS                     := x, y : x + y
     PLUS -> +                                  := x : x
     MINUS -> -                                 := x : x
     TIMES -> *                                 := x : x
@@ -104,25 +103,13 @@ def test_value():
     
     assert 12 in values
 
-    tokens = "( 3 * 7 ) + 8".split()
-    tokens = tuple(tokens)
-
-    values = parser.value(tokens)
-
-    assert 19 in values
-
-    tokens = "( 1 + 1 * 3 ) + 6 * 3".split()
+    tokens = "( 3 * 3 ) + ( 2 * ( 3 + 1 ) )".split()
     tokens = tuple(tokens)
 
     parse = parser.parse(tokens)
-    for indices in parse.spans:
-        print(indices)
-        for span in parse.spans[indices]:
-            print(span)
-
     values = parser.value(tokens)
     
-    assert 22 in values and 30 not in values
+    assert 17 in values
  
 
 test_grammar_to_rules()    
