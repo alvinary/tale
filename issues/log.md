@@ -63,13 +63,13 @@
 The current interface does not let you use pysat's 'solve with'
 (you cannot say 'hey, give me a model using the current state, but
 temporarily add the literals in L to it. Give me just one model, then
-forget'). I don't think pysat lets you iterate over more than one model
-that way.
+forget'). Also, I don't think pysat lets you iterate over more than
+one model that way.
 
 ### SOLVING
 
 - Solve an instance with respect to a background theory (you unfold
-  all general facts once, and add instance facts with solve_with)
+  all general facts once, and add instance facts with `solve_with`)
 
 ### MODELING
 
