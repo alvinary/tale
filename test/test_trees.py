@@ -1,7 +1,7 @@
 from tale.pipeline import *
 from tale.objects import *
 
-MODELS = 10
+MODELS = 700
 
 program = '''
 order n 9 : node.
@@ -10,46 +10,48 @@ order t 10 : token.
 order n 9 : vertex.
 order t 10 : vertex.
 
-var a, b, c : vertex.
-var n, m, o : node.
-var t, s, w : token.
+order i 10 : index.
+
+var a, b : vertex.
+var n, m : node.
+var t, s : token.
+var i : index.
 
 let left : node -> vertex.
 let right : node -> vertex.
 
+let ileft : vertex -> node.
+let iright : vertex -> node.
+
+let level : vertex -> index.
+
 left (a, a) -> False.
 right (a, a) -> False.
 
-left (t, a) -> False.
 right (t, a) -> False.
+left (t, a) -> False.
+
+left (n, a) -> ileft (a, n).
+right (n, a) -> iright (a, n). 
 
 left (a, b), right (a, b) -> False.
 
-left (a, b), right (c, b) -> False.
-left (a, b), left (c, b), a != c -> False.
-right (a, b), right (c, b), a != c -> False.
+right (n, a) -> isRight (a).
+left (n, a) -> isLeft (a).
 
-left (a, b) -> below (a, b).
-right (a, b) -> below (a, b).
+isLeft (a), isRight (a) -> False.
 
-below (a, b), below (b, c) -> below (a, c).
-below (a, a) -> False.
-below (a, b), below (b, a) -> False.
+left (a, b), level (a, i) -> level(b, i.next).
+right (a, b), level (a, i) -> level(b, i.next).
+left (a, b), level (b, i.next) -> level(a, i).
+right (a, b), level (b, i.next) -> level(a, i).
 
-below (a, n0) -> False.
-not below (n0, a), a != n0 -> False.
+level (n0, i0).
 
-left (a, b), left (a, c), b != c -> False.
-right (a, b), right (a, c), b != c -> False.
-
-not below (n0, a), a != n0 -> False.
-not above (a, n0), a != n0 -> False.
-
-below (a, b) -> above (b, a).
-above (a, b), above (b, c) -> above (a, c).
-above (a, b), above (b, a) -> False.
-above (a, a) -> False.
-
+level (a, i.next) -> not before (a, i).
+not before (a, i.next) -> not before (a, i).
+level (a, i) -> before (a, i.next).
+before (a, i) -> before (a, i.next).
 '''
 
 
@@ -61,8 +63,5 @@ def test_trees():
         assert False
 
     for index, model in zip(range(MODELS), models):
-        try:
-            tree = getTree(model)
-            print(tree.show(), '\n')
-        except BrokenPrecondition:
-            assert False
+        tree = getTree(model)
+        print(tree.show(), '\n')
