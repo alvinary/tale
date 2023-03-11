@@ -74,10 +74,7 @@ def argumentParser():
                         dest='verbosityFlag',
                         default=0,
                         help='Verbosity level.')
-    parser.add_argument('-p',
-                        dest='predicates',
-                        nargs="+",
-                        type=str)
+    parser.add_argument('-p', dest='predicates', nargs="+", type=str)
     return parser
 
 
@@ -105,9 +102,11 @@ def showModel(model, index):
         for literal in model if literal > 0
     }
 
+
 def atomRelation(atom):
     endIndex = atom.find('(')
     return atom[0:endIndex].strip()
+
 
 def printModel(model, filters=set()):
     if filters:

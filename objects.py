@@ -149,12 +149,14 @@ def getTree(model):
             f"{edges} do not specify a tree - there are cycles (check nodes {' '.join(cycleVertices)})."
         )
 
+
 def stringSpecification(name, sequence):
     facts = []
     characters = set()
     for index, char in enumerate(sequence):
         facts.append(f'{char} ({name}, {index}, {index}).')
     return name, facts, characters
+
 
 def makeStrings(strings):
     allNames, allFacts, allCharacters = [], [], set()

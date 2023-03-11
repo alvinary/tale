@@ -9,7 +9,8 @@ NEWLINE = '\n'
 COMMENT = '--'
 UNORDERED = 10.0
 
-inventory = lambda : defaultdict(lambda : set())
+inventory = lambda: defaultdict(lambda: set())
+
 
 def getLines(text):
     # The first line should be '<separator> <precedence>'
@@ -19,12 +20,13 @@ def getLines(text):
     lines = text.split('\n')
     lines = [line for line in lines if line and notComment(line)]
     lines = lines[1:]
-    
+
     evaluate = firstLine.split()[0].strip()
     precedence = firstLine.split()[1].strip()
-    
+
     return evaluate, precedence, lines
-    
+
+
 def linesToPrecedence(lines, separator, precedence):
     order = defaultdict(lambda: UNORDERED)
     for index, line in enumerate(lines):
@@ -34,6 +36,7 @@ def linesToPrecedence(lines, separator, precedence):
             order[str(index)] = orderValue
     return order
 
+
 def linesToActions(lines, separator, precedence):
     actions = {}
     lines = [l.split(separator)[1].strip() for l in lines]
@@ -41,55 +44,64 @@ def linesToActions(lines, separator, precedence):
         actions[str(index)] = eval('lambda ' + line)
     return actions
 
+
 def notComment(line):
     return COMMENT != line[:len(COMMENT)]
-    
+
+
 def removePrecedence(line, precedence):
     if precedence not in line:
         return line
     return " ".join([t for t in line.split() if not t.startswith(precedence)])
-    
+
+
 def linesToRules(lines, separator, precedence):
     # The first line should be separator <separator>
     rules = []
-    lines = [removePrecedence(l, precedence).split(separator)[0].strip() for l in lines]
+    lines = [
+        removePrecedence(l, precedence).split(separator)[0].strip()
+        for l in lines
+    ]
     lines = [l + f' ({i})' for i, l in enumerate(lines)]
     for line in lines:
         newRules = lineToRules(line)
         rules += newRules
     return rules
-    
+
+
 def lineToRules(line):
     tokens, name = lineToParts(line)
     return tokensToRules(tokens, name)
 
-def lineToParts(line):
-    assert "->" in line and ')' in line and '(' in line # to be sure
-    
-    rparenIndex = -1 # Index of the last )
-    lparenIndex = line.rfind("(")
-    line = line[:rparenIndex] # String up to the last (
-    
-    tokens = [t.strip() for t in line[:lparenIndex].split()]
-    tokens = tokens[0:1] + tokens[2:] # Ignore '->'
 
-    name = line[lparenIndex+1:]
+def lineToParts(line):
+    assert "->" in line and ')' in line and '(' in line  # to be sure
+
+    rparenIndex = -1  # Index of the last )
+    lparenIndex = line.rfind("(")
+    line = line[:rparenIndex]  # String up to the last (
+
+    tokens = [t.strip() for t in line[:lparenIndex].split()]
+    tokens = tokens[0:1] + tokens[2:]  # Ignore '->'
+
+    name = line[lparenIndex + 1:]
     # Handle punctuation here
 
     return tokens, name
 
-def tokensToRules(tokens, name):
 
+def tokensToRules(tokens, name):
     '''
        Input a sequence of tokens and a rule
        name and return the corresponding rule.
     '''
-    
+
     if tokens[1] == LBRACE and tokens[-1] == RBRACE:
         rules = []
         head = tokens[0]
-        members = tokens[2:-1] # ignore '{' and '}'
-        members = [s.strip() for s in ''.join(members).split(',')] # Remove commas
+        members = tokens[2:-1]  # ignore '{' and '}'
+        members = [s.strip()
+                   for s in ''.join(members).split(',')]  # Remove commas
         for leaf in members[1:]:
             rules += unaryRule(head, leaf, name)
         return rules
@@ -101,15 +113,18 @@ def tokensToRules(tokens, name):
     if len(tokens) == 3:
         head, left, right = tuple(tokens)
         return binaryRule(head, left, right, name)
-    
+
     if len(tokens) > 3:
         return naryRule(tokens, name)
-        
+
+
 def binaryRule(head, left, right, name):
     return [((left, right), (head, name))]
 
+
 def unaryRule(head, branch, name):
     return [(branch, (head, name))]
+
 
 def naryRule(tokens, name):
 
@@ -118,26 +133,26 @@ def naryRule(tokens, name):
     head = tokens.pop(0)
     left = tokens.pop(0)
     size = len(tokens)
-    
+
     while tokens:
 
         auxiliaryRight = f"{name}[{size - len(tokens)}]"
-        
+
         if len(tokens) == 1:
-        
+
             right = tokens.pop(0)
             newRules = binaryRule(head, left, right, auxiliaryRight)
             rules += newRules
-        
+
         else:
             newRules = binaryRule(head, left, auxiliaryRight, auxiliaryRight)
             rules += newRules
             head = auxiliaryRight
             left = tokens.pop(0)
-        
+
     return rules
-    
-    
+
+
 def grammarFromRules(rules):
     grammar = defaultdict(lambda: [])
     for rule in rules:
@@ -152,31 +167,35 @@ def grammarFromRules(rules):
             rhs = left, right
             grammar[rhs].append(lhs)
     return grammar
-    
+
+
 def checkSilent(token):
     if token[0] == "[" and token[-1] == "]":
         return token[1:-1], True
     else:
         return token, False
-        
+
+
 def isUnary(rhs):
     return not isinstance(rhs, tuple)
+
 
 def isBinary(rhs):
     return isinstance(rhs, tuple) and len(rhs) == 2
 
+
 def semantics(grammar, triggers):
 
-    encapsulate = lambda x : x
-    ignoreLeft = lambda x, y : [y]
-    ignoreRight = lambda x, y : [x]
-    ignoreBoth = lambda x, y : []
-    includeBoth = lambda x, y : [x, y]
+    encapsulate = lambda x: x
+    ignoreLeft = lambda x, y: [y]
+    ignoreRight = lambda x, y: [x]
+    ignoreBoth = lambda x, y: []
+    includeBoth = lambda x, y: [x, y]
 
     actions = {}
 
     for rule in grammar:
-        
+
         rhs, lhs = rule
         head, actionName = lhs
 
@@ -185,14 +204,14 @@ def semantics(grammar, triggers):
             left, right = rhs
             left, leftIsMute = checkSilent(left)
             right, rightIsMute = checkSilent(right)
-            
+
             if actionName in triggers.keys():
                 semanticAction = triggers[actionName]
-                
+
             elif '[0]' in actionName:
                 name = actionName.replace('[0]', '')
                 semanticAction = triggers[name]
-                
+
             else:
                 semanticAction = lambda x: x
 
@@ -204,7 +223,7 @@ def semantics(grammar, triggers):
                 argumentAction = ignoreRight
             if not leftIsMute and not rightIsMute:
                 argumentAction = includeBoth
-            
+
             actions[actionName] = (head, semanticAction, argumentAction)
 
         if isUnary(rhs):
@@ -220,13 +239,15 @@ def semantics(grammar, triggers):
             actions[actionName] = (head, semanticAction, argumentAction)
 
     return actions
-    
+
+
 def overlap(i, j, k, l):
     end = max(j, l)
     if end == j:
         return i <= l
     if end == l:
         return k <= j
+
 
 def parserFromGrammar(grammar):
     separator, precedence, lines = getLines(grammar)
@@ -237,29 +258,30 @@ def parserFromGrammar(grammar):
     syn = grammarFromRules(rules)
     return Parser(syn, sem, order)
 
-    
+
 class Parser:
+
     def __init__(self, grammar, actions, order):
         self.precedence = order
         self.grammar = grammar
         self.actions = actions
         self.values = {}
-        
+
     def parse(self, tokens):
         return Parse(tokens, self).execute()
-        
+
     def setValue(self, span):
-    
-        if span[0] in self.values: # Value is already stored
+
+        if span[0] in self.values:  # Value is already stored
             return
-            
+
         isLeaf = len(span) == 1
         isUnary = len(span) == 2
         isBinary = len(span) == 3
-    
+
         if isLeaf:
             leaf = span[0]
-            check = True # Because leaves already have a value
+            check = True  # Because leaves already have a value
 
         if isUnary:
             head, branch = span
@@ -271,14 +293,14 @@ class Parser:
             check = check and right in self.values
 
         if check and isLeaf:
-            self.values[leaf] = leaf[0] # The token
-            
+            self.values[leaf] = leaf[0]  # The token
+
         if check and isUnary:
-            _, action, arg = self.actions[head[3]] # Magic number 3
+            _, action, arg = self.actions[head[3]]  # Magic number 3
             argument = self.values[branch]
             arg = arg(argument)
             self.values[head] = action(arg[0])
-        
+
         if check and isBinary:
             _, action, args = self.actions[head[3]]
             left = self.values[left]
@@ -288,23 +310,23 @@ class Parser:
                 self.values[head] = action(args[0])
             if len(args) == 2:
                 self.values[head] = action(args[0], args[1])
-        
+
         # TODO: add error messages so this function
         # provides useful information when something
         # goes wrong, instead of failing silently
-         
+
     def value(self, tokens):
-        
+
         self.values = {}
-        
+
         parse = self.parse(tokens)
-        
+
         distances = set()
 
         leaves = defaultdict(lambda: [])
         binary = defaultdict(lambda: [])
         unary = defaultdict(lambda: [])
-        
+
         for span in parse.spans.keys():
             distance = span[1] - span[0]
             data = parse.spans[span]
@@ -314,50 +336,56 @@ class Parser:
                 if len(d) == 2:
                     unary[distance].append(d)
                 if len(d) == 3:
-                    binary[distance].append(d)    
+                    binary[distance].append(d)
             distances.add(distance)
-            
+
         for span in leaves[0]:
             self.setValue(span)
-        
+
         for k in sorted(distances):
             for s in binary[k]:
                 for t in binary[k]:
                     self.setValue(t)
-            
+
             for s in binary[k]:
                 head, _, _ = s
-                    
+
             for s in unary[k]:
                 for t in unary[k]:
                     self.setValue(t)
-                    
+
             for s in unary[k]:
                 head, _ = s
 
         begin = 0
         end = max(distances)
-        
-        fullSpans = [span for span in self.values if span[1] == begin and span[2] == end]
-            
+
+        fullSpans = [
+            span for span in self.values if span[1] == begin and span[2] == end
+        ]
+
         results = [self.values[k] for k in fullSpans]
-        
+
         print("\n\n")
         for s in self.values:
             print('span: ', s, 'value: ', self.values[s])
         print("\n\n")
-        
+
         return results
+
 
 def pairs(sequence):
     for i in range(len(sequence)):
         for j in range(i):
             yield (sequence[i], sequence[j])
 
+
 def getHead(span):
     return span[0]
-        
+
+
 class Parse:
+
     def __init__(self, tokens, parser):
         self.parser = parser
         self.tokens = tokens
@@ -365,32 +393,32 @@ class Parse:
         self.endAt = inventory()
         self.beginAt = inventory()
         self.spans = inventory()
-        
+
         self.readable = set()
-        
+
     def execute(self):
-    
+
         for index, token in enumerate(self.tokens):
             self.addToken(index, token)
-            self.spans[index, index].add(((token, index, index, TOKEN),))
-             
+            self.spans[index, index].add(((token, index, index, TOKEN), ))
+
         while self.unvisited:
             current = self.unvisited.pop()
-            label, begin, end, action = current 
+            label, begin, end, action = current
             self.trigger(current)
-            
-            left = set(self.endAt[begin-1])
+
+            left = set(self.endAt[begin - 1])
             for other in left:
                 self.triggerPair(other, current)
-                
-            right = set(self.beginAt[end+1])
+
+            right = set(self.beginAt[end + 1])
             for other in right:
                 self.triggerPair(current, other)
 
         self.prune()
-                 
+
         return self
-        
+
     def trigger(self, branch):
         branchLabel, begin, end, branchAction = branch
         if (branchLabel) in self.parser.grammar.keys():
@@ -399,7 +427,7 @@ class Parse:
                 head = (label, begin, end, action)
                 self.addSpan(label, begin, end, action)
                 self.spans[begin, end].add((head, branch))
-                 
+
     def triggerPair(self, left, right):
         lLabel = left[0]
         rLabel = right[0]
@@ -411,21 +439,21 @@ class Parse:
                 head = label, begin, end, action
                 self.addSpan(*head)
                 self.spans[begin, end].add((head, left, right))
-     
+
     def addSpan(self, label, begin, end, action):
         spanData = (label, begin, end, action)
         self.endAt[end].add(spanData)
         self.beginAt[begin].add(spanData)
         self.unvisited.add(spanData)
-        spanContent = tuple(self.tokens[begin:end+1])
+        spanContent = tuple(self.tokens[begin:end + 1])
         self.readable.add((label, spanContent))
-        
+
     def addToken(self, index, token):
         self.addSpan(token, index, index, TOKEN)
 
     def compare(self, left, right):
         leftLabel, i, j, leftName = left
-        rightLabel, k, l, rightName  = right
+        rightLabel, k, l, rightName = right
         leftPrecedence = self.parser.precedence[leftName]
         rightPrecedence = self.parser.precedence[rightName]
         if leftLabel == rightLabel and i == k and j == l and leftPrecedence != rightPrecedence:
@@ -435,9 +463,9 @@ class Parse:
                 return right
         else:
             return False
-        
+
     def prune(self):
-    
+
         remove = set()
         nodes = set()
 
@@ -446,7 +474,7 @@ class Parse:
                 nodes |= set(span)
 
         nodes = list(nodes)
-        
+
         for n, m in pairs(nodes):
             comparison = self.compare(n, m)
             if comparison:
@@ -455,6 +483,3 @@ class Parse:
         for indices in self.spans:
             spanItems = self.spans[indices]
             self.spans[indices] = [i for i in spanItems if i not in remove]
-            
-
-

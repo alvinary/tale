@@ -52,17 +52,17 @@ above (a, a) -> False.
 
 '''
 
+
 def test_trees():
     models = pipeline(program)
-    
+
     if not models:
         print("Instance is not satisfiable")
         assert False
-    
+
     for index, model in zip(range(MODELS), models):
         try:
             tree = getTree(model)
             print(tree.show(), '\n')
         except BrokenPrecondition:
             assert False
-

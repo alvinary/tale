@@ -1,4 +1,3 @@
-
 # The edit distance between talk and also is 2.
 # The edit distance between Score and scores is also 2.
 # We'll use common subsequences between normalized strings as a criterion for similarity.
@@ -8,7 +7,6 @@
 
 # Suppose common(s1, s2) = c
 # - distance from s1 to c, and distance from s2 to c
-
 
 # Replacing random characters with 'a's (or deleting characters)
 # in both strings may increase the length and number of common
@@ -32,32 +30,34 @@
 
 # This also seems pointless, but less ill-defined
 
+
 def commonSubsequence(first, second):
 
     if not first or not second:
-    
+
         return ''
-    
+
     if first[0] == second[0]:
 
         char = first[0]
         first = first[1:]
         second = second[1:]
-            
+
         return char + commonSubsequence(first, second)
-    
+
     else:
-    
+
         poppedFirst = first[1:]
         poppedSecond = second[1:]
-        
+
         popFirst = commonSubsequence(poppedFirst, second)
         popSecond = commonSubsequence(first, poppedSecond)
-        
+
         if len(popFirst) < len(popSecond):
             return popSecond
         else:
             return popFirst
+
 
 def testCommon():
     print(commonSubsequence('AGGTAB', 'GXTXAYB'))

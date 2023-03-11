@@ -16,6 +16,7 @@ from tale.objects import *
 # ('regular-grammar style') rules
 
 import sys
+
 sys.setrecursionlimit(1500)
 
 MODELS = 5
@@ -111,17 +112,21 @@ symbol (n, A), symbol (n, B), A != B -> False.
 symbol (t, A), symbol (t, B), A != B -> False.
 '''
 
+
 def decode(model):
     objects = []
     return objects
+
 
 def encode(structure, tag):
     facts = []
     return facts
 
+
 def ask():
     choice = input()
     return choice == QUIT
+
 
 def chooseTag():
     choice = input()
@@ -129,6 +134,7 @@ def chooseTag():
         return choice
     else:
         return chooseTag()
+
 
 def tag(sample):
     show(sample)
@@ -141,19 +147,27 @@ def tag(sample):
         negative = [sample]
     return positive, negative
 
+
 def extend(theory, positive, negative):
     # This should be the same as pipeline(),
     # but adding the decoded positive and negative
     # examples to their respective sorts
     newTheory = ''
     return newTheory
-    
+
+
 def massUnfold(solver, rules, index, dimacs):
     for rule in rules:
         for clause in unfold(rule, index).clausify(dimacs):
             solver.add_clause(clause)
 
-def applyRules(rules, objects, reader, sorter, solver=Solver(), dimacs=Dimacs()):
+
+def applyRules(rules,
+               objects,
+               reader,
+               sorter,
+               solver=Solver(),
+               dimacs=Dimacs()):
     for obj in objects:
         index = sorter(obj)
         massUnfold(solver, rules, index, dimacs)
@@ -161,19 +175,20 @@ def applyRules(rules, objects, reader, sorter, solver=Solver(), dimacs=Dimacs())
             addFact(solver, fact)
     return solver
 
+
 # TODO: handle branching and unsatisfiable cores
 def induce(baseTheory, positive, negative, step=DEFAULT_STEP):
-    
+
     currentTheory = baseTheory
     samples = []
 
     positive = []
     negative = []
-    
+
     while not stop:
 
         currentTheory = extend(currentTheory, positive, negative)
-        
+
         for i in range(step):
             results = models(currentTheory)
             newSamples = [decode(model) for model in results]
@@ -184,7 +199,7 @@ def induce(baseTheory, positive, negative, step=DEFAULT_STEP):
             newPositive, newNegative = tag(sample)
             positive += newPositive
             negative += newNegative
-    
+
         stop = ask()
 
     return currentTheory, positive, negative
