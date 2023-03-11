@@ -210,7 +210,11 @@ if __name__ == '__main__':
     size = int(size)
     chatty = int(chatty)
     count = 1
-    included = set(included)
+
+    if included:
+        included = set(included)
+    else:
+        included = set()
 
     models = pipeline(programText, logLevel=chatty)
 
