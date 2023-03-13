@@ -484,7 +484,7 @@ class Parse:
             self.spans[indices] = [i for i in spanItems if i not in remove]
 
 # These are most special characters visible in a QWERTY keyboard
-defaultSpecial = "- > < ( ) / & % $ ' ! = + - { } [] ^ + * ? , . | @ # ~ \ ".split()
+defaultSpecial = "- > < ( ) / & % $ ' ! = + - { } [] ^ + * ? , . | @ # ~ \\".split()
 
 def defaultTokenizer(string, specialCharacters=defaultSpecial):
     for p in punctuation:
