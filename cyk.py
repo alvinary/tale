@@ -11,7 +11,6 @@ UNORDERED = 10.0
 
 inventory = lambda: defaultdict(lambda: set())
 
-
 def getLines(text):
     # The first line should be '<separator> <precedence>'
     # This simply takes the first line, splits it at whitespace,
@@ -483,3 +482,11 @@ class Parse:
         for indices in self.spans:
             spanItems = self.spans[indices]
             self.spans[indices] = [i for i in spanItems if i not in remove]
+
+# These are most special characters visible in a QWERTY keyboard
+defaultSpecial = "- > < ( ) / & % $ ' ! = + - { } [] ^ + * ? , . | @ # ~ \ ".split()
+
+def defaultTokenizer(string, specialCharacters=defaultSpecial):
+    for p in punctuation:
+        string = string.replace(p, f' {p} ')
+    return string.split()
