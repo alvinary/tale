@@ -50,7 +50,7 @@ grammar = '''
 
     finaldeclaration = last:declaration ;
 
-    name = /[A-Za-z0-9]+/ ;
+    name = /[A-Za-z0-9_]+/ ;
 
     program = programpart | finalstatement ;
 
