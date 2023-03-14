@@ -124,6 +124,12 @@ def test_value():
 
     print("values: ", values)
 
+    tokens = "2 + 4 * 5 + 6".split()
+    tokens = tuple(tokens)
+    parse = parser.parse(tokens)
+    values = parser.value(tokens)
+    assert 28 in values
+
 
 test_grammar_to_rules()
 test_cyk()
