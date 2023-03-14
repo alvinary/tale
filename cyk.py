@@ -33,6 +33,7 @@ def linesToPrecedence(lines, separator, precedence):
             orderValues = [t for t in line.split() if t.startswith(precedence)]
             orderValue = float(orderValues[0].replace(precedence, ""))
             order[str(index)] = orderValue
+            order[str(index) + '[0]'] = orderValue # In case a rule is n-ary and the actual rule used during parsing is n[0]
     return order
 
 
@@ -240,14 +241,6 @@ def semantics(grammar, triggers):
     return actions
 
 
-def overlap(i, j, k, l):
-    end = max(j, l)
-    if end == j:
-        return i <= l
-    if end == l:
-        return k <= j
-
-
 def parserFromGrammar(grammar):
     separator, precedence, lines = getLines(grammar)
     order = linesToPrecedence(lines, separator, precedence)
@@ -365,11 +358,6 @@ class Parser:
 
         results = [self.values[k] for k in fullSpans]
 
-        print("\n\n")
-        for s in self.values:
-            print('span: ', s, 'value: ', self.values[s])
-        print("\n\n")
-
         return results
 
 
@@ -455,6 +443,7 @@ class Parse:
         rightLabel, k, l, rightName = right
         leftPrecedence = self.parser.precedence[leftName]
         rightPrecedence = self.parser.precedence[rightName]
+
         if leftLabel == rightLabel and i == k and j == l and leftPrecedence != rightPrecedence:
             if leftPrecedence < rightPrecedence:
                 return left
@@ -480,8 +469,8 @@ class Parse:
                 remove.add(comparison)
 
         for indices in self.spans:
-            spanItems = self.spans[indices]
-            self.spans[indices] = [i for i in spanItems if i not in remove]
+            spanItems = list(self.spans[indices])
+            self.spans[indices] = [i for i in spanItems if not set(i) & remove]
 
 # These are most special characters visible in a QWERTY keyboard
 defaultSpecial = "< > ( ) { } [] / \\ ' ! = + - * & | % $ ^ ? @ # ~ ; : , .".split()
