@@ -120,7 +120,7 @@ def test_value():
     parse = parser.parse(tokens)
     values = parser.value(tokens)
 
-    assert 14 in values and 24 not in values
+    assert 14 in values and 24 not in values and 20 not in values
 
     print("values: ", values)
 
