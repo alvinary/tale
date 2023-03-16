@@ -23,11 +23,10 @@ def bitAtom(label, index, bit, elem):
     elemTerms = [e.term for e in elem]
     return Atom(termify(label, index, bit, *elemTerms))
 
+flipMap = {'0' : '1', '1' : '0'}
 
 def flip(bit):
-    options = ['0', '1']
-    options.remove(bit)
-    return options.pop(0)
+    return flipMap[bit]
 
 
 def pad(word, length, char='0'):
