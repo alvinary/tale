@@ -48,7 +48,14 @@ def imageBits(index, image, args, label, padding):
         bit = bitAtom(labelBit, stringIndex, b, args)
         negatedBit = bitAtom(labelBit, stringIndex, flip(b), args)
         elementBits.append(bit)
+        
+        # Ensure the ith bit for elem is either 0 or 1
+        
         yield Either([bit, negatedBit])
+    
+    # If an element has all bit predicates of a given image i,
+    # then f(e, i), and viceversa
+    
     yield Iff(elementBits, [elemHasImage])
 
 
@@ -76,14 +83,23 @@ def unfold(rule, index):
 
 def oneOf(imageSort, domainSorts, label=''):
 
+    # Find the smallest power of two that is
+    # greater or equal than |imageSort|
+
     imageSize = len(imageSort)
     logSize = ceil(log(imageSize, 2))
     bottom = 2**logSize
+    
+    # Ensure every tuple of elements in the domain
+    # is asigned a single index from 1 to |ImageSort|
 
     for i, image in enumerate(imageSort):
         for args in product(*domainSorts):
             for r in imageBits(i, image, args, label, logSize):
                 yield r
+                
+    # Ensure no element is assigned an index
+    # greater than |ImageSort|
 
     for i in range(imageSize, bottom):
         for args in product(*domainSorts):
