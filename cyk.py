@@ -6,10 +6,10 @@ MUTE = 'mute'
 LBRACE = '{'
 RBRACE = '}'
 NEWLINE = '\n'
+TAB = '\t'
+SPACE = ' '
 COMMENT = '--'
 UNORDERED = 10.0
-
-inventory = lambda: defaultdict(lambda: set())
 
 def getLines(text):
     # The first line should be '<separator> <precedence>'
@@ -42,6 +42,11 @@ def linesToActions(lines, separator, precedence):
     lines = [l.split(separator)[1].strip() for l in lines]
     for index, line in enumerate(lines):
         actions[str(index)] = eval('lambda ' + line)
+        
+    actions['NEWLINE'] = lambda x : NEWLINE
+    actions['SPACE'] = lambda x : SPACE
+    actions['TAB'] = lambda x : TAB
+        
     return actions
 
 
@@ -66,6 +71,9 @@ def linesToRules(lines, separator, precedence):
     for line in lines:
         newRules = lineToRules(line)
         rules += newRules
+        
+    rules += whitespaceRules
+    
     return rules
 
 
@@ -193,6 +201,10 @@ def semantics(grammar, triggers):
     includeBoth = lambda x, y: [x, y]
 
     actions = {}
+    
+    triggers['tab'] = lambda x : x
+    triggers['space'] = lambda x : x
+    triggers['newline'] = lambda x : x
 
     for rule in grammar:
 
@@ -384,7 +396,7 @@ class Parse:
         self.readable = set()
 
     def execute(self):
-
+    
         for index, token in enumerate(self.tokens):
             self.addToken(index, token)
             self.spans[index, index].add(((token, index, index, TOKEN), ))
@@ -473,9 +485,21 @@ class Parse:
             self.spans[indices] = [i for i in spanItems if not set(i) & remove]
 
 # These are most special characters visible in a QWERTY keyboard
-defaultSpecial = "< > ( ) { } [] / \\ ' ! = + - * & | % $ ^ ? @ # ~ ; : , .".split()
+defaultSpecial = ('" ' + "< > ( ) { } [] / \\ ' ! = + - * & | % $ ^ ? @ # ~ ; : , . ").split()
 
 def defaultTokenizer(string, specialCharacters=defaultSpecial):
-    for p in punctuation:
+    for p in defaultSpecial:
         string = string.replace(p, f' {p} ')
     return string.split()
+    
+def whitespaceTokenizer(string, specialCharacters=defaultSpecial):
+    for p in defaultSpecial:
+        string = string.replace(p, f' {p} ')
+    string = " NEWLINE ".join(string.split(NEWLINE))
+    string = " TAB ".join(string.split(TAB))
+    string = " SPACE ".join(string.split(SPACE))
+    return string.split()
+    
+inventory = lambda: defaultdict(lambda: set())
+
+whitespaceRules = tokensToRules(['TAB', TAB], 'tab') + tokensToRules(['NEWLINE', NEWLINE], 'newline') + tokensToRules(['SPACE', SPACE], 'space')
