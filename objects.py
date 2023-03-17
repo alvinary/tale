@@ -64,6 +64,10 @@ class Node():
 
     def show(self):
         return f"({self.left.show()} {self.right.show()})"
+        
+    def replace(self, a, b):
+        self.left.replace(a, b)
+        self.right.replace(a, b)
 
 
 class Leaf():
@@ -73,6 +77,10 @@ class Leaf():
 
     def show(self):
         return self.leaf
+        
+    def replace(self, a, b):
+        if self.leaf == a:
+            self.leaf = b
 
 
 def extract(literal):
@@ -167,3 +175,49 @@ def makeStrings(strings):
         allFacts += facts
         allCharacters |= characters
     return allNames, allFacts, allCharacters
+    
+    
+def getSentence(model):
+
+    isLeft = lambda s: s[0:5] == 'left('
+    isRight = lambda s: s[0:6] == 'right('
+    isLex = lambda s: s[0:4] == 'lex('
+
+    leftCandidates = {literal for literal in model if 'left(' in literal}
+    rightCandidates = {literal for literal in model if 'right(' in literal}
+    lexCandidates = {literal for literal in model if 'lex(' in literal}
+
+    leftEdges = {
+        extract(literal)
+        for literal in leftCandidates if isLeft(literal)
+    }
+    rightEdges = {
+        extract(literal)
+        for literal in rightCandidates if isRight(literal)
+    }
+    lexicalItems = {
+        extract(literal)
+        for literal in lexCandidates if isLex(literal)
+    }
+    
+    print(lexicalItems)
+
+    edges = leftEdges | rightEdges
+    predecessors = {a for a, _ in edges}
+    successors = {b for _, b in edges}
+    vertices = predecessors | successors
+    
+    edges = leftEdges | rightEdges
+    predecessors = {a for a, _ in edges}
+    successors = {b for _, b in edges}
+    vertices = predecessors | successors
+
+    roots = {i for i in vertices if i not in successors}
+    root = roots.pop()
+    
+    tree = bort(root, leftEdges, rightEdges)
+    
+    for a, b in lexicalItems:
+        tree.replace(a, b)
+        
+    return tree
