@@ -8,10 +8,11 @@ from tale.embeddings import *
 from tale.formulas import *
 from tale.programs import parseProgram
 
-RULES = "r"
-GROUNDRULES = "gr"
-ATOMS = "a"
-CLAUSES = "cl"
+RULES = "rules"
+GROUNDRULES = "ground"
+ATOMS = "atoms"
+CLAUSES = "clauses"
+STATS = "stats"
 
 DESCRIPTION = '''
 Find out if a logic program is satisfiable, and list some models, if any.
@@ -24,12 +25,12 @@ POSITIVE_COMPARISONS = ["=", "<", "<="]
 
 class Log:
 
-    def __init__(self, level=0):
+    def __init__(self):
         self.data = defaultdict(lambda: [])
-        self.level = level
+        self.flags = set()
 
-    def log(self, field, data, priority):
-        if priority == self.level:
+    def log(self, field, data):
+        if field in self.flags:
             self.data[field].append(data)
 
 
@@ -70,11 +71,8 @@ def argumentParser():
         dest='requestedModels',
         default=1,
         help='Number of models to show, if the input program is satisfiable.')
-    parser.add_argument('-v',
-                        dest='verbosityFlag',
-                        default=0,
-                        help='Verbosity level.')
-    parser.add_argument('-p', dest='predicates', nargs="+", type=str)
+    parser.add_argument('-p', dest='predicates', nargs="+", type=str, help='Names of predicates to be shown in output. If none are provied, all predicates are shown.')
+    parser.add_argument('-l', dest='log', nargs="+", type=str, help='Choose any subset of the flags { rules, ground, atoms, clauses, stats } to decide what the logger logs and then shows.')
     return parser
 
 
@@ -132,14 +130,14 @@ def functionClauses(index, functions):
             yield clause
 
 
-def pipeline(program, logLevel=0, logger=defaultLogger):
+def pipeline(program, logFlags=set(), logger=defaultLogger):
 
-    logger.level = logLevel
+    logger.flags=logFlags
 
     _sorts, _variables, _values, _functions, rules = parseProgram(program)
 
     for r in rules:
-        logger.log(RULES, r.show(), 1)
+        logger.log(RULES, r.show())
 
     index = Index(sorts=_sorts, variables=_variables, functions=_functions)
     dimacs = DimacsIndex([])
@@ -156,38 +154,39 @@ def pipeline(program, logLevel=0, logger=defaultLogger):
                 atomForms.add(comparison.show())
             for clause in comparison.clausify(dimacs):
                 solver.add_clause(clause)
-                logger.log(CLAUSES, (clause, comparison.show()), 2)
+                logger.log(CLAUSES, (clause, comparison.show()))
 
     for clauseSet in functionClauses(index, _values):
-        logger.log(GROUNDRULES, clauseSet.show(), 2)
+        logger.log(GROUNDRULES, clauseSet.show())
         for clause in clauseSet.clausify(dimacs):
             solver.add_clause(clause)
-            logger.log(CLAUSES, (clause, clauseSet.show()), 2)
+            logger.log(CLAUSES, (clause, clauseSet.show()))
 
     for rule in rules:
         source = rule.collect(index)
         if unfold(rule, index):
             for groundRule in unfold(rule, index):
-                logger.log(GROUNDRULES, groundRule.show(), 2)
+                logger.log(GROUNDRULES, groundRule.show())
                 for atom in groundRule.atoms():
                     if atom.show() not in atomForms and isPositive(atom):
                         atomForms.add(atom.show())
                         atoms.append(atom)
-                        logger.log(ATOMS, atom.show(), 2)
+                        logger.log(ATOMS, atom.show())
                 for clause in groundRule.clausify(dimacs):
                     solver.add_clause(clause)
-                    logger.log(CLAUSES, (clause, groundRule.show()), 2)
+                    logger.log(CLAUSES, (clause, groundRule.show()))
         else:
             solver.add_clause(rule.clausify(dimacs))
-            logger.log(CLAUSES, (rule.clausify(dimacs), rule.show()), 2)
+            logger.log(CLAUSES, (rule.clausify(dimacs), rule.show()))
 
     for clauseSet in negation(atoms):
-        logger.log(GROUNDRULES, clauseSet.show(), 2)
+        logger.log(GROUNDRULES, clauseSet.show())
         for clause in clauseSet.clausify(dimacs):
             solver.add_clause(clause)
-            logger.log(CLAUSES, (clause, clauseSet.show()), 3)
+            logger.log(CLAUSES, (clause, clauseSet.show()))
 
     for model in solver.enum_models():
+        logger.log(STATS, str(solver.accum_stats()))
         yield showModel(model, dimacs)
 
 
@@ -196,10 +195,10 @@ if __name__ == '__main__':
     argParser = argumentParser()
     arguments = vars(argParser.parse_args())
 
-    chatty = arguments["verbosityFlag"]
     program = arguments["inputProgram"]
     size = arguments["requestedModels"]
     included = arguments["predicates"]
+    flags = arguments["log"]
 
     programText = ""
     with open(program) as programFile:
@@ -207,7 +206,6 @@ if __name__ == '__main__':
             programText = f"{programText}\n{line}"
 
     size = int(size)
-    chatty = int(chatty)
     count = 1
 
     if included:
@@ -215,7 +213,7 @@ if __name__ == '__main__':
     else:
         included = set()
 
-    models = pipeline(programText, logLevel=chatty)
+    models = pipeline(programText, logFlags=flags)
 
     if models:
         print("The input program is satisfiable.")
