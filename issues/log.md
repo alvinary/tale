@@ -397,6 +397,8 @@ Abstract predicates (similar to alloy's abstract sigs)
 * PDL planning with resources
 * Symmetry breaking with leftOf defined like before
 * Compositional types
+* Log number of clauses and literals added to solver
+  instance, without necessarily storing them 
 
 ## Done
 
@@ -406,3 +408,4 @@ Abstract predicates (similar to alloy's abstract sigs)
 * Test quadratic tree embedding (in test_trees.py)
 * Check parsing and evaluation with precedence
 * Obtain strings from a fixed grammar
+* Log using flags instead of verbosity
