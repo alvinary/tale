@@ -395,10 +395,14 @@ Abstract predicates (similar to alloy's abstract sigs)
 * Natural deduction
 * PDL planning
 * PDL planning with resources
-* Check parsing and evaluation with precedence
+* Symmetry breaking with leftOf defined like before
+* Compositional types
 
 ## Done
 
 * Parsing and evaluation without precedence.
+* Parsing and evaluation with precedence.
 * Try ordering vertices with level : vertex -> index (it seems to work).
 * Test quadratic tree embedding (in test_trees.py)
+* Check parsing and evaluation with precedence
+* Obtain strings from a fixed grammar
