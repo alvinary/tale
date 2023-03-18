@@ -134,20 +134,5 @@ def uniqueNameAssumption(constants):
                 yield Comparison('!=', c1, c2)
             elif c1 == c2:
                 yield Comparison('=', c1, c2)
+    
 
-
-# Mixed embeddings
-
-
-def binaryTree(size, label=''):
-
-    leaves = []
-    partMap = {}
-
-    partMap['left'] = []
-    partMap['right'] = []
-
-    # virtual or actual
-    # virtuals have a direction
-    # inherit in that direction directly
-    # show
