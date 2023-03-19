@@ -1,4 +1,5 @@
 from tale.cyk import *
+from math import floor
 
 test_grammar = '''
     := @
@@ -8,6 +9,8 @@ test_grammar = '''
     NUMBER -> NUMBER [MINUS] NUMBER            := x, y : x - y
     NUMBER -> NUMBER [TIMES] NUMBER @5         := x, y : x * y
     NUMBER -> [MINUS] NUMBER                   := x : -x
+    NUMBER -> NUMBER [POWER] NUMBER            := x, y : x ** y
+    NUMBER -> NUMBER [BETWEEN] NUMBER          := x, y : x / y
     LPAREN -> (                                := x : x
     RPAREN -> )                                := x : x
     DIGIT -> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }  := x : x
@@ -15,6 +18,8 @@ test_grammar = '''
     PLUS -> +                                  := x : x
     MINUS -> -                                 := x : x
     TIMES -> *                                 := x : x
+    POWER -> ^                                 := x : x
+    BETWEEN -> /                               := x : x
 '''
 
 identity = lambda x: x
@@ -27,6 +32,9 @@ test_grammar_triggers = {
     ')': [("RPAREN", ") symbol")],
     '+': [("PLUS", "+ symbol")],
     '-': [("MINUS", "- symbol")],
+    '^': [("POWER", "+ symbol")],
+    '*': [("TIMES", "- symbol")],
+    '/': [("TIMES", "- symbol")],
     ('PLUS', 'NUMBER'): [("PLUSNUMBER", "Addition")],
     ('MINUS', 'NUMBER'): [("NUMBER", "Additive inverse")],
     ('NUMBER', 'PLUSNUMBER'): [("NUMBER", "Sum")],
@@ -128,7 +136,15 @@ def test_value():
     tokens = tuple(tokens)
     parse = parser.parse(tokens)
     values = parser.value(tokens)
+    
     assert 28 in values
+    
+    expr = tuple([c for c in '((((2*4)-(7*3))+((4*1)-(5*5)))/(((7/6)-(7/8))+((9/8)-(4^2))))*((((7^3)-(1/4))+((5/5)-(6/7)))/(((8/7)-(8/9))+((4)-(7))))+((((2*4)-(7*3))+((4*1)-(5*5)))/(((7/6)-(7/8))+((9/8)-(4^2))))*((((7^3)-(1/4))+((5/5)-(6/7)))/(((8/7)-(8/9))+((4)-(7))))'])
+    
+    values = parser.value(expr)
+    
+    assert -583 in [floor(v) for v in values]
+    
 
 
 test_grammar_to_rules()
