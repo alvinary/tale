@@ -28,9 +28,9 @@ test_grammar = '''
     COMMA -> ,                                 := x : x
     LSQUARE -> [                               := x : x
     RSQUARE -> ]                               := x : x
-    LIST -> [LSQUARE] ELEMS [RSQUARE]          := x : x.split(',')
+    LIST -> [LSQUARE] ELEMS [RSQUARE]          := x : x
     ELEMS -> NUMBER                            := x : x
-    ELEMS -> NUMBER [COMMA] ELEMS              := x, xs : x + xs
+    ELEMS -> NUMBER [COMMA] ELEMS              := x, xs : xs.append(x)
 '''
 
 identity = lambda x: x
