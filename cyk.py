@@ -303,13 +303,16 @@ class Parser:
             _, action, arg = self.actions[head[3]]  # Magic number 3
             argument = self.values[branch]
             arg = arg(argument)
-            self.values[head] = action(arg[0])
+            self.values[head] = action(arg)
 
         if check and isBinary:
             _, action, args = self.actions[head[3]]
             left = self.values[left]
             right = self.values[right]
-            args = args(left, right)
+            args = args(left, right) # This should not be a python sequence
+            # if a function returns a single value that is a list, and the list
+            # has length 1 or 2 or more, it will either fall nowhere or pass
+            # for two arguments or its first element will pass for an arugment
             if len(args) == 1:
                 self.values[head] = action(args[0])
             if len(args) == 2:
