@@ -23,7 +23,9 @@ class ArgumentList:
         if self.ignore and not self.nextArgument:
             return []
         if self.nextArgument:
-            return [self.item] + self.nextArgument.collect()
+            args = self.nextArgument.collect()
+            args.append(self.item)
+            return args
         else:
             return [self.item]
         
@@ -365,7 +367,7 @@ class Parser:
         if check and isUnary:
             _, action, arg = self.actions[head[3]]  # Magic number 3
             argument = self.values[branch]
-            arg = arg(argument).collect()
+            arg = reversed(arg(argument).collect())
             self.values[head] = action(*arg)
 
         if check and isBinary:
@@ -373,7 +375,7 @@ class Parser:
             left = self.values[left]
             right = self.values[right]
             args = args(left, right)
-            args = args.collect()
+            args = reversed(args.collect())
             self.values[head] = action(*args)
 
         # TODO: add error messages so this function
