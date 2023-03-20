@@ -373,10 +373,7 @@ class Parser:
             left = self.values[left]
             right = self.values[right]
             args = args(left, right)
-            args = args.collect() # This should not be a python sequence
-            # if a function returns a single value that is a list, and the list
-            # has length 1 or 2 or more, it will either fall nowhere or pass
-            # for two arguments or its first element will pass for an arugment
+            args = args.collect()
             self.values[head] = action(*args)
 
         # TODO: add error messages so this function
