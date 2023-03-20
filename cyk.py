@@ -11,6 +11,29 @@ SPACE = ' '
 COMMENT = '--'
 UNORDERED = 10.0
 
+class ArgumentList:
+    def __init__(self, item, ignore=False, next=False):
+        self.item = item
+        self.nextArgument = next
+        self.ignore = ignore
+        
+    def collect(self):
+        if self.ignore and self.nextArgument:
+            return self.nextArgument.collect()
+        if self.ignore and not self.nextArgument:
+            return []
+        if self.nextArgument:
+            return [self.item] + self.nextArgument.collect()
+        else:
+            return [self.item]
+        
+    def size(self):
+        if self.nextArgument:
+            return 1 + self.nextArgument.size()
+        else:
+            return 1
+        
+
 def getLines(text):
     # The first line should be '<separator> <precedence>'
     # This simply takes the first line, splits it at whitespace,
@@ -190,15 +213,55 @@ def isUnary(rhs):
 
 def isBinary(rhs):
     return isinstance(rhs, tuple) and len(rhs) == 2
+    
+# Argument accumulators
 
+# We pass these instead of Python sequences because
+# when working with collections f(*a) could be applied
+# to what is intended to be single argument, but happens
+# to be a Python sequence
+    
+def ignoreBoth(x, y):
+    if not isinstance(y, ArgumentList):
+        y = ArgumentList(y)
+    x = ArgumentList(x, ignore=True, next=y)
+    y.ignore = True
+    return x
+    
+def ignoreLeft(x, y):
+    if not isinstance(y, ArgumentList):
+        y = ArgumentList(y)
+    x = ArgumentList(x, ignore=True, next=y)
+    return x
+    
+def ignoreRight(x, y):
+    if not isinstance(y, ArgumentList):
+        y = ArgumentList(y)
+    y.ignore = True
+    x = ArgumentList(x, ignore=False, next=y)
+    return x
+    
+def includeBoth(x, y):
+    if not isinstance(y, ArgumentList):
+        y = ArgumentList(y)
+    x = ArgumentList(x, ignore=False, next=y)
+    y.ignore = False
+    return x        
+    
+def encapsulate(x):
+   if not isinstance(x, ArgumentList):
+       return ArgumentList(x)
+   else:
+       return x
+   
+def emptyArgument(x):
+   if not isinstance(x, ArgumentList):
+       return ArgumentList(x, ignore=True)
+   else:
+       x.ignore = True
+       return x
 
 def semantics(grammar, triggers):
-
-    encapsulate = lambda x: x
-    ignoreLeft = lambda x, y: [y]
-    ignoreRight = lambda x, y: [x]
-    ignoreBoth = lambda x, y: []
-    includeBoth = lambda x, y: [x, y]
 
     actions = {}
     
@@ -225,7 +288,7 @@ def semantics(grammar, triggers):
                 semanticAction = triggers[name]
 
             else:
-                semanticAction = lambda x: x
+                semanticAction = encapsulate
 
             if leftIsMute and rightIsMute:
                 argumentAction = ignoreBoth
@@ -244,9 +307,9 @@ def semantics(grammar, triggers):
             semanticAction = triggers[actionName]
 
             if mute:
-                argumentAction = lambda x: []
+                argumentAction = emptyArgument
             else:
-                argumentAction = lambda x: x
+                argumentAction = encapsulate
 
             actions[actionName] = (head, semanticAction, argumentAction)
 
@@ -302,21 +365,19 @@ class Parser:
         if check and isUnary:
             _, action, arg = self.actions[head[3]]  # Magic number 3
             argument = self.values[branch]
-            arg = arg(argument)
-            self.values[head] = action(arg)
+            arg = arg(argument).collect()
+            self.values[head] = action(*arg)
 
         if check and isBinary:
             _, action, args = self.actions[head[3]]
             left = self.values[left]
             right = self.values[right]
-            args = args(left, right) # This should not be a python sequence
+            args = args(left, right)
+            args = args.collect() # This should not be a python sequence
             # if a function returns a single value that is a list, and the list
             # has length 1 or 2 or more, it will either fall nowhere or pass
             # for two arguments or its first element will pass for an arugment
-            if len(args) == 1:
-                self.values[head] = action(args[0])
-            if len(args) == 2:
-                self.values[head] = action(args[0], args[1])
+            self.values[head] = action(*args)
 
         # TODO: add error messages so this function
         # provides useful information when something
