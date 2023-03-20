@@ -395,7 +395,7 @@ Abstract predicates (similar to alloy's abstract sigs)
 * Natural deduction
 * PDL planning
 * PDL planning with resources
-* Symmetry breaking with leftOf defined like before
+* Symmetry breaking with leftOf defined like before (i.e. as a relation using induction on i.next)
 * Compositional types
 * Log number of clauses and literals added to solver
   instance, without necessarily storing them 
