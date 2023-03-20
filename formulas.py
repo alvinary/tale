@@ -6,6 +6,14 @@ from functools import reduce
 
 union = lambda x, y: x | y
 
+swappedComparisons = {
+            '='  : '!=',
+            '!=' : '=',
+            '<=' : '</=',
+            '</=' : '<=',
+            '<' : '</',
+            '</' : '<'
+            }
 
 def reverseComparison(comparison):
     '''
@@ -16,18 +24,7 @@ def reverseComparison(comparison):
     # Since the list of comparison operators is fixed,
     # this should be an enumeration.
 
-    if comparison == '=':
-        return '!='
-    if comparison == '!=':
-        return '='
-    if comparison == '<=':
-        return '</='
-    if comparison == '</=':
-        return '<='
-    if comparison == '<':
-        return '</'
-    if comparison == '</':
-        return '<'
+    return swappedComparisons[comparison]
 
 
 def isNegative(term):
