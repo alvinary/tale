@@ -389,7 +389,7 @@ Abstract predicates (similar to alloy's abstract sigs)
 
 ## TODOS
 
-* Check equality of a.f with assign
+* Check equality of `a.f` with assign
 * DAGS
 * Arithmetic (parse the arithmetic file with the new parser)
 * Natural deduction
@@ -397,8 +397,16 @@ Abstract predicates (similar to alloy's abstract sigs)
 * PDL planning with resources
 * Symmetry breaking with leftOf defined like before (i.e. as a relation using induction on i.next)
 * Compositional types
+* 'Bare' composition with arbitrary predicates as restrictions on arguments
+  (instead of types), without composition
 * Log number of clauses and literals added to solver
-  instance, without necessarily storing them 
+  instance, without necessarily storing them
+* Write down 'old' model of semantic composition
+  (DRT with inheritance), check against AMR (Copestake)
+* Survey cases where it fails (like 'the fake fake
+  muffler and the actual fake muffler'), and see if that
+  can be modeled with functions  (with identity being the
+  most common case)
 
 ## Done
 
@@ -409,3 +417,4 @@ Abstract predicates (similar to alloy's abstract sigs)
 * Check parsing and evaluation with precedence
 * Obtain strings from a fixed grammar
 * Log using flags instead of verbosity
+* Use ArgumentList instead of sequence
