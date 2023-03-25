@@ -401,12 +401,33 @@ Abstract predicates (similar to alloy's abstract sigs)
   (instead of types), without composition
 * Log number of clauses and literals added to solver
   instance, without necessarily storing them
-* Write down 'old' model of semantic composition
-  (DRT with inheritance), check against AMR (Copestake)
 * Survey cases where it fails (like 'the fake fake
   muffler and the actual fake muffler'), and see if that
   can be modeled with functions  (with identity being the
   most common case)
+* Refactor `cyk.py`. For instance, `semantics` could be
+rewritten like this:
+
+```python
+
+def semantics(grammar, triggers):
+    actions = DEFAULT_ACTIONS
+    for rule in grammar:
+         actions[rule.name] = rule.getAction()
+
+```
+
+This only requires one class, `GrammarRule`, with
+three subclasses (one for each case in the current long,
+poorly abstracted loop - binary rules, unary rules, and
+leaf rules), and data for heads and the required number
+of branches (as well as data on which branches should be
+ignored).
+
+However, if such a class is defined, one might as well have it
+include data on precedence, and use methods defined for that
+class to implement all the functionality that is spread across
+the module.
 
 ## Done
 
@@ -418,3 +439,8 @@ Abstract predicates (similar to alloy's abstract sigs)
 * Obtain strings from a fixed grammar
 * Log using flags instead of verbosity
 * Use ArgumentList instead of sequence
+
+## Superseded
+
+* Write down 'old' model of semantic composition
+  (DRT with inheritance), check against AMR (Copestake) - this is no longer necessary
