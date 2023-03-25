@@ -429,6 +429,8 @@ include data on precedence, and use methods defined for that
 class to implement all the functionality that is spread across
 the module.
 
+* Test `binary_addition.tl`
+
 ## Done
 
 * Parsing and evaluation without precedence.
