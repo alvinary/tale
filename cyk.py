@@ -410,19 +410,14 @@ class Parser:
             self.setValue(span)
 
         for k in sorted(distances):
+            
             for s in binary[k]:
                 for t in binary[k]:
                     self.setValue(t)
 
-            for s in binary[k]:
-                head, _, _ = s
-
             for s in unary[k]:
                 for t in unary[k]:
                     self.setValue(t)
-
-            for s in unary[k]:
-                head, _ = s
 
         begin = 0
         end = max(distances)
