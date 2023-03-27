@@ -386,6 +386,24 @@ Abstract predicates (similar to alloy's abstract sigs)
   ```
 
   Is there something missing?
+  
+## Multiplication
+
+We can implement addition using only a `shift left` operation and addition.
+Suppose we want to obtain `ab`. Suppose `a = 2k`. Then `ab = 2kb = shift(kb)`.
+If `a = 2k+1`, then `ab = (2k+1)b = 2kb + b = shift (2k) + b`. If `k = 1`,
+then `kb = b`.
+
+This requires smaller embeddings than just adding `b`several times.
+
+Shifts can be modeled copying bits using the `next` relation and setting
+the least significant bit to zero.
+
+For instance, `21 * 42` is `42 + shift (shift (42 + (shift (shift 42))))`.
+
+The relational specification has 6 operation nodes 9 number nodes, I think.
+
+That's smaller than 21 operation nodes with 23 number nodes.
 
 ## TODOS
 
