@@ -1,5 +1,7 @@
 from collections import defaultdict
+from multiprocessing import cpu_count, Pool
 from itertools import islice as iteratorslice
+from itertools import chain
 import argparse
 
 from pysat.solvers import Solver
@@ -14,6 +16,8 @@ ATOMS = "atoms"
 CLAUSES = "clauses"
 STATS = "stats"
 
+CHUNKSIZE = 1024
+
 DESCRIPTION = '''
 Find out if a logic program is satisfiable, and list some models, if any.
 '''
@@ -21,6 +25,17 @@ Find out if a logic program is satisfiable, and list some models, if any.
 EPILOG = 'Verbosity levels show: 1- rules, 2- grounded rules, and \n 3- dimacs ground clauses.\n'
 
 POSITIVE_COMPARISONS = ["=", "<", "<="]
+
+
+def poolMap(iterators, mapping, cores=False):
+    # Look up how to do this with a `with` statement
+    if not cores:
+        cores = cpu_count()
+    pool = Pool(cores)
+    mappedData = pool.imap(mapping, chain(*iterators), CHUNKSIZE)
+    for elem in mappedData:
+        yield elem
+    pool.close()
 
 
 class Log:
