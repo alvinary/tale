@@ -32,7 +32,6 @@ def poolMap(iterators, mapping, cores=False):
     if not cores:
         cores = cpu_count()
     with Pool(cores) as pool:
-        pool = Pool(cores)
         mappedData = pool.imap(mapping, chain(*iterators), CHUNKSIZE)
         for elem in mappedData:
             yield elem
