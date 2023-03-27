@@ -31,11 +31,12 @@ def poolMap(iterators, mapping, cores=False):
     # Look up how to do this with a `with` statement
     if not cores:
         cores = cpu_count()
-    pool = Pool(cores)
-    mappedData = pool.imap(mapping, chain(*iterators), CHUNKSIZE)
-    for elem in mappedData:
-        yield elem
-    pool.close()
+    with Pool(cores) as pool:
+        pool = Pool(cores)
+        mappedData = pool.imap(mapping, chain(*iterators), CHUNKSIZE)
+        for elem in mappedData:
+            yield elem
+        pool.close()
 
 
 class Log:
