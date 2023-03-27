@@ -451,6 +451,8 @@ the module.
 * Try a parallel map in `pipeline.py`, in `unfold()`.
 ```python
 
+CHUNKSIZE = 1024
+
 from multiprocessing import cpu_count, Pool
 import itertools
 
@@ -459,7 +461,7 @@ def poolMap(iterators, mapping, cores=False):
     if not cores:
         cores = cpu_count()
     pool = Pool(cores)
-    mappedData = pool.imap(func, itertools.chain(iterators))
+    mappedData = pool.imap(func, itertools.chain(iterators), CHUNKSIZE)
     for elem in mappedData:
         yield elem
     pool.close()
