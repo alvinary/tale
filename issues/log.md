@@ -448,6 +448,23 @@ class to implement all the functionality that is spread across
 the module.
 
 * Test `binary_addition.tl`
+* Try a parallel map in `pipeline.py`, in `unfold()`.
+```python
+
+from multiprocessing import cpu_count, Pool
+import itertools
+
+def poolMap(iterators, mapping, cores=False):
+    # Look up how to do this with a `with` statement
+    if not cores:
+        cores = cpu_count()
+    pool = Pool(cores)
+    mappedData = pool.imap(func, itertools.chain(iterators))
+    for elem in mappedData:
+        yield elem
+    pool.close()
+```
+Check some examples to make sure `imap` is used properly.
 
 ## Done
 
