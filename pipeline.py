@@ -86,8 +86,22 @@ def argumentParser():
         dest='requestedModels',
         default=1,
         help='Number of models to show, if the input program is satisfiable.')
-    parser.add_argument('-p', dest='predicates', nargs="+", type=str, help='Names of predicates to be shown in output. If none are provied, all predicates are shown.')
-    parser.add_argument('-l', dest='log', nargs="+", type=str, help='Choose any subset of the flags { rules, ground, atoms, clauses, stats } to decide what the logger logs and then shows.')
+    parser.add_argument(
+        '-p',
+        dest='predicates',
+        nargs="+",
+        type=str,
+        help=
+        'Names of predicates to be shown in output. If none are provied, all predicates are shown.'
+    )
+    parser.add_argument(
+        '-l',
+        dest='log',
+        nargs="+",
+        type=str,
+        help=
+        'Choose any subset of the flags { rules, ground, atoms, clauses, stats } to decide what the logger logs and then shows.'
+    )
     return parser
 
 
@@ -147,7 +161,7 @@ def functionClauses(index, functions):
 
 def pipeline(program, logFlags=set(), logger=defaultLogger):
 
-    logger.flags=logFlags
+    logger.flags = logFlags
 
     _sorts, _variables, _values, _functions, rules = parseProgram(program)
 
