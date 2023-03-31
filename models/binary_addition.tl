@@ -1,41 +1,40 @@
 1, 0 : digit.
-order i 16 : index.
-order n 3 : number.
+
+order i 8 : index.
+
+order s 2 : sum.
+order n 4 : sumee.
+
+order s 2 : number.
+order n 4 : number.
 
 var d, e : digit.
 var i, j, k : index.
-var a, b, c : number.
+var s : sum.
+var t : sumee.
 
 let bit : number, index -> digit. 
 
-either atomic (a), operation (a).
+let leftArg : sum -> sumee.
+let rightArg : sum -> sumee.
 
-leftArg (a, b) -> arg (a, b).
-rightArg (a, b) -> arg (a, b).
+leftArg (s, t), bit (t, i, d) -> leftOperand (s, i, d).
+rightArg (s, t), bit (t, i, d) -> rightOperand (s, i, d).
 
-leftArg (a, b), atomic (a) -> False.
-rightArg (a, b), atomic (a) -> False.
+carryBit (s, i0, 0).
 
-arg (a, b), arg (b, a) -> False.
+leftOperand (s, i, 1), rightOperand (s, i, 0) -> carryBit (s, i.next, 0).
+leftOperand (s, i, 0), rightOperand (s, i, 0) -> carryBit (s, i.next, 0).
+leftOperand (s, i, 0), rightOperand (s, i, 1) -> carryBit (s, i.next, 0).
+leftOperand (s, i, 1), rightOperand (s, i, 1) -> carryBit (s, i.next, 1).
 
-leftArg (a, b), bit (b, i, d) -> leftOperand (a, i, d).
-rightArg (a, b), bit (b, i, d) -> rightOperand (a, i, d).
-
-atomic (a), leftOperand (a, i, d) -> False.
-atomic (a), rightOperand (a, i, d) -> False.
-
-leftOperand (a, i, 1), rightOperand (a, i, 0) -> carryBit (a, i.next, 0).
-leftOperand (a, i, 0), rightOperand (a, i, 0) -> carryBit (a, i.next, 0).
-leftOperand (a, i, 0), rightOperand (a, i, 1) -> carryBit (a, i.next, 0).
-leftOperand (a, i, 1), rightOperand (a, i, 1) -> carryBit (a, i.next, 1).
-
-leftOperand (a, i, 0), rightOperand (a, i, 0), carryBit (a, i, 0) -> bit (a, i, 0).
-leftOperand (a, i, 0), rightOperand (a, i, 0), carryBit (a, i, 1) -> bit (a, i, 1).
-leftOperand (a, i, 0), rightOperand (a, i, 1), carryBit (a, i, 0) -> bit (a, i, 1).
-leftOperand (a, i, 0), rightOperand (a, i, 1), carryBit (a, i, 1) -> bit (a, i, 0).
-leftOperand (a, i, 1), rightOperand (a, i, 0), carryBit (a, i, 0) -> bit (a, i, 1).
-leftOperand (a, i, 1), rightOperand (a, i, 0), carryBit (a, i, 1) -> bit (a, i, 0).
-leftOperand (a, i, 1), rightOperand (a, i, 1), carryBit (a, i, 0) -> bit (a, i, 0).
-leftOperand (a, i, 1), rightOperand (a, i, 1), carryBit (a, i, 1) -> bit (a, i, 1).
+leftOperand (s, i, 0), rightOperand (s, i, 0), carryBit (s, i, 0) -> bit (s, i, 0).
+leftOperand (s, i, 0), rightOperand (s, i, 0), carryBit (s, i, 1) -> bit (s, i, 1).
+leftOperand (s, i, 0), rightOperand (s, i, 1), carryBit (s, i, 0) -> bit (s, i, 1).
+leftOperand (s, i, 0), rightOperand (s, i, 1), carryBit (s, i, 1) -> bit (s, i, 0).
+leftOperand (s, i, 1), rightOperand (s, i, 0), carryBit (s, i, 0) -> bit (s, i, 1).
+leftOperand (s, i, 1), rightOperand (s, i, 0), carryBit (s, i, 1) -> bit (s, i, 0).
+leftOperand (s, i, 1), rightOperand (s, i, 1), carryBit (s, i, 0) -> bit (s, i, 0).
+leftOperand (s, i, 1), rightOperand (s, i, 1), carryBit (s, i, 1) -> bit (s, i, 1).
 
 
