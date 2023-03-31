@@ -229,6 +229,9 @@ if __name__ == '__main__':
     included = arguments["predicates"]
     flags = arguments["log"]
 
+    if not flags:
+        flags = set()
+
     programText = ""
     with open(program) as programFile:
         for line in programFile:
