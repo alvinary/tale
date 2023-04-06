@@ -447,26 +447,10 @@ include data on precedence, and use methods defined for that
 class to implement all the functionality that is spread across
 the module.
 
-* Test `binary_addition.tl`
-* Try a parallel map in `pipeline.py`, in `unfold()`.
-```python
-
-CHUNKSIZE = 1024
-
-from multiprocessing import cpu_count, Pool
-import itertools
-
-def poolMap(iterators, mapping, cores=False):
-    # Look up how to do this with a `with` statement
-    if not cores:
-        cores = cpu_count()
-    pool = Pool(cores)
-    mappedData = pool.imap(func, itertools.chain(iterators), CHUNKSIZE)
-    for elem in mappedData:
-        yield elem
-    pool.close()
-```
-Check some examples to make sure `imap` is used properly.
+* Refactor `pipeline.py` so `PoolMap` can be used
+* Implement the shift-based multiplication model
+* Tag a small tileset so `maps.tl` can be tested
+* Graph coloring
 
 ## Done
 
@@ -478,6 +462,8 @@ Check some examples to make sure `imap` is used properly.
 * Obtain strings from a fixed grammar
 * Log using flags instead of verbosity
 * Use ArgumentList instead of sequence
+* Check addition
+* Implement parallel map
 
 ## Superseded
 
