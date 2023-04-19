@@ -317,24 +317,25 @@ def semantics(grammar, triggers):
 
     return actions
 
+justToken = lambda x: TOKEN
 
-def parserFromGrammar(grammar):
+def parserFromGrammar(grammar, tag=justToken):
     separator, precedence, lines = getLines(grammar)
     order = linesToPrecedence(lines, separator, precedence)
     rules = linesToRules(lines, separator, precedence)
     actions = linesToActions(lines, separator, precedence)
     sem = semantics(rules, actions)
     syn = grammarFromRules(rules)
-    return Parser(syn, sem, order)
-
+    return Parser(syn, sem, order, tag=tag)
 
 class Parser:
 
-    def __init__(self, grammar, actions, order):
+    def __init__(self, grammar, actions, order, tag=justToken):
         self.precedence = order
         self.grammar = grammar
         self.actions = actions
         self.values = {}
+        self.tag = tag
 
     def parse(self, tokens):
         return Parse(tokens, self).execute()
@@ -457,7 +458,7 @@ class Parse:
     
         for index, token in enumerate(self.tokens):
             self.addToken(index, token)
-            self.spans[index, index].add(((token, index, index, TOKEN), ))
+            self.spans[index, index].add(((token, index, index, self.parser.tag(token)), ))
 
         while self.unvisited:
             current = self.unvisited.pop()
