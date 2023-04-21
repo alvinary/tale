@@ -17,12 +17,19 @@ class ArgumentList:
         self.nextArgument = next
         self.ignore = ignore
         
+    def fromList(arguments):
+        # This method assumes 'arguments' is not empty
+        argumentList = ArgumentList(arguments.pop(0))
+        if arguments:
+            argumentList.nextArgument = ArgumentList.fromList(arguments)
+        return argumentList
+        
     def collect(self):
         if self.ignore and self.nextArgument:
             return self.nextArgument.collect()
         if self.ignore and not self.nextArgument:
             return []
-        if self.nextArgument:
+        if not self.ignore and self.nextArgument:
             args = self.nextArgument.collect()
             args.append(self.item)
             return args
@@ -226,8 +233,8 @@ def isBinary(rhs):
 def ignoreBoth(x, y):
     if not isinstance(y, ArgumentList):
         y = ArgumentList(y)
-    x = ArgumentList(x, ignore=True, next=y)
     y.ignore = True
+    x = ArgumentList(x, ignore=True, next=y)
     return x
     
 def ignoreLeft(x, y):
@@ -246,8 +253,8 @@ def ignoreRight(x, y):
 def includeBoth(x, y):
     if not isinstance(y, ArgumentList):
         y = ArgumentList(y)
-    x = ArgumentList(x, ignore=False, next=y)
     y.ignore = False
+    x = ArgumentList(x, ignore=False, next=y)
     return x        
     
 def encapsulate(x):
@@ -262,6 +269,12 @@ def emptyArgument(x):
    else:
        x.ignore = True
        return x
+       
+def variadicIdentity(*x):
+    if len(x) > 1:
+        return ArgumentList.fromList(list(x))
+    else:
+        return x[0]
 
 def semantics(grammar, triggers):
 
@@ -290,7 +303,7 @@ def semantics(grammar, triggers):
                 semanticAction = triggers[name]
 
             else:
-                semanticAction = encapsulate
+                semanticAction = variadicIdentity
 
             if leftIsMute and rightIsMute:
                 argumentAction = ignoreBoth
@@ -359,8 +372,9 @@ class Parser:
 
         if isBinary:
             head, left, right = span
-            check = left in self.values
-            check = check and right in self.values
+            checkLeft = left in self.values
+            checkRight = right in self.values
+            check = checkLeft and checkRight
 
         if check and isLeaf:
             self.values[leaf] = leaf[0]  # The token
@@ -368,20 +382,16 @@ class Parser:
         if check and isUnary:
             _, action, arg = self.actions[head[3]]  # Magic number 3
             argument = self.values[branch]
-            arg = reversed(arg(argument).collect())
+            arg = list(reversed(arg(argument).collect()))
             self.values[head] = action(*arg)
 
         if check and isBinary:
-            _, action, args = self.actions[head[3]]
+            _, action, args = self.actions[head[3]] # These should all be objects, not tuples
             left = self.values[left]
             right = self.values[right]
             args = args(left, right)
-            args = reversed(args.collect())
+            args = list(reversed(args.collect()))
             self.values[head] = action(*args)
-
-        # TODO: add error messages so this function
-        # provides useful information when something
-        # goes wrong, instead of failing silently
 
     def value(self, tokens):
 
