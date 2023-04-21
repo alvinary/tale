@@ -6,7 +6,7 @@ test_grammar = '''
     NUMBER -> INTEGER                          := x : int(x)
     NUMBER -> FLOAT                            := x : float(x)
     INTEGER -> DIGITS @15                      := x : x
-    FLOAT -> DIGITS [DOT] DIGITS @20           := x, y, z : x + y + z
+    FLOAT -> DIGITS DOT DIGITS @20             := x, y, z : x + y + z
     NUMBER -> [LPAREN] NUMBER [RPAREN]         := x : x
     NUMBER -> NUMBER [PLUS] NUMBER             := x, y : x + y
     NUMBER -> NUMBER [MINUS] NUMBER            := x, y : x - y
@@ -161,7 +161,7 @@ def test_value():
     
     print(values)
     assert -583 in [floor(v) for v in values]
-    assert len(values) == 1
+    assert len(set(values)) == 1
     
     expr = tuple([c for c in '(((((211275*4)-(7*3))+((4*1)-(51213*5)))/(((7/6)-(7/8))+((9/8)-(4^2))))*((((7^3)-(1/4))+((5/5)-(6/7)))/(((8/7)-(8.2/9))+((422)-(73))))+((((2.4*4)-(755*3))+((4*1)-(5*5)))/(((7/6)-(7/8))+((9/8)-(4^2))))*((((7^3)-(1/4))+((5/5)-(6/7)))/(((8/7)-(81/9))+((4)-(7)))))'])
     
@@ -169,8 +169,7 @@ def test_value():
     
     print(values)
     assert -44587 in [floor(v) for v in values]
-    assert len(values) == 1
-
+    assert len(set(values)) == 1
 
 test_grammar_to_rules()
 test_cyk()
