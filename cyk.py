@@ -11,19 +11,21 @@ SPACE = ' '
 COMMENT = '--'
 UNORDERED = 10.0
 
+
 class ArgumentList:
+
     def __init__(self, item, ignore=False, next=False):
         self.item = item
         self.nextArgument = next
         self.ignore = ignore
-        
+
     def fromList(arguments):
         # This method assumes 'arguments' is not empty
         argumentList = ArgumentList(arguments.pop(0))
         if arguments:
             argumentList.nextArgument = ArgumentList.fromList(arguments)
         return argumentList
-        
+
     def collect(self):
         if self.ignore and self.nextArgument:
             return self.nextArgument.collect()
@@ -35,13 +37,13 @@ class ArgumentList:
             return args
         else:
             return [self.item]
-        
+
     def size(self):
         if self.nextArgument:
             return 1 + self.nextArgument.size()
         else:
             return 1
-        
+
 
 def getLines(text):
     # The first line should be '<separator> <precedence>'
@@ -65,7 +67,9 @@ def linesToPrecedence(lines, separator, precedence):
             orderValues = [t for t in line.split() if t.startswith(precedence)]
             orderValue = float(orderValues[0].replace(precedence, ""))
             order[str(index)] = orderValue
-            order[str(index) + '[0]'] = orderValue # In case a rule is n-ary and the actual rule used during parsing is n[0]
+            order[
+                str(index) +
+                '[0]'] = orderValue  # In case a rule is n-ary and the actual rule used during parsing is n[0]
     return order
 
 
@@ -74,11 +78,11 @@ def linesToActions(lines, separator, precedence):
     lines = [l.split(separator)[1].strip() for l in lines]
     for index, line in enumerate(lines):
         actions[str(index)] = eval('lambda ' + line)
-        
-    actions['NEWLINE'] = lambda x : NEWLINE
-    actions['SPACE'] = lambda x : SPACE
-    actions['TAB'] = lambda x : TAB
-        
+
+    actions['NEWLINE'] = lambda x: NEWLINE
+    actions['SPACE'] = lambda x: SPACE
+    actions['TAB'] = lambda x: TAB
+
     return actions
 
 
@@ -103,9 +107,9 @@ def linesToRules(lines, separator, precedence):
     for line in lines:
         newRules = lineToRules(line)
         rules += newRules
-        
+
     rules += whitespaceRules
-    
+
     return rules
 
 
@@ -222,67 +226,76 @@ def isUnary(rhs):
 
 def isBinary(rhs):
     return isinstance(rhs, tuple) and len(rhs) == 2
-    
+
+
 # Argument accumulators
 
 # We pass these instead of Python sequences because
 # when working with collections f(*a) could be applied
 # to what is intended to be single argument, but happens
 # to be a Python sequence
-    
+
+
 def ignoreBoth(x, y):
     if not isinstance(y, ArgumentList):
         y = ArgumentList(y)
     y.ignore = True
     x = ArgumentList(x, ignore=True, next=y)
     return x
-    
+
+
 def ignoreLeft(x, y):
     if not isinstance(y, ArgumentList):
         y = ArgumentList(y)
     x = ArgumentList(x, ignore=True, next=y)
     return x
-    
+
+
 def ignoreRight(x, y):
     if not isinstance(y, ArgumentList):
         y = ArgumentList(y)
     y.ignore = True
     x = ArgumentList(x, ignore=False, next=y)
     return x
-    
+
+
 def includeBoth(x, y):
     if not isinstance(y, ArgumentList):
         y = ArgumentList(y)
     y.ignore = False
     x = ArgumentList(x, ignore=False, next=y)
-    return x        
-    
+    return x
+
+
 def encapsulate(x):
-   if not isinstance(x, ArgumentList):
-       return ArgumentList(x)
-   else:
-       return x
-   
+    if not isinstance(x, ArgumentList):
+        return ArgumentList(x)
+    else:
+        return x
+
+
 def emptyArgument(x):
-   if not isinstance(x, ArgumentList):
-       return ArgumentList(x, ignore=True)
-   else:
-       x.ignore = True
-       return x
-       
+    if not isinstance(x, ArgumentList):
+        return ArgumentList(x, ignore=True)
+    else:
+        x.ignore = True
+        return x
+
+
 def variadicIdentity(*x):
     if len(x) > 1:
         return ArgumentList.fromList(list(x))
     else:
         return x[0]
 
+
 def semantics(grammar, triggers):
 
     actions = {}
-    
-    triggers['tab'] = lambda x : x
-    triggers['space'] = lambda x : x
-    triggers['newline'] = lambda x : x
+
+    triggers['tab'] = lambda x: x
+    triggers['space'] = lambda x: x
+    triggers['newline'] = lambda x: x
 
     for rule in grammar:
 
@@ -330,7 +343,9 @@ def semantics(grammar, triggers):
 
     return actions
 
+
 justToken = lambda x: TOKEN
+
 
 def parserFromGrammar(grammar, tag=justToken):
     separator, precedence, lines = getLines(grammar)
@@ -340,6 +355,7 @@ def parserFromGrammar(grammar, tag=justToken):
     sem = semantics(rules, actions)
     syn = grammarFromRules(rules)
     return Parser(syn, sem, order, tag=tag)
+
 
 class Parser:
 
@@ -386,7 +402,8 @@ class Parser:
             self.values[head] = action(*arg)
 
         if check and isBinary:
-            _, action, args = self.actions[head[3]] # These should all be objects, not tuples
+            _, action, args = self.actions[
+                head[3]]  # These should all be objects, not tuples
             left = self.values[left]
             right = self.values[right]
             args = args(left, right)
@@ -421,7 +438,7 @@ class Parser:
             self.setValue(span)
 
         for k in sorted(distances):
-            
+
             for s in binary[k]:
                 for t in binary[k]:
                     self.setValue(t)
@@ -465,10 +482,11 @@ class Parse:
         self.readable = set()
 
     def execute(self):
-    
+
         for index, token in enumerate(self.tokens):
             self.addToken(index, token)
-            self.spans[index, index].add(((token, index, index, self.parser.tag(token)), ))
+            self.spans[index, index].add(
+                ((token, index, index, self.parser.tag(token)), ))
 
         while self.unvisited:
             current = self.unvisited.pop()
@@ -553,14 +571,19 @@ class Parse:
             spanItems = list(self.spans[indices])
             self.spans[indices] = [i for i in spanItems if not set(i) & remove]
 
+
 # These are most special characters visible in a QWERTY keyboard
-defaultSpecial = ('" ' + "< > ( ) { } [] / \\ ' ! = + - * & | % $ ^ ? @ # ~ ; : , . ").split()
+defaultSpecial = (
+    '" ' +
+    "< > ( ) { } [] / \\ ' ! = + - * & | % $ ^ ? @ # ~ ; : , . ").split()
+
 
 def defaultTokenizer(string, specialCharacters=defaultSpecial):
     for p in defaultSpecial:
         string = string.replace(p, f' {p} ')
     return string.split()
-    
+
+
 def whitespaceTokenizer(string, specialCharacters=defaultSpecial):
     for p in defaultSpecial:
         string = string.replace(p, f' {p} ')
@@ -568,7 +591,9 @@ def whitespaceTokenizer(string, specialCharacters=defaultSpecial):
     string = " TAB ".join(string.split(TAB))
     string = " SPACE ".join(string.split(SPACE))
     return string.split()
-    
+
+
 inventory = lambda: defaultdict(lambda: set())
 
-whitespaceRules = tokensToRules(['TAB', TAB], 'tab') + tokensToRules(['NEWLINE', NEWLINE], 'newline') + tokensToRules(['SPACE', SPACE], 'space')
+whitespaceRules = tokensToRules(['TAB', TAB], 'tab') + tokensToRules(
+    ['NEWLINE', NEWLINE], 'newline') + tokensToRules(['SPACE', SPACE], 'space')
