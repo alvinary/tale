@@ -451,6 +451,7 @@ the module.
 * Implement the shift-based multiplication model
 * Tag a small tileset so `maps.tl` can be tested
 * Graph coloring
+* Unfold `a.f : A` as a function `assign : { x.f : x in a.sort } -> A`
 
 ## Done
 
@@ -464,6 +465,8 @@ the module.
 * Use ArgumentList instead of sequence
 * Check addition
 * Implement parallel map
+* Eight queens
+* Fix evaluation with multiple arguments
 
 ## Superseded
 
