@@ -9,22 +9,6 @@
 - Total orders with 'next' leave lots of 'hanging' facts about the
   out-of-bounds constant next of the last element.
 
-### GRID
-
-- I got stuck with the visualization / verification part.
-
-- The approach taken with objects.py (first write procedural
-  tests checking if a certain Python object has a property,
-  then write a function that turns a relational specification
-  into that Python object, and check it using a testing framework,
-  which allows very fast, repeatable and hassle-free iteration)
-  worked, so we should try that again (maybe using some of the
-  same functions for trees).
-
-- This might have been superseded by 'functions plus levels'.
-  Obviousy checking specifications with procedural tests is
-  still a useful approach. p(x) <=> f(g(x)) = True, etc-
-
 ### FUNCTIONS
 
 - I got stuck with the debugging part (is the logic program
@@ -472,3 +456,4 @@ the module.
 
 * Write down 'old' model of semantic composition
   (DRT with inheritance), check against AMR (Copestake) - this is no longer necessary
+* Grid embedding of trees
