@@ -436,6 +436,9 @@ the module.
 * Tag a small tileset so `maps.tl` can be tested
 * Graph coloring
 * Unfold `a.f : A` as a function `assign : { x.f : x in a.sort } -> A`
+* Sensible addition with several numbers (the simplest approach is having
+  numbers and sums as separate sorts, and copying sum bits to numbers
+  as required.
 
 ## Done
 
@@ -451,6 +454,8 @@ the module.
 * Implement parallel map
 * Eight queens
 * Fix evaluation with multiple arguments
+* Bitwise addition with carry
+
 
 ## Superseded
 
