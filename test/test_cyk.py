@@ -28,12 +28,19 @@ test_grammar = '''
     COMMA -> ,                                 := x : x
     LSQUARE -> [                               := x : x
     RSQUARE -> ]                               := x : x
+    LBRACE -> {                                := x : x
+    RBRACE -> }                                := x : x
+    COLON -> :                                 := x : x
+    ELEMS -> NUMBER [COMMA] ELEMS              := x, xs : expand(xs, x)
+    ELEMS -> NUMBER [COMMA] NUMBER             := x, y : [x, y]
     LIST -> [LSQUARE] ELEMS [RSQUARE]          := x : x
-    ELEMS -> NUMBER                            := x : x
-    ELEMS -> NUMBER [COMMA] ELEMS              := x, xs : xs.append(x)
+    LIST -> [LSQUARE] NUMBER [RSQUARE]         := x : [x]
+    DICT -> [LBRACE] PAIRS                     := xs : dict(xs)
+    PAIR -> NUMBER [COLON] NUMBER              := s, e : (s, e)
+    PAIR -> NUMBER [COLON] LIST                := s, l : (s, l)
+    PAIRS -> PAIR [RBRACE]                     := x : [x]
+    PAIRS -> PAIR [COMMA] PAIRS                := x, xs : expand(xs, x)
 '''
-
-identity = lambda x: x
 
 test_grammar_triggers = {
     '5': [("NUMBER", "Single digit")],
@@ -139,6 +146,12 @@ def test_value():
     print(values)
     assert 17 in values
 
+    print("\n\n")    
+    parse = parser.parse(tokens)
+    for k in parse.spans.keys():
+        print(k, parse.spans[k])
+    print("\n\n")
+
     tokens = " 2 + 3 * 4".split()
     tokens = tuple(tokens)
     parse = parser.parse(tokens)
@@ -160,16 +173,34 @@ def test_value():
     values = parser.value(expr)
     
     print(values)
-    assert -583 in [floor(v) for v in values]
-    assert len(set(values)) == 1
+    for v in values:
+       print('value: ', v)
+    assert -583 in [floor(v) for v in values if not isinstance(v, list)]
     
     expr = tuple([c for c in '(((((211275*4)-(7*3))+((4*1)-(51213*5)))/(((7/6)-(7/8))+((9/8)-(4^2))))*((((7^3)-(1/4))+((5/5)-(6/7)))/(((8/7)-(8.2/9))+((422)-(73))))+((((2.4*4)-(755*3))+((4*1)-(5*5)))/(((7/6)-(7/8))+((9/8)-(4^2))))*((((7^3)-(1/4))+((5/5)-(6/7)))/(((8/7)-(81/9))+((4)-(7)))))'])
     
     values = parser.value(expr)
     
     print(values)
-    assert -44587 in [floor(v) for v in values]
-    assert len(set(values)) == 1
+    assert -44587 in [floor(v) for v in values if not isinstance(v, list)]
+
+    expr = tuple('[ 7 5 * 3 , 1 2 + 5 , 8 0 ]'.split())
+    values = parser.value(expr)
+    
+    parse = parser.parse(expr)
+    for k in parse.spans.keys():
+        print(k, parse.spans[k])
+    
+    print(values)
+
+    for v in values:
+        print('value of coso: ', v)
+    
+    value = values.pop(0)
+    assert values[1] == 25
+    assert 17 in value[2]
+    assert 80 in value[2]
+    assert 225 in values[2]
 
 test_grammar_to_rules()
 test_cyk()
