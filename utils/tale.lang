@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<language id="tl" name="Tale" version="2.0" _section="Other">
+
+  <metadata>
+    <property name="mimetypes">text/plain</property>
+    <property name="globs">*.tl</property>
+  </metadata>
+
+
+  <styles>
+      <style id="comment" name="Comment" map-to="def:comment"/>
+      <style id="decimal" name="Decimal" map-to="def:decimal"/>
+      <style id="keyword" name="Keyword" map-to="def:keyword"/>
+      <style id="punctuation" name="Punctuation" map-to="def:string"/>
+  </styles>
+  
+  <definitions>
+    
+    <context id="tl" class="no-spell-check">
+    
+      <include>
+
+        <context id="comment" style-ref="comment">
+          <start>--</start>
+          <end>$</end>
+        </context>
+
+        <context ref="def:decimal"/>
+
+        <context id="keywords" style-ref="keyword">
+          <keyword>order</keyword>
+          <keyword>let</keyword>
+          <keyword>var</keyword>
+        </context>
+
+        <context id="punctuation" style-ref="punctuation">
+          <keyword>-></keyword>
+          <keyword>.</keyword>
+          <keyword>(</keyword>
+          <keyword>)</keyword>
+          <keyword>:</keyword>
+          <keyword>,</keyword>
+        </context>
+
+      </include>
+
+    </context>
+
+  </definitions>
+  
+  
+</language>
