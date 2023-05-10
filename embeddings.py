@@ -113,8 +113,8 @@ def totalOrder(size, prefix, sort):
     sorts = {sort: []}
     functions = {}
     for i in range(size):
-        current = f"{prefix}{i}"
-        _next = f"{prefix}{i+1}"
+        current = f"{prefix}{i+1}"
+        _next = f"{prefix}{i+2}"
         # If next is out of bounds, it does not matter, because
         # next is not part of any sort, and should not be involved
         # in any predicate. But by adding it we ensure f(a) is always
