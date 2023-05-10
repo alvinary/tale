@@ -1,15 +1,15 @@
 := /
 
-Program -> Statement
-Program -> Statement [dot] Program
+Line -> Statement [dot]                  := x : x
+dot -> .                                 := x : x
 
-Statement -> Declaration
-Statement -> Formula
+Statement -> Declaration                 := x : x
+Statement -> Formula                     := x : x
 
-Formula -> Or 
-Formula -> Rule
-Formula -> Iff
-Formula -> Contradiction
+Formula -> Or                            := x : x
+Formula -> Rule                          := x : x
+Formula -> Iff                           := x : x
+Formula -> Contradiction                 := x : x
 
 Or -> OrAtoms                  		 := xs : Or(xs)			
 OrAtoms -> Atom [or] OrAtoms   		 := x, xs : [x] + xs		
@@ -22,7 +22,7 @@ Iff -> Atoms [DoubleArrow] Atoms	 := xs, ys : Iff(xs, ys)
 Contradiction -> Atoms [Implies] [False] := xs : Never(xs)
 
 Atom -> [not] Atom 			 := x : x.negate()
-Atom -> Token Comparison Token
+Atom -> Token comp Token                 := x, c, y : Comparison(c, x, y)
 Atom -> Token [(] Tokens [)] 		 := p, xs : Term([p] + xs)
 Atoms -> Atom				 := x : [x]
 Atoms -> Atom [,] Atoms			 := x, xs : [x] + [xs]
@@ -30,15 +30,15 @@ Atoms -> Atom [,] Atoms			 := x, xs : [x] + [xs]
 Tokens -> Token			 	 := x : [x]
 Tokens -> Token [,] Tokens               := x, xs : [x] + xs
 
-comp -> equal
-comp -> notequal
+comp -> equal                            := x : x
+comp -> notequal                         := x : x
 
-equal -> =
-notequal -> =!=
+equal -> =                               := x : x
+notequal -> !=                           := x : x
 
-Declaration -> Tokens [:] Token
-Declaration -> [order] Natural [:] Token
-Declaration -> Token [:] Tokens [->] Token
+Declaration -> Tokens [:] Token             := consts, sort : ('append', consts, sort) 
+Declaration -> [order] Natural [:] Token    := size, sort : ('order', size, sort)
+Declaration -> Token [:] Tokens [->] Token  := f, dom, im : ('let', f, dom, im)
 
 Token -> Word                            := x : Term(x, [])
 Token -> Word [.] Dotted                 := x, xs : Term(x, xs)
@@ -48,3 +48,7 @@ Dotted -> Word [.] Dotted                := x, xs : [x] + xs
 
 -- Word and Natural should be defined externally, and
 -- assigned to every token passed to Parser.parse()
+
+-- A program should be split into lines, and each line parsed
+-- separately (which is something we can do with the current
+-- Tatsu parser)
