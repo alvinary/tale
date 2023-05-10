@@ -393,7 +393,7 @@ That's smaller than 21 operation nodes with 23 number nodes.
 
 * Check equality of `a.f` with assign
 * DAGS
-* Arithmetic (parse the arithmetic file with the new parser)
+* Multiplication
 * Natural deduction
 * PDL planning
 * PDL planning with resources
@@ -431,6 +431,20 @@ include data on precedence, and use methods defined for that
 class to implement all the functionality that is spread across
 the module.
 
+Also, CYK should return `Semantics` instead of lambdas, so that
+`Semantics` objects can store relevant data (lambdas can store
+references as closures, or when an object is passed as a keyword argument,
+but it is more reasonable and straightforward to define a class),
+and have an `apply()` and `fail()` method. `apply()` should
+result in the intended value, fail() could raise an exception
+and use the rule definition to show an informative error message,
+and `call()` should be a 'try apply except fail' block.
+
+Moreover, when the intended semantics of an expression is a side
+effect and not a value, it is best to have a reference to a mutable
+object and call one of its methods, instead of returning a value.
+
+
 * Refactor `pipeline.py` so `PoolMap` can be used
 * Implement the shift-based multiplication model
 * Tag a small tileset so `maps.tl` can be tested
@@ -439,6 +453,8 @@ the module.
 * Sensible addition with several numbers (the simplest approach is having
   numbers and sums as separate sorts, and copying sum bits to numbers
   as required.
+* Split .tale programs into statements and parse statements separately
+  (to reuse the Tatsu parser for long programs)
 
 ## Done
 
