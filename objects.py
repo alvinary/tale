@@ -126,36 +126,15 @@ def getTree(model):
     vertices = predecessors | successors
 
     roots = {i for i in vertices if i not in successors}
-    cycleVertices = [v for v in vertices if reachesBack(v, edges)]
-
-    rooted = len(roots) == 1
-    noRoot = len(roots) == 0
-
-    if noRoot:
-        raise BrokenPrecondition(f"There is no root")
-
-    if not rooted:
-        raise BrokenPrecondition(
-            f"{edges} do not specify a tree - more than one root (check nodes {' '.join(roots)})."
-        )
-
-    acyclic = len(cycleVertices) == 0
-
-    isTree = acyclic and rooted
 
     # Lots of heap allocated data structures
     # when all this could be on the stack (or
     # at the very least be discarded when the
     # function returns)
 
-    if isTree:
-        root = roots.pop()
-        return bort(root, leftEdges, rightEdges)
-
-    elif not acyclic:
-        raise BrokenPrecondition(
-            f"{edges} do not specify a tree - there are cycles (check nodes {' '.join(cycleVertices)})."
-        )
+    root = roots.pop()
+    
+    return bort(root, leftEdges, rightEdges)
 
 
 def stringSpecification(name, sequence):
