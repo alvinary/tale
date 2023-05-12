@@ -34,10 +34,6 @@ def pad(word, length, char='0'):
     return char * (length - len(word)) + word
 
 
-def chooseOne(p, q, a):
-    return Either([Atom([p, a]), Atom([q, a])])
-
-
 def imageBits(index, image, args, label, padding):
     elementBits = []
     argumentTerms = [arg.term for arg in args]
