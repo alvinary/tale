@@ -1,35 +1,24 @@
-# The edit distance between talk and also is 2.
-# The edit distance between Score and scores is also 2.
-# We'll use common subsequences between normalized strings as a criterion for similarity.
+# The Hamming distance between two strings is not an adequate
+# measure of "typo distance"
+# For instance, Score and scores are potentially mutual typos,
+# but talk and also are very unlikely to be mistyped as each other.
+# However, the edit distance between talk and also is 2, and
+# the edit distance between Score and scores is also 2.
+# So in order to report very similar names as warnings, some
+# other criterion is needed.
 
-# Then we'll randomly replace parts of the string with 'aaa's, and compare the histograms with
-# cosine similarity or something
+# A token is likely to be a mispelled version of some other if
+# it has a low frequency, and shares a large common subsequence
+# with a frequent token
 
-# Suppose common(s1, s2) = c
-# - distance from s1 to c, and distance from s2 to c
+# Since reliable cutoffs are hard to obtain, we'll just report
+# any pair of tokens whose length is greater than 4 and whose
+# lowercase versions share a very large common subsequence,
+# but do not differ much in length (say, 3 characters)
 
-# Replacing random characters with 'a's (or deleting characters)
-# in both strings may increase the length and number of common
-# substrings and the size/shape of the longest common subsequence.
-# Replacements and deletiions don't change anything only if edits
-# are coindexed.
-# If both strings are equal, the number of common substrings increases
-# and the size of the longest common subsequence drops.
-# Seems fun but pointless.
-
-# Maybe just using the set of common substrings (which is bounded
-# by n**2, since any common substring is a substring of both
-# strings, and there are as many indices as string index pairs i, j,
-# with i < j and j < len(s), and can be computed in at least O(n**3) -
-# just pick the shortest string, and for each substring do linear search
-# in the ooother string, to see if you find it. A cheap trick like
-# 'only look for indices starting with the same character' maybe can
-# improve practical performance but is not necessary for comparing tokens.
-
-# And then you just use ''some'' distance between two sets of strings
-
-# This also seems pointless, but less ill-defined
-
+# This is overly conservative (e.g. prefetch and fetch, or locate and
+# location), but additional constraints are not likely to be exhaustive
+# or helpful
 
 def commonSubsequence(first, second):
 
