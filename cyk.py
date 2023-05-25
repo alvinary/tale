@@ -9,7 +9,7 @@ NEWLINE = '\n'
 TAB = '\t'
 SPACE = ' '
 COMMENT = '--'
-UNORDERED = 10.0
+UNORDERED = 10.0 # Default precedence
 
 
 class ArgumentList:
