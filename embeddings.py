@@ -108,7 +108,7 @@ def oneOf(imageSort, domainSorts, label=''):
 def totalOrder(size, prefix, sort):
     sorts = {sort: []}
     functions = {}
-    for i in range(size):
+    for i in range(1, size+1):
         current = f"{prefix}{i}"
         _next = f"{prefix}{i+1}"
         # If next is out of bounds, it does not matter, because
