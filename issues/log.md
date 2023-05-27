@@ -401,7 +401,7 @@ That's smaller than 21 operation nodes with 23 number nodes.
 * Compositional types
 * 'Bare' composition with arbitrary predicates as restrictions on arguments
   (instead of types), without composition
-* Log number of clauses and literals added to solver
+* Log number of clauses and literals added to a solver
   instance, without necessarily storing them
 * Survey cases where it fails (like 'the fake fake
   muffler and the actual fake muffler'), and see if that
@@ -447,14 +447,20 @@ object and call one of its methods, instead of returning a value.
 
 * Refactor `pipeline.py` so `PoolMap` can be used
 * Implement the shift-based multiplication model
+    - The draft is done.
+    - Add a suitable hierarchy (so expressions form a dag, not an
+      arbitrary relation).
+    - Define the required auxiliary predicates.
 * Tag a small tileset so `maps.tl` can be tested
 * Graph coloring
 * Unfold `a.f : A` as a function `assign : { x.f : x in a.sort } -> A`
-* Sensible addition with several numbers (the simplest approach is having
-  numbers and sums as separate sorts, and copying sum bits to numbers
-  as required.
 * Split .tale programs into statements and parse statements separately
   (to reuse the Tatsu parser for long programs)
+* Add indexed sorts, so you can unfold all rules for sort `A`, but
+  for each sort `A[i]`, which is useful when you need to have quadratic
+  or otherwise expensive grounding for a sort, but have several independent
+  instances (several arithmetic expressions, several trees, and so on).
+* Lexical item DSL
 
 ## Done
 
@@ -471,6 +477,7 @@ object and call one of its methods, instead of returning a value.
 * Eight queens
 * Fix evaluation with multiple arguments
 * Bitwise addition with carry
+* Draft bitwise multiplication with shift
 
 
 ## Superseded
@@ -478,3 +485,6 @@ object and call one of its methods, instead of returning a value.
 * Write down 'old' model of semantic composition
   (DRT with inheritance), check against AMR (Copestake) - this is no longer necessary
 * Grid embedding of trees
+* Sensible addition with several numbers (the simplest approach is having
+  numbers and sums as separate sorts, and copying sum bits to numbers
+  as required (this is a special case of indexed sorts).
