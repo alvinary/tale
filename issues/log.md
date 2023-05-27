@@ -285,7 +285,8 @@ one model that way.
       ___
   ```
 
-  so we may get rid of all spans for the same.
+  so we may get rid of all spans with a non-empty intersection with
+  higher-priority spans.
   Is that criterion enough? I never know ´_`
 
   In any case, when you finish a parse, you can prune it,
