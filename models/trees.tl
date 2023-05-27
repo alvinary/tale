@@ -40,7 +40,7 @@ right (a, b), level (a, i) -> level(b, i.next).
 left (a, b), level (b, i.next) -> level(a, i).
 right (a, b), level (b, i.next) -> level(a, i).
 
-level (n0, i0).
+level (n1, i1).
 
 level (a, i.next) -> not before (a, i).
 not before (a, i.next) -> not before (a, i).
