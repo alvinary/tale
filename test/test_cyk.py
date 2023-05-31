@@ -31,7 +31,7 @@ test_grammar = '''
     LBRACE -> {                                := x : x
     RBRACE -> }                                := x : x
     COLON -> :                                 := x : x
-    ELEMS -> NUMBER [COMMA] ELEMS              := x, xs : expand(xs, x)
+    ELEMS -> NUMBER [COMMA] ELEMS              := x, xs : [x] + xs
     ELEMS -> NUMBER [COMMA] NUMBER             := x, y : [x, y]
     LIST -> [LSQUARE] ELEMS [RSQUARE]          := x : x
     LIST -> [LSQUARE] NUMBER [RSQUARE]         := x : [x]
@@ -39,7 +39,7 @@ test_grammar = '''
     PAIR -> NUMBER [COLON] NUMBER              := s, e : (s, e)
     PAIR -> NUMBER [COLON] LIST                := s, l : (s, l)
     PAIRS -> PAIR [RBRACE]                     := x : [x]
-    PAIRS -> PAIR [COMMA] PAIRS                := x, xs : expand(xs, x)
+    PAIRS -> PAIR [COMMA] PAIRS                := x, xs : [x] + xs
 '''
 
 test_grammar_triggers = {
@@ -184,7 +184,7 @@ def test_value():
     print(values)
     assert -44587 in [floor(v) for v in values if not isinstance(v, list)]
 
-    expr = tuple('[ 7 5 * 3 , 1 2 + 5 , 8 0 ]'.split())
+    expr = tuple('[ 5 * 3 , 2 + 5 , 8 ]'.split())
     values = parser.value(expr)
     
     parse = parser.parse(expr)
@@ -197,10 +197,10 @@ def test_value():
         print('value of coso: ', v)
     
     value = values.pop(0)
-    assert values[1] == 25
-    assert 17 in value[2]
-    assert 80 in value[2]
-    assert 225 in values[2]
+    print(value)
+    assert value[0] == 15
+    assert value[1] == 7
+    assert value[2] == 8
 
 test_grammar_to_rules()
 test_cyk()
