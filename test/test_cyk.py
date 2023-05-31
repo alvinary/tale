@@ -184,7 +184,7 @@ def test_value():
     print(values)
     assert -44587 in [floor(v) for v in values if not isinstance(v, list)]
 
-    expr = tuple('[ 5 * 3 , 2 + 5 , 8 ]'.split())
+    expr = tuple('[ 1 5 * 3 , 1 2 2 + 5 1 , 8 ]'.split())
     values = parser.value(expr)
     
     parse = parser.parse(expr)
@@ -198,8 +198,8 @@ def test_value():
     
     value = values.pop(0)
     print(value)
-    assert value[0] == 15
-    assert value[1] == 7
+    assert value[0] == 45
+    assert value[1] == 173
     assert value[2] == 8
 
 test_grammar_to_rules()
