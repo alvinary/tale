@@ -192,15 +192,26 @@ def test_value():
         print(k, parse.spans[k])
     
     print(values)
-
-    for v in values:
-        print('value of coso: ', v)
     
     value = values.pop(0)
     print(value)
     assert value[0] == 45
     assert value[1] == 173
     assert value[2] == 8
+    
+    expr = tuple('{ 1 : 2 , 2 : [ 1 5 * 3 , 1 2 2 + 5 1 , 8 ] }'.split())
+    values = parser.value(expr)
+    
+    parse = parser.parse(expr)
+    for k in parse.spans.keys():
+        print(k, parse.spans[k])
+    
+    print(values)
+    
+    value = values.pop(0)
+    print(value)
+    assert value[1] == 2
+    assert 8 in value[2]
 
 test_grammar_to_rules()
 test_cyk()
