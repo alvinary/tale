@@ -393,13 +393,17 @@ class Parser:
             check = checkLeft and checkRight
 
         if check and isLeaf:
-            self.values[leaf] = leaf[0]  # The token
+            self.values[leaf] = leaf[3]  # The token
+            
+            print('leaf span: ', leaf, 'value: ', self.values[leaf])
 
         if check and isUnary:
             _, action, arg = self.actions[head[3]]  # Magic number 3
             argument = self.values[branch]
             arg = list(reversed(arg(argument).collect()))
             self.values[head] = action(*arg)
+            
+            print('unary span: ', head, 'value: ', self.values[head])
 
         if check and isBinary:
             _, action, args = self.actions[
@@ -409,6 +413,8 @@ class Parser:
             args = args(left, right)
             args = list(reversed(args.collect()))
             self.values[head] = action(*args)
+            
+            print('binary span: ', head, 'value: ', self.values[head])
 
     def value(self, tokens):
 
@@ -484,9 +490,10 @@ class Parse:
     def execute(self):
 
         for index, token in enumerate(self.tokens):
-            self.addToken(index, token)
+            tokenLabel = self.parser.tag(token)
+            self.addToken(index, token, tokenLabel)
             self.spans[index, index].add(
-                ((token, index, index, self.parser.tag(token)), ))
+                ((tokenLabel, index, index, token), ))
 
         while self.unvisited:
             current = self.unvisited.pop()
@@ -534,8 +541,8 @@ class Parse:
         spanContent = tuple(self.tokens[begin:end + 1])
         self.readable.add((label, spanContent))
 
-    def addToken(self, index, token):
-        self.addSpan(token, index, index, TOKEN)
+    def addToken(self, index, token, tokenLabel):
+        self.addSpan(tokenLabel, index, index, token)
 
     def compare(self, left, right):
         leftLabel, i, j, leftName = left
@@ -570,6 +577,10 @@ class Parse:
         for indices in self.spans:
             spanItems = list(self.spans[indices])
             self.spans[indices] = [i for i in spanItems if not set(i) & remove]
+            
+    def showSpans(self):
+        for span in sorted(self.spans.keys()):
+            print(span, ': ', self.spans[span], '\n\n')
 
 
 # These are most special characters visible in a QWERTY keyboard

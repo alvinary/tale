@@ -42,6 +42,14 @@ test_grammar = '''
     PAIRS -> PAIR [COMMA] PAIRS                := x, xs : [x] + xs
 '''
 
+numeric = set('123456789.')
+
+def sampleTagger(token):
+    if set(token) <= numeric:
+        return token
+    else:
+        return token
+
 test_grammar_triggers = {
     '5': [("NUMBER", "Single digit")],
     '4': [("NUMBER", "Single digit")],
@@ -66,7 +74,7 @@ def test_cyk():
     tokens = "- ( 5 + 4 ) + 1".split()
     tokens = tuple(tokens)
 
-    parse = parserFromGrammar(test_grammar).parse(tokens)
+    parse = parserFromGrammar(test_grammar, tag=sampleTagger).parse(tokens)
 
     for span in parse.readable:
         print('span:', span)
@@ -103,8 +111,8 @@ def test_value():
     tokens = "( - ( 5 + 4 ) ) + 1".split()
     tokens = tuple(tokens)
 
-    parser = parserFromGrammar(test_grammar)
-    parser.actions['TOKEN'] = lambda x: x
+    parser = parserFromGrammar(test_grammar, tag=sampleTagger)
+    
     for a in parser.actions:
         print("Action:", a, ":", parser.actions[a])
 
