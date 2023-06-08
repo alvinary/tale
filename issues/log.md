@@ -456,7 +456,11 @@ object and call one of its methods, instead of returning a value.
 * Graph coloring
 * Unfold `a.f : A` as a function `assign : { x.f : x in a.sort } -> A`
 * Split .tale programs into statements and parse statements separately
-  (to reuse the Tatsu parser for long programs)
+  (to reuse the Tatsu parser for long programs). Since dots are used
+  for functions and as statement delimiters, there is no simple syntactic
+  criterion for splitting statements without parsing, so a different
+  character should be used as statement delimiter, or I should wait
+  until knowing if the cyk module can parse longer programs.
 * Add indexed sorts, so you can unfold all rules for sort `A`, but
   for each sort `A[i]`, which is useful when you need to have quadratic
   or otherwise expensive grounding for a sort, but have several independent
@@ -479,7 +483,7 @@ object and call one of its methods, instead of returning a value.
 * Fix evaluation with multiple arguments
 * Bitwise addition with carry
 * Draft bitwise multiplication with shift
-* Fix the parser so a function cab be used to tag tokens programmatically
+* Fix the parser so a function can be used to tag tokens programmatically
 
 
 ## Superseded
