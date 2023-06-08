@@ -38,29 +38,29 @@ model5 = [
 
 def test_trees():
     try:
-        getTree(model1)
+        getTree(model1, test=True)
         assert False
     except BrokenPrecondition:
         pass
 
     try:
-        getTree(model2)
+        getTree(model2, test=True)
         assert False
     except BrokenPrecondition:
         pass
 
     try:
-        getTree(model3)
+        getTree(model3, test=True)
         assert False
     except BrokenPrecondition:
         pass
 
     try:
-        getTree(model4)
+        getTree(model4, test=True)
         assert False
     except BrokenPrecondition:
         pass
 
-    assert getTree(model5)
+    assert getTree(model5, test=True)
 
-    assert getTree(model5).show() == "(B (D E))"
+    assert getTree(model5, test=True).show() == "(B (D E))"

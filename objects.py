@@ -26,12 +26,13 @@ def successors(vertex, relation):
 
 
 def bort(vertex, left, right):
+
     leftSuccessors = successors(vertex, left)
     rightSuccessors = successors(vertex, right)
-
+    
     if len(leftSuccessors) == 0 and len(rightSuccessors) == 0:
         return Leaf(vertex)
-
+        
     if len(leftSuccessors) == 1:
         leftChild = leftSuccessors.pop()
     elif len(leftSuccessors) > 1:
@@ -103,7 +104,7 @@ def reachesBack(vertex, edges):
     return vertex in span
 
 
-def getTree(model):
+def getTree(model, test=False):
 
     isLeft = lambda s: s[0:5] == 'left('
     isRight = lambda s: s[0:6] == 'right('
@@ -126,6 +127,19 @@ def getTree(model):
     vertices = predecessors | successors
 
     roots = {i for i in vertices if i not in successors}
+    
+    if test:
+        rooted = len(roots) == 1
+        cycles = [v for v in vertices if reachesBack(v, edges)]
+        
+        if not rooted:
+            raise BrokenPrecondition(
+                f"More than one root found (roots are {', '.join(roots)})")
+                
+        if cycles:
+            raise BrokenPrecondition(
+                f"There are loops connecting some vertices to themselves ({', '.join(cycles)})")
+        
 
     # Lots of heap allocated data structures
     # when all this could be on the stack (or
