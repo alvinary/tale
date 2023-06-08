@@ -479,6 +479,7 @@ object and call one of its methods, instead of returning a value.
 * Fix evaluation with multiple arguments
 * Bitwise addition with carry
 * Draft bitwise multiplication with shift
+* Fix the parser so a function cab be used to tag tokens programmatically
 
 
 ## Superseded
