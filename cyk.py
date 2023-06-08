@@ -394,16 +394,12 @@ class Parser:
 
         if check and isLeaf:
             self.values[leaf] = leaf[3]  # The token
-            
-            print('leaf span: ', leaf, 'value: ', self.values[leaf])
 
         if check and isUnary:
             _, action, arg = self.actions[head[3]]  # Magic number 3
             argument = self.values[branch]
             arg = list(reversed(arg(argument).collect()))
             self.values[head] = action(*arg)
-            
-            print('unary span: ', head, 'value: ', self.values[head])
 
         if check and isBinary:
             _, action, args = self.actions[
@@ -413,8 +409,6 @@ class Parser:
             args = args(left, right)
             args = list(reversed(args.collect()))
             self.values[head] = action(*args)
-            
-            print('binary span: ', head, 'value: ', self.values[head])
 
     def value(self, tokens):
 
@@ -579,8 +573,8 @@ class Parse:
             self.spans[indices] = [i for i in spanItems if not set(i) & remove]
             
     def showSpans(self):
-        for span in sorted(self.spans.keys()):
-            print(span, ': ', self.spans[span], '\n\n')
+        for span in self.readable:
+            print(span)
 
 
 # These are most special characters visible in a QWERTY keyboard
