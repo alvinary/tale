@@ -44,11 +44,7 @@ test_grammar = '''
 
 numeric = set('123456789.')
 
-def sampleTagger(token):
-    if set(token) <= numeric:
-        return token
-    else:
-        return token
+sampleTagger = lambda x : x
 
 test_grammar_triggers = {
     '5': [("NUMBER", "Single digit")],
