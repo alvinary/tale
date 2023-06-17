@@ -33,6 +33,7 @@ grammar = '''
         | var
         | order
         | assign
+        | project
         ;
 
     add = elems:elements ":" sort:name ;
@@ -41,6 +42,7 @@ grammar = '''
     let = "let " f:name ":" domain:elements "->" range:name ;
     order = "order " prefix:name n:number ":" sort:name ;
     assign = "let " preimage:name "." f:name "=" image:name ;
+    project = "let " domain:name "." f:name ":" image:name ;
 
     number = n:/[0-9]+/ ;
 
@@ -198,6 +200,9 @@ class ProgramSemantics:
         sorts, variables, values, functions = listMap(), {}, {}, {}
         values[ast.f] = (ast.domain, ast.range)
         return sorts, variables, values, functions
+        
+    def project(self, ast):
+        return listMap(), {}, {}, {(PROJECTION, ast.domain, ast.f) : ast.image}
 
     def fullprogram(self, ast):
         sorts, variables, values, functions = ast.preamble

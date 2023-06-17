@@ -174,6 +174,8 @@ def pipeline(program, logFlags=set(), logger=defaultLogger):
     index = Index(sorts=_sorts, variables=_variables, functions=_functions)
     dimacs = DimacsIndex([])
     solver = Solver()
+    
+    index.addProjections()
 
     atomForms = set()
     atoms = []

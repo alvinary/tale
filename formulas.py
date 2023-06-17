@@ -4,6 +4,8 @@ from itertools import product
 from typing import List
 from functools import reduce
 
+PROJECTION = 0
+
 union = lambda x, y: x | y
 
 swappedComparisons = {
@@ -160,9 +162,10 @@ class Index:
 
     def __init__(self, sorts={}, variables={}, functions={}):
 
-        self.functionMap = functions
+        self.functionMap = {k:v for k, v in functions.items() if len(k) != 3}
         self.sortMap = sorts
         self.variableMap = variables
+        self.projections = {k:v for k, v in functions.items() if len(k) == 3}
 
     def value(self, function, elem):
 
@@ -203,6 +206,15 @@ class Index:
         for assignment in product(*[self.sortMap[s] for s in sorts]):
             binding = dict(zip(variables, assignment))
             yield Assignment(binding)
+            
+    def addProjections(self):
+        for k, v in self.projections.items():
+            _, domain, function = k
+            image = v
+            for preimage in self.sortMap[domain]:
+                imageName = f"{preimage}.{function}"
+                self.sortMap[image].append(imageName)
+                self.functionMap[function, preimage] = imageName
 
 
 @dataclass(frozen=True)
