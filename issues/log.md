@@ -454,7 +454,6 @@ object and call one of its methods, instead of returning a value.
     - Define the required auxiliary predicates.
 * Tag a small tileset so `maps.tl` can be tested
 * Graph coloring
-* Unfold `a.f : A` as a function `assign : { x.f : x in a.sort } -> A`
 * Split .tale programs into statements and parse statements separately
   (to reuse the Tatsu parser for long programs). Since dots are used
   for functions and as statement delimiters, there is no simple syntactic
@@ -466,6 +465,7 @@ object and call one of its methods, instead of returning a value.
   or otherwise expensive grounding for a sort, but have several independent
   instances (several arithmetic expressions, several trees, and so on).
 * Lexical item DSL
+* Write a test suite for projection rules.
 
 ## Done
 
@@ -484,7 +484,10 @@ object and call one of its methods, instead of returning a value.
 * Bitwise addition with carry
 * Draft bitwise multiplication with shift
 * Fix the parser so a function can be used to tag tokens programmatically
-
+* Unfold `a.f : A` as a function `assign : { x.f : x in a.sort } -> A`
+    * You can now use statements like `let A.f : B`, but you have to define
+      the relevant assignments manually (which is preferrable anyway, since it
+      offers more fine grained-control).
 
 ## Superseded
 
