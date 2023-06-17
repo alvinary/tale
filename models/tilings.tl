@@ -1,60 +1,59 @@
--- dramatis personae
+order i 100 : index.
+order v 1500 : vertex.
 
-order i 40 : index.
-order n 400 : node.
-order t 1600 : tile.
+order t 100 : tile.
 
--- terrain constants should be specified programatically
--- grass, shallowWater, ... : terrain.
+let vertex.level : level.
+let vertex.corner : position.
+let vertex.origin : position.
 
--- dry, moist, blocked, free, beachy, greeny, browny, sandy, ... : property
+let onvertex : tile -> vertex.
 
--- function types
+let x : position -> index.
+let y : position -> index.
 
-let tile.x : index.
-let tile.y : index.
+let depth : level -> index.
 
-let node.upper : index.
-let node.lower : index.
-let node.left : index.
-let node.right : index.
-
-let tile.t : terrain.
-
--- variables
-
+var a, b : vertex.
 var i, j : index.
-var a, b : node.
-var t : tile.
-var p : property.
+var t, s : trait.
+var p, q : position.
+var l, k : level.
 
--- 'before' for nodes and indices
--- this should be unfolded into <= for all order sorts, don't you agree?
+-- index order
 
-before (a, a.next).
-before (a, b) -> before (a, b.next).
-
+not before (i, i).
 before (i, i.next).
-before (i, j) -> before (i, i.next).
+before (i, j) -> before (i, j.next).
 
--- DAG rules
+-- relation between indices, levels and positions
 
-part (a, b), before (b, a) -> False.
+depth (l, i), before (i, j) -> lowerD (l, j).
+depth (k, i), lowerD (l, i) -> before (l, k).
 
--- constraints on part positions
+x (p, i), before (i, j) -> lowerX (p, j).
+y (p, i), before (i, j) -> lowerY (p, j).
 
-part (a, b) -> b.right <= a.right.
-part (a, b) -> b.upper <= a.upper.
-part (a, b) -> a.lower <= b.lower.
-part (a, b) -> a.left <= a.left.
+x (p, i), lowerX (q, i) -> beforeX(q, p).
+y (p, i), lowerY (q, i) -> beforeY(q, p).
 
--- constraints on tile positions
+-- map structure
 
-part (a, t), t.x <= a.right -> False.
-part (a, t), t.y <= a.upper -> False.
-part (a, t), a.lower <= t.y -> False.
-part (a, t), a.left <= t.x -> False.
+part (a, a) -> False.
+part (a, b), before (b.level, a.level) -> False.
+part (a, b), beforeX (b.origin, a.origin) -> False.
+part (a, b), beforeX (a.corner, b.corner) -> False.
+part (a, b), beforeY (b.origin, a.origin) -> False.
+part (a, b), beforeY (a.corner, b.corner) -> False.
 
--- terrain rules
+terminal (a), part (a, b) -> False.
 
+terminal (a) -> same(a.corner, a.origin).
 
+onvertex (t, a), not leaf (a) -> False.
+
+-- trait compatibility
+
+trait (a, t), part (a, b), not compatible (b, t) -> False.
+
+-- here go tile traits and map-specific rules
