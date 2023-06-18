@@ -466,6 +466,9 @@ object and call one of its methods, instead of returning a value.
   instances (several arithmetic expressions, several trees, and so on).
 * Lexical item DSL
 * Write a test suite for projection rules.
+* Use the old strategy to produce more diverse models (iterate trough proposition
+  names and use `solve_with` to get a model forcing the current propositional
+  variable to true).
 
 ## Done
 
