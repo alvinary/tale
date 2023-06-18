@@ -1,16 +1,16 @@
 from tale.pipeline import *
 from tale.objects import *
 
-MODELS = 700
+MODELS = 10
 
 program = '''
-order n 9 : node.
-order t 10 : token.
+order n 10 : node.
+order t 11 : token.
 
-order n 9 : vertex.
-order t 10 : vertex.
+order n 10 : vertex.
+order t 11 : vertex.
 
-order i 10 : index.
+order i 11 : index.
 
 var a, b : vertex.
 var n, m : node.
@@ -46,7 +46,7 @@ right (a, b), level (a, i) -> level(b, i.next).
 left (a, b), level (b, i.next) -> level(a, i).
 right (a, b), level (b, i.next) -> level(a, i).
 
-level (n0, i0).
+level (n1, i1).
 
 level (a, i.next) -> not before (a, i).
 not before (a, i.next) -> not before (a, i).
