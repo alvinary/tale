@@ -215,7 +215,7 @@ class Index:
                 imageName = f"{preimage.term}.{function}"
                 imageTerm = Term(imageName, [])
                 self.sortMap[image].append(imageTerm)
-                self.functionMap[function, preimage.term] = imageTerm
+                self.functionMap[function, preimage.term] = imageName
 
 
 @dataclass(frozen=True)
