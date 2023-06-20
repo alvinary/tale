@@ -212,9 +212,10 @@ class Index:
             _, domain, function = k
             image = v
             for preimage in self.sortMap[domain]:
-                imageName = f"{preimage}.{function}"
-                self.sortMap[image].append(imageName)
-                self.functionMap[function, preimage] = imageName
+                imageName = f"{preimage.term}.{function}"
+                imageTerm = Term(imageName, [])
+                self.sortMap[image].append(imageTerm)
+                self.functionMap[function, preimage.term] = imageTerm
 
 
 @dataclass(frozen=True)
