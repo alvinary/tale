@@ -37,10 +37,14 @@ y (p, i), before (i, j) -> lowerY (p, j).
 x (p, i), lowerX (q, i) -> beforeX(q, p).
 y (p, i), lowerY (q, i) -> beforeY(q, p).
 
+same (p, q), x (p, i) -> x (q, i).
+same (p, q), y (p, i) -> y (p, i).
+
 -- map structure
 
 part (a, a) -> False.
 part (a, b), before (b.level, a.level) -> False.
+
 part (a, b), beforeX (b.origin, a.origin) -> False.
 part (a, b), beforeX (a.corner, b.corner) -> False.
 part (a, b), beforeY (b.origin, a.origin) -> False.
