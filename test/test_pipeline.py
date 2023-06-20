@@ -92,18 +92,19 @@ won (i, farmer), ferry (i, a) -> False.
 '''
 
 karens = '''
-order i 6 : karen.
+leslie, margot, maddie, susan : karen.
 let karen.pet : cat.
-let karen.mother : mother.
+let karen.supervisor : supervisor.
 
-let assign : mother -> karen.
+let assign : supervisor -> karen.
 
 var k, q : karen.
 var c, m : cat.
 
 likes (k, c) -> likes (c, k).
 
-assign (k.mother, k) -> primordialKaren (k).
+assign (k.supervisor, k) -> primordialKaren (k).
+primordialKaren (k) -> False.
 '''
 
 
