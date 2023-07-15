@@ -54,12 +54,7 @@ class UndefinedSort(Exception):
     pass
 
 
-# Undefined variables will always be treated as constants
-
-# Maybe there should be some mechanism for detecting potential typos
-# (Even if it's just edit distance and the message is shown only
-# with a debugging flag)
-
+# Terms that are not declared as variables are always treated as constants
 
 # When accessing const.fun
 class UndefinedFunction(Exception):
