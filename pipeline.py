@@ -29,18 +29,6 @@ EPILOG = 'Verbosity levels show: 1- rules, 2- grounded rules, and \n 3- dimacs g
 
 POSITIVE_COMPARISONS = ["=", "<", "<="]
 
-
-def poolMap(iterators, mapping, cores=False):
-    # Look up how to do this with a `with` statement
-    if not cores:
-        cores = cpu_count()
-    with Pool(cores) as pool:
-        mappedData = pool.imap(mapping, chain(*iterators), CHUNKSIZE)
-        for elem in mappedData:
-            yield elem
-        pool.close()
-
-
 class Log:
 
     def __init__(self):
