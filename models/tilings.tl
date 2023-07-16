@@ -54,7 +54,7 @@ terminal (a), part (a, b) -> False.
 
 terminal (a) -> same(a.corner, a.origin).
 
-onvertex (t, a), not leaf (a) -> False.
+onvertex (t, a), not terminal (a) -> False.
 
 -- trait compatibility
 
