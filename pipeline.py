@@ -4,9 +4,6 @@ from itertools import islice as iteratorslice
 from itertools import chain
 import argparse
 
-from sys import path
-path.insert(0, ".")
-
 from pysat.solvers import Solver
 
 from tale.embeddings import *
