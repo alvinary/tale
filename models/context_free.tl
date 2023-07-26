@@ -10,12 +10,13 @@ var n, m : node.
 var t, s : leaf.
 
 var i : index.
-
+var A, B : category.
 var r : rule.
 
 let node.left : dummyvertex.
 let node.right : dummyvertex.
 
+let cat : dummyvertex -> category.
 let cat : vertex -> category.
 let cat : rule -> category.
 let leftCat : rule -> category.
@@ -38,6 +39,11 @@ let level : vertex -> index.
 assign (r, n), cat (r, A), not cat (n, A) -> False.
 assign (r, n), leftCat (r, A), not cat (n.left, A) -> False.
 assign (r, n), rightCat (r, A), not cat (n.right, A) -> False.
+
+assign (a.left, b), cat (b, A) -> cat (a.left, A).
+assign (a.right, b), cat (b, A) -> cat (a.right, A).
+assign (a.left, b), cat (a.left, A) -> cat (b, A).
+assign (a.right, b), cat (a.right, A) -> cat (b, A).
 
 -- Link dummy vertices and vertices
 
