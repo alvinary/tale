@@ -1,25 +1,43 @@
-var n, m : proofnode.
+var x, y : proofnode.
 var l, f : proofleaf.
-var x, y : proofvertex.
+var z, q : proofvertex.
 
 var o, t : formulanode.
-var v, w : formulaleaf.
-var a, b : formulavertex.
+var v, k : formulaleaf.
+var u, w : formulavertex.
 
 var s1, s2, s3 : symbol.
 
-match (a, b) -> match (b, a).
-  
+-- matching is symmetric
+
+match (u, w) -> match (w, u).
+
+-- matching for leaves
+
 symbol (v, s1), symbol (w, s1) -> match (v, w).
 symbol (v, s1), not symbol (w, s1), match (v, w) -> False.
+empty (v), pred (v) -> False.
+empty (v), empty (k) -> match (v, k).
 
-match (o.left, t.left), match (o.right, t.right) -> match (o, t).
-match (o, t), not match (o.left, t.left) -> False.
-match (o, t), not match (o.right, t.right) -> False.
+-- inference rule arity
 
-ternary (x), proven (x.1), proven (x.2), proven (x.3) -> proven (x).
-binary (x), proven (x.1), proven (x.2) -> proven (x).
-unary (x), proven (x.1) -> proven (x).
+binary (o), binary (t), match (o.1, t.1), match (o.2, t.2) -> match (o, t).
+binary (o), match (o, t), not match (o.1, t.1) -> False.
+binary (o), match (o, t), not match (o.2, t.2) -> False.
+
+unary (o), match (o.1, t.1) -> match (o, t).
+unary (o), not match (o.1, t.1), match (o, t) -> False.
+
+-- simulate match (o, o.1.1) with matchOne (o, o.1).
+match (o, t.1) -> matchOne (o, t).
+not match (o, t.1), matchOne (o, t) -> False.
+match (o, t.2) -> matchTwo (o, t).
+not match (o, t.2), matchtwo (o, t) -> False.
+
+-- Matching formula nodes for connectives
+
+-- connective-independent proof node behavior
+
 axiom (x) -> proven (x).
 
 binary (x) -> empty (x.3).
@@ -27,6 +45,19 @@ unary (x) -> empty (x.2), empty (x.3).
 
 hypothesis (x, y), not proven (y), proven (x) -> False.
 
-empty (x), pred (x) -> False.
+-- Proof nodes for connectives
+
+andIntro (x) -> binary (x).
+andIntro (x), proven (x.1), proven (x.2) -> proven (x).
+
+andElim (x), not and (x.1) -> False.
+andElim (x), leftElim (x) -> matchOne (x, x.1).
+andElim (x), rightElim (x) -> matchTwo (x, x.1).
+
+andElim (x), not leftElim (x), not rightElim (x) -> False.
+
+or (x) -> ternary (x).
+
+imply (x), hypothesis (x, h) -> cancel (x, h).
   
   
