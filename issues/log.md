@@ -23,3 +23,4 @@ Features
 * Obtaining strings from a fixed grammar
 * Addition
 * Eight Queens
+* Avoid cubic embedding of `assign(a, b), r(b, c) -> s(a, c)`
