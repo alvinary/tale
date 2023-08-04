@@ -15,6 +15,8 @@ Features
     * Notation
     * Semantics
     * Implementation
+* Parameter passing from CLI (for the size of a sort, for instance)
+* Optimization (in pipeline.py, optimizing with respect to a given relation)
 
 ### Done
 * `let A.f : B`
