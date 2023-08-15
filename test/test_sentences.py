@@ -4,22 +4,36 @@ from tale.objects import *
 MODELS = 1
 
 program = '''
-order n 6 : node.
-order t 7 : token.
+order n 20 : node.
+order t 21 : leaf.
+order n 20 : vertex.
+order t 21 : vertex.
 
-order n 6 : vertex.
-order t 7 : vertex.
+bool, boolb, num, numb, ifkw, eqkw, cond, eqnum, ubool : category.
+r1, r2, r3, r4, r5, r6, r7, r8, r9 : rule.
+one, two, three, true, false, nott, eq, and, or : terminal.
+if, plus, times, minus, zero : terminal.
 
-order i 7 : index.
+order i 21 : index.
 
-saw, bought, two, countless, sheep, horses, large, brown : word.
-
+var A : category.
 var a, b : vertex.
 var n, m : node.
-var t, s : token.
+var t, s : leaf.
+var o : terminal.
 var i : index.
-var w : word.
-var X, Y : category.
+var r : rule.
+
+let cat : vertex -> category.
+let cat : rule -> category.
+let rleftCat : rule -> category.
+let rrightCat : rule -> category.
+let leftCat : node -> category.
+let rightCat : node -> category.
+
+let assign : node -> rule.
+let assign : leaf -> terminal.
+let assign : dummyvertex -> vertex.
 
 let left : node -> vertex.
 let right : node -> vertex.
@@ -28,70 +42,27 @@ let ileft : vertex -> node.
 let iright : vertex -> node.
 
 let level : vertex -> index.
-let lex : token -> word.
 
-S, N, V, A, D, NP, VP, NB : category.
+-- Constraints on node categories
 
-cat (brown, A).
-cat (large, A).
-cat (horses, N).
-cat (sheep, N).
-cat (countless, D).
-cat (two, D).
-cat (bought, V).
-cat (saw, V).
+assign (n, r), cat (r, A), not cat (n, A) -> False.
+assign (n, r), rleftCat (r, A), not leftCat (n, A) -> False.
+assign (n, r), rrightCat (r, A), not rightCat (n, A) -> False.
 
-cat (w, X), lex (t, w) -> cat (t, X).
-cat (w, X), lex (t, w), not cat (w, X) -> False.
+-- Left cat and right cat
 
-cat (a, X), cat (a, Y), X != Y -> False.
+left (n, a), cat (a, A) -> leftCat (n, A).
+leftCat (n, A), left (n, a), not cat (a, A) -> False.
 
-left (n, a), cat (a, X) -> leftCat (n, X).
-right (n, a), cat (a, X) -> rightCat (n, X).
+right (n, a), cat (a, A) -> rightCat (n, A).
+rightCat (n, A), right (n, a), not cat (a, A) -> False.
 
-leftCat (n, X), not cat (a, X), left (n, a) -> False.
-rightCat (n, X), not cat (a, X), right (n, a) -> False.
+-- Constraints on leaf categories
 
-rightCat (n, D) -> False.
-rightCat (n, A) -> False.
-rightCat (n, V) -> False.
+terminal (t, o), cat (o, A) -> cat (t, A).
+terminal (t, o), cat (t, A), not cat (o, A) -> False.
 
-leftCat (n, NB) -> False.
-leftCat (n, VP) -> False.
-leftCat (n, NP), cat (n, X), X != S -> False.
-leftCat (n, NB) -> False.
-leftCat (n, N) -> False.
-leftCat (n, D), cat (n, NB) -> False.
-rightCat (n, NP), cat (n, NB) -> False.
-leftCat (n, N), cat (n, NB) -> False.
-leftCat (n, NB), cat (n, NB) -> False.
-leftCat (n, NP), cat (n, NB) -> False.
-leftCat (n, NP), cat (n, NP) -> False.
-leftCat (n, NB), cat (n, NP) -> False.
-leftCat (n, N), cat (n, NP) -> False.
-
-leftCat (n, A), rightCat (n, NB) -> cat (n, NB).
-leftCat (n, A), rightCat (n, N) -> cat (n, NB). 
-leftCat (n, D), rightCat (n, NB) -> cat (n, NP).
-leftCat (n, V), rightCat (n, NP) -> cat (n, VP).
-leftCat (n, NP), rightCat (n, VP) -> cat (n, S).
-leftCat (n, A) -> cat (n, NB).
-
-not cat (n, VP), leftCat (n, V) -> False.
-not cat (n, NP), leftCat (n, D) -> False.
-
-not leftCat (n, D), cat (n, NP) -> False.
-not leftCat (n, A), cat (n, NB) -> False.
-not rightCat (n, NB), not rightCat (n, N), cat (n, NB) -> False.
-
-cat (n, NB), not rightCat (n, N), not rightCat (n, NB) -> False.
-cat (n, NB), leftCat (n, X), X != A -> False.
-cat (n, VP), not rightCat (n, NP) -> False.
-cat (n, VP), not leftCat (n, V) -> False.
-cat (n, NP), not leftCat (n, D) -> False.
-cat (n, NP), not rightCat (n, N), not rightCat (n, NB) -> False.
-cat (n, S), not rightCat (n, VP) -> False.
-cat (n, S), not leftCat (n, NP) -> False.
+-- Tree behavior
 
 left (a, a) -> False.
 right (a, a) -> False.
@@ -114,16 +85,73 @@ right (a, b), level (a, i) -> level(b, i.next).
 left (a, b), level (b, i.next) -> level(a, i).
 right (a, b), level (b, i.next) -> level(a, i).
 
-level (n0, i0).
-cat (n0, S).
-
 level (a, i.next) -> not before (a, i).
 not before (a, i.next) -> not before (a, i).
 level (a, i) -> before (a, i.next).
 before (a, i) -> before (a, i.next).
 
-before (n, m), right (m, n) -> False.
-before (n, m), left (m, n) -> False.
+-- Test rules
+
+-- Labels of terminals
+
+cat (one, num).
+cat (two, num).
+cat (true, bool).
+cat (false, bool).
+cat (three, num).
+cat (if, ifkw).
+cat (eq, eqkw).
+cat (and, bbool).
+cat (or, bbool).
+cat (plus, bnum).
+cat (minus, bnum).
+cat (times, bnum).
+cat (minus, unum).
+cat (nott, ubool).
+cat (zero, num).
+
+-- List of terminals:
+-- one, two, three, false, true, if, eq, and,
+-- or, plus, minus, times, nott
+
+-- Rules
+
+cat (r1, bool).
+leftCat (r1, bool).
+rightCat (r1, boolb).
+
+cat (r2, boolb).
+leftCat (r2, boolop).
+rightCat (r2, bool).
+
+cat (r3, num).
+leftCat (r3, num).
+rightCat (r3, numb).
+
+cat (r4, numb).
+leftCat (r4, numop).
+rightCat (r4, num).
+
+cat (r5, num).
+leftCat (r5, ifkw).
+rightCat (r5, cond).
+
+cat (r6, cond).
+leftCat (r6, bool).
+rightCat (r6, num).
+
+cat (r7, bool).
+leftCat (r7, num).
+rightCat (r7, eqnum).
+
+cat (r8, eqnum).
+leftCat (r8, eqkw).
+rightCat (r8, num).
+
+cat (r9, bool).
+leftCat (r9, ubool).
+rightCat (r8, bool).
+
 '''
 
 
