@@ -174,11 +174,13 @@ def getSentence(model):
 
     isLeft = lambda s: s[0:5] == 'left('
     isRight = lambda s: s[0:6] == 'right('
-    isLex = lambda s: s[0:4] == 'lex('
+    isLex = lambda s: s[0:4] == 'terminal('
 
     leftCandidates = {literal for literal in model if 'left(' in literal}
     rightCandidates = {literal for literal in model if 'right(' in literal}
-    lexCandidates = {literal for literal in model if 'lex(' in literal}
+    lexCandidates = {literal for literal in model if 'terminal(' in literal and 'not terminal' not in literal}
+    
+    print(lexCandidates)
 
     leftEdges = {
         extract(literal)
@@ -190,7 +192,7 @@ def getSentence(model):
     }
     lexicalItems = {
         extract(literal)
-        for literal in lexCandidates if isLex(literal)
+        for literal in lexCandidates
     }
     
     print(lexicalItems)
