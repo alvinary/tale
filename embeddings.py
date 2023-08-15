@@ -83,6 +83,11 @@ def oneOf(imageSort, domainSorts, label=''):
     # greater or equal than |imageSort|
 
     imageSize = len(imageSort)
+    
+    if imageSize == 0:
+        print(f"Attempted to define function mapping into an empty set")
+        assert False
+    
     logSize = ceil(log(imageSize, 2))
     bottom = 2**logSize
     
