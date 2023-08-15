@@ -1,14 +1,13 @@
-order n 20 : node.
-order t 21 : leaf.
-order n 20 : vertex.
-order t 21 : vertex.
+order n 5 : node.
+order t 6 : leaf.
+order n 5 : vertex.
+order t 6 : vertex.
 
-bool, boolb, num, numb, ifkw, eqkw, cond, eqnum, ubool : category.
-r1, r2, r3, r4, r5, r6, r7, r8, r9 : rule.
-one, two, three, true, false, nott, eq, and, or : terminal.
-if, plus, times, minus, zero : terminal.
+num, numop, unum, numb : category.
+r1, r2, r3 : rule.
+zero, one, two, three, plus, times, minus : terminal.
 
-order i 21 : index.
+order i 6 : index.
 
 var A : category.
 var a, b : vertex.
@@ -20,14 +19,15 @@ var r : rule.
 
 let cat : vertex -> category.
 let cat : rule -> category.
+
 let rleftCat : rule -> category.
 let rrightCat : rule -> category.
+
 let leftCat : node -> category.
 let rightCat : node -> category.
 
-let assign : node -> rule.
-let assign : leaf -> terminal.
-let assign : dummyvertex -> vertex.
+let rule : node -> rule.
+let terminal : leaf -> terminal.
 
 let left : node -> vertex.
 let right : node -> vertex.
@@ -39,9 +39,14 @@ let level : vertex -> index.
 
 -- Constraints on node categories
 
-assign (n, r), cat (r, A), not cat (n, A) -> False.
-assign (n, r), rleftCat (r, A), not leftCat (n, A) -> False.
-assign (n, r), rrightCat (r, A), not rightCat (n, A) -> False.
+rule (n, r), cat (r, A) -> cat (n, A).
+rule (n, r), cat (r, A), not cat (n, A) -> False.
+
+rule (n, r), rleftCat (r, A) -> leftCat (n, A).
+rule (n, r), rrightCat (r, A) -> rightCat (n, A).
+
+rule (n, r), rleftCat (r, A), not leftCat (n, A) -> False.
+rule (n, r), rrightCat (r, A), not rightCat (n, A) -> False.
 
 -- Left cat and right cat
 
@@ -54,7 +59,7 @@ rightCat (n, A), right (n, a), not cat (a, A) -> False.
 -- Constraints on leaf categories
 
 terminal (t, o), cat (o, A) -> cat (t, A).
-terminal (t, o), cat (t, A), not cat (o, A) -> False.
+terminal (t, o), cat (o, A), not cat (t, A) -> False.
 
 -- Tree behavior
 
@@ -88,61 +93,24 @@ before (a, i) -> before (a, i.next).
 
 -- Labels of terminals
 
+cat (zero, num).
 cat (one, num).
 cat (two, num).
-cat (true, bool).
-cat (false, bool).
 cat (three, num).
-cat (if, ifkw).
-cat (eq, eqkw).
-cat (and, bbool).
-cat (or, bbool).
-cat (plus, bnum).
-cat (minus, bnum).
-cat (times, bnum).
+cat (plus, numop).
+cat (times, numop).
 cat (minus, unum).
-cat (nott, ubool).
-cat (zero, num).
-
--- List of terminals:
--- one, two, three, false, true, if, eq, and,
--- or, plus, minus, times, nott
 
 -- Rules
 
-cat (r1, bool).
-leftCat (r1, bool).
-rightCat (r1, boolb).
+cat (r1, num).
+rleftCat (r1, num).
+rrightCat (r1, numb).
 
-cat (r2, boolb).
-leftCat (r2, boolop).
-rightCat (r2, bool).
+cat (r2, numb).
+rleftCat (r2, numop).
+rrightCat (r2, num).
 
 cat (r3, num).
-leftCat (r3, num).
-rightCat (r3, numb).
-
-cat (r4, numb).
-leftCat (r4, numop).
-rightCat (r4, num).
-
-cat (r5, num).
-leftCat (r5, ifkw).
-rightCat (r5, cond).
-
-cat (r6, cond).
-leftCat (r6, bool).
-rightCat (r6, num).
-
-cat (r7, bool).
-leftCat (r7, num).
-rightCat (r7, eqnum).
-
-cat (r8, eqnum).
-leftCat (r8, eqkw).
-rightCat (r8, num).
-
-cat (r9, bool).
-leftCat (r9, ubool).
-rightCat (r8, bool).
-
+rleftCat (r3, unum).
+rrightCat (r3, num).
