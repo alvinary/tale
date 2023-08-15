@@ -15,6 +15,8 @@ Features
     * Notation
     * Semantics
     * Implementation
+* Parameter passing from CLI (for the size of a sort, for instance)
+* Optimization (in pipeline.py, optimizing with respect to a given relation)
 
 ### Done
 * `let A.f : B`
@@ -23,3 +25,4 @@ Features
 * Obtaining strings from a fixed grammar
 * Addition
 * Eight Queens
+* Avoid cubic embedding of `assign(a, b), r(b, c) -> s(a, c)`
