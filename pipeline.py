@@ -142,11 +142,18 @@ def functionClauses(index, functions):
             yield clause
 
 
-def pipeline(program, logFlags=set(), logger=defaultLogger):
+def pipeline(program, logFlags=set(), default_sorts={}, default_functions={}, logger=defaultLogger):
 
     logger.flags = logFlags
 
     _sorts, _variables, _values, _functions, rules = parseProgram(program)
+
+    for s in default_sorts:
+        for c in default_sorts[s]:
+            _sorts[s].append(c)
+
+    for k in default_functions:
+        _functions[k] = default_functions[k]
 
     for r in rules:
         logger.log(RULES, r.show())
@@ -154,7 +161,6 @@ def pipeline(program, logFlags=set(), logger=defaultLogger):
     index = Index(sorts=_sorts, variables=_variables, functions=_functions)
     dimacs = DimacsIndex([])
     solver = Solver()
-    
     index.addProjections()
 
     atomForms = set()
