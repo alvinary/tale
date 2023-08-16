@@ -43,17 +43,3 @@ real (a), dRight (a.right, b) -> right (a, b).
 
 dRight (a, b), not real (b) -> False.
 dLeft (a, b), not real (b) -> False.
-
--- 'regular' tree constraints
-
-left (a, a) -> False.
-right (a, a) -> False.
-
-left (a, b), before (b, a) -> False.
-right (a, b), before (b, a) -> False.
-
-before (a, a).
-before (a, a.left).
-before (a, a.right).
-before (a, b) -> before (a, b.left).
-before (a, b) -> before (a, b.right).
