@@ -37,7 +37,7 @@ UNum -> negative.
 Num -> UNum Num.
 '''
 
-grammar_productions = '''
+'''
 N -> Paulo.
 N -> Monsi.
 N -> Genaro.
