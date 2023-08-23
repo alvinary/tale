@@ -1,45 +1,70 @@
-let left : tree -> tree.
-let right : tree -> tree.
-let dDir : tree -> tree.
+leaf, virtual, real : class.
+
+let branch : nonroot -> tree.
+let class : tree -> class.
 
 var a, b : tree.
 
--- tree nodes are virtual or real
-
-not virtual (a), not real (a) -> False.
-not leaf (a), not node (a) -> False.
+class (a, leaf) -> leaf (a).
+class (a, real) -> real (a).
+class (a, virtual) -> virtual (a).
 
 virtual (a), real (a) -> False.
-leaf (a), node (a) -> False.
+virtual (a), leaf (a) -> False.
+real (a), leaf (a) -> False.
 
--- only real nodes are branches of each other
+leaf (a), vl (a) -> False.
+leaf (a), vr (a) -> False.
 
-left (a, b), not real (a) -> False.
-left (a, b), not real (b) -> False.
+right (a, b), leaf (a) -> False.
+left (a, b), leaf (a) -> False.
 
-right (a, b), not real (a) -> False.
-right (a, b), not real (b) -> False.
+right (a, b), virtual (a) -> False.
+left (a, b), virtual (a) -> False.
 
--- virtual nodes are either left branching or right branching. Real nodes are both.
+right (a, b), virtual (b) -> False.
+left (a, b), virtual (b) -> False.
 
-real (a) -> lefter(a), righter (a).
-virtual (a), righter (a), lefter (a) -> False.
+carryLeft (a, b), real (a) -> False.
+carryRight (a, b), real (a) -> False.
 
--- virtual nodes 'propagate' branches back in the tree,
--- eventually reaching a real node
+vl (a) -> virtual (a).
+vr (a) -> virtual (a).
+vl (a), vr (a) -> False.
+virtual (a), not vl (a), not vr (a) -> False.
 
-dLeft (a, b) -> dDir (a, b).
-dRight (a, b) -> dDir (a, b).
+vl (a.left), virtual (a) -> vl (a).
+vr (a.right), virtual (a) -> vr (a).
+vl (a), virtual (a.left) -> vl (a.left).
+vr (a), virtual (a.right) -> vr (a.right).
 
-virtual (a), lefter (a) -> dLeft (a, a.left).
-dLeft (a.left, b), virtual (a) -> dLeft (a, b).
-real (a), dLeft (a.left, b) -> left (a, b).
+vl (a), real (a.left) -> carryLeft (a, a.left).
+vl (a), leaf (a.left) -> carryLeft (a, a.left).
+vl (a), carryLeft (a.left, b) -> carryLeft (a, b).
 
-virtual (a), righter (a) -> dRight (a, a.right).
-dRight (a.right, b), virtual (a) -> dRight (a, b).
-real (a), dRight (a.right, b) -> right (a, b).
+carryLeft (a, b), not vl (a) -> False.
+carryRight (a, b), not vr (a) -> False.
 
--- virtual nodes can only have real nodes as branches
+vr (a), real (a.right) -> carryRight (a, a.right).
+vr (a), leaf (a.right) -> carryRight (a, a.right).
+vr (a), carryRight (a.right, b) -> carryRight (a, b).
 
-dRight (a, b), not real (b) -> False.
-dLeft (a, b), not real (b) -> False.
+carryLeft (a, b), real (a) -> False.
+carryRight (a, b), real (a) -> False.
+
+carryLeft (a.left, b), real (a) -> left (a, b).
+carryRight (a.right, b), real (a) -> right (a, b).
+
+real (a), real (a.left) -> left (a, a.left).
+real (a), real (a.right) -> right (a, a.right).
+
+real (a), leaf (a.left) -> left (a, a.right).
+real (a), leaf (a.right) -> right (a, a.right).
+
+real (a), virtual (a.left), carryLeft (a.left, b) -> left (a, b).
+real (a), virtual (a.right), carryRight (a.right, b) -> right (a, b).
+
+left (a, b) -> branch (b, a).
+right (a, b) -> branch (b, a).
+
+left (a, b), right (a, b) -> False.
