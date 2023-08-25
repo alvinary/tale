@@ -61,9 +61,6 @@ real (a), real (a.right) -> right (a, a.right).
 real (a), leaf (a.left) -> left (a, a.left).
 real (a), leaf (a.right) -> right (a, a.right).
 
-real (a), virtual (a.left), carryLeft (a.left, b) -> left (a, b).
-real (a), virtual (a.right), carryRight (a.right, b) -> right (a, b).
-
 left (a, b) -> branch (b, a).
 right (a, b) -> branch (b, a).
 vl (a.left) -> branch (a, a.left).
