@@ -63,7 +63,5 @@ real (a), leaf (a.right) -> right (a, a.right).
 
 left (a, b) -> branch (b, a).
 right (a, b) -> branch (b, a).
-vl (a.left) -> branch (a, a.left).
-vr (a.right) -> branch (a, a.right).
-
-left (a, b), right (a, b) -> False.
+vl (a.left) -> branch (a.left, a).
+vr (a.right) -> branch (a.right, a).
