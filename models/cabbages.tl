@@ -68,10 +68,10 @@ not eats (a, farmer).
 
 -- Initial state
 
-at (i0, farmer, shore).
-at (i0, wolf, shore).
-at (i0, cabbage, shore).
-at (i0, goat, shore).
+at (i1, farmer, shore).
+at (i1, wolf, shore).
+at (i1, cabbage, shore).
+at (i1, goat, shore).
 
 -- The farmer stops ferrying actors when he wins
 won (i, farmer), ferry (i, c) -> False.
