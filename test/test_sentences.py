@@ -189,7 +189,7 @@ def test_sentences():
     sentences = set()
 
     for i in range(MODELS):
-        models = pipeline(program)
+        models = Program(program).models()
         for i, model in zip(range(1), models):
             sentence = getSentence(model)
             sentences.add(sentence.show().replace("(", "").replace(")", ""))

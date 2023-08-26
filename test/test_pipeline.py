@@ -109,13 +109,13 @@ primordialKaren (k) -> False.
 
 
 def test_pipeline():
-    for index, model in zip(range(MODELS), pipeline(program)):
+    for index, model in zip(range(MODELS), Program(program).models()):
         for a in sorted(list(model)):
             print(a)
         print("")
 
 def test_projections():
-    for index, model in zip(range(MODELS), pipeline(karens)):
+    for index, model in zip(range(MODELS), Program(karens).models()):
         for a in sorted(list(model)):
             print(a)
         print("")

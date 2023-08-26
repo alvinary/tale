@@ -56,7 +56,7 @@ before (a, i) -> before (a, i.next).
 
 
 def test_trees():
-    models = pipeline(program)
+    models = Program(program).models()
 
     if not models:
         print("Instance is not satisfiable")
