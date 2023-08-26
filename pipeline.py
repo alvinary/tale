@@ -37,9 +37,6 @@ class Log:
             self.data[field].append(data)
 
 
-defaultLogger = Log()
-
-
 # When unfolding a rule with variables
 class EmptySort(Exception):
     pass
@@ -57,6 +54,8 @@ class UndefinedSort(Exception):
 class UndefinedFunction(Exception):
     pass
 
+def emptySet():
+    return set([])
 
 def argumentParser():
     parser = argparse.ArgumentParser(description=DESCRIPTION, epilog=EPILOG)
@@ -141,74 +140,85 @@ def functionClauses(index, functions):
         for clause in oneOf(_range, _domain, label=f):
             yield clause
 
+class Program:
 
-def pipeline(program, logFlags=set(), default_sorts={}, default_functions={}, logger=defaultLogger):
+    def __init__(self,
+                 program_text,
+                 defaultFunctions=emptySet(),
+                 defaultSorts=emptySet(),
+                 flags=emptySet()):
+                 
+        sorts, variables, values, functions, rules = parseProgram(program_text)
+        functions |= defaultFunctions
+        for s in defaultSorts:
+            sorts[s] += defaultSorts[s]
 
-    logger.flags = logFlags
+        self.rules = rules
+        self.index = Index(sorts=sorts, variables=variables, functions=functions)
+        self.dimacs = DimacsIndex([])
+        self.solver = Solver()
+        self.logger = Log()
+        self.logger.flags |= flags
+        self.ready = False
+        self.values = values
 
-    _sorts, _variables, _values, _functions, rules = parseProgram(program)
+    def setup(self):
+        if not self.setup:
+            self.index.addProjections()
 
-    for s in default_sorts:
-        for c in default_sorts[s]:
-            _sorts[s].append(c)
+        atomForms = set()
+        atoms = []
 
-    for k in default_functions:
-        _functions[k] = default_functions[k]
+        for r in self.rules:
+            self.logger.log(RULES, r.show())
 
-    for r in rules:
-        logger.log(RULES, r.show())
+        for sort in self.index.sortMap.keys():
+            elements = self.index.sortMap[sort]
+            for comparison in uniqueNameAssumption(elements):
+                if comparison.show() not in atomForms:
+                    atoms.append(comparison)
+                    atomForms.add(comparison.show())
+                for clause in comparison.clausify(self.dimacs):
+                    self.solver.add_clause(clause)
+                    self.logger.log(CLAUSES, (clause, comparison.show()))
 
-    index = Index(sorts=_sorts, variables=_variables, functions=_functions)
-    dimacs = DimacsIndex([])
-    solver = Solver()
-    index.addProjections()
+        for clauseSet in functionClauses(self.index, self.values):
+            self.logger.log(GROUNDRULES, clauseSet.show())
+            for clause in clauseSet.clausify(self.dimacs):
+                self.solver.add_clause(clause)
+                self.logger.log(CLAUSES, (clause, clauseSet.show()))
 
-    atomForms = set()
-    atoms = []
+        for rule in self.rules:
+            source = rule.collect(self.index)
+            if unfold(rule, self.index):
+                for groundRule in unfold(rule, self.index):
+                    self.logger.log(GROUNDRULES, groundRule.show())
+                    for atom in groundRule.atoms():
+                        if atom.show() not in atomForms and isPositive(atom):
+                            atomForms.add(atom.show())
+                            atoms.append(atom)
+                            self.logger.log(ATOMS, atom.show())
+                    for clause in groundRule.clausify(self.dimacs):
+                        self.solver.add_clause(clause)
+                        self.logger.log(CLAUSES, (clause, groundRule.show()))
+            else:
+                self.solver.add_clause(rule.clausify(self.dimacs))
+                self.logger.log(CLAUSES, (rule.clausify(self.dimacs), rule.show()))
 
-    for sortName in index.sortMap.keys():
-        sort = index.sortMap[sortName]
-        for comparison in uniqueNameAssumption(sort):
-            if comparison.show() not in atomForms:
-                atoms.append(comparison)
-                atomForms.add(comparison.show())
-            for clause in comparison.clausify(dimacs):
-                solver.add_clause(clause)
-                logger.log(CLAUSES, (clause, comparison.show()))
+        for clauseSet in negation(atoms):
+            self.logger.log(GROUNDRULES, clauseSet.show())
+            for clause in clauseSet.clausify(self.dimacs):
+                self.solver.add_clause(clause)
+                self.logger.log(CLAUSES, (clause, clauseSet.show()))
 
-    for clauseSet in functionClauses(index, _values):
-        logger.log(GROUNDRULES, clauseSet.show())
-        for clause in clauseSet.clausify(dimacs):
-            solver.add_clause(clause)
-            logger.log(CLAUSES, (clause, clauseSet.show()))
+        self.ready = True
 
-    for rule in rules:
-        source = rule.collect(index)
-        if unfold(rule, index):
-            for groundRule in unfold(rule, index):
-                logger.log(GROUNDRULES, groundRule.show())
-                for atom in groundRule.atoms():
-                    if atom.show() not in atomForms and isPositive(atom):
-                        atomForms.add(atom.show())
-                        atoms.append(atom)
-                        logger.log(ATOMS, atom.show())
-                for clause in groundRule.clausify(dimacs):
-                    solver.add_clause(clause)
-                    logger.log(CLAUSES, (clause, groundRule.show()))
-        else:
-            solver.add_clause(rule.clausify(dimacs))
-            logger.log(CLAUSES, (rule.clausify(dimacs), rule.show()))
-
-    for clauseSet in negation(atoms):
-        logger.log(GROUNDRULES, clauseSet.show())
-        for clause in clauseSet.clausify(dimacs):
-            solver.add_clause(clause)
-            logger.log(CLAUSES, (clause, clauseSet.show()))
-
-    for model in solver.enum_models():
-        logger.log(STATS, str(solver.accum_stats()))
-        yield showModel(model, dimacs)
-
+    def models(self):
+        if not self.ready:
+            self.setup()
+        for model in self.solver.enum_models():
+            self.logger.log(STATS, str(self.solver.accum_stats()))
+            yield showModel(model, self.dimacs)
 
 if __name__ == '__main__':
 
@@ -236,11 +246,17 @@ if __name__ == '__main__':
     else:
         included = set()
 
-    models = pipeline(programText, logFlags=flags)
+    program = Program(programText, flags=flags)
+
+    models = program.models()
 
     if models:
         print("The input program is satisfiable.")
         print("")
+        for k in program.index.sortMap:
+            print(k, program.index.sortMap[k])
+        for k in program.index.functionMap:
+            print(k, program.index.functionMap[k])
         if size > 1:
             print(f"Showing up to {size} models...")
         elif size == 1:
@@ -252,7 +268,7 @@ if __name__ == '__main__':
         printModel(m, filters=included)
         print("\n\n")
 
-    for key in defaultLogger.data.keys():
+    for key in program.logger.data.keys():
         print(key, ":")
-        print("\n".join(defaultLogger.data[key]))
+        print("\n".join(program.logger.data[key]))
         print("\n\n\n")
