@@ -163,8 +163,8 @@ class Program:
         self.values = values
 
     def setup(self):
-        if not self.setup:
-            self.index.addProjections()
+        
+        self.index.addProjections()
 
         atomForms = set()
         atoms = []
