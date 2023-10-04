@@ -3,9 +3,9 @@ order t 6 : leaf.
 order n 5 : vertex.
 order t 6 : vertex.
 
-num, numop, unum, numb : category.
-r1, r2, r3 : rule.
-zero, one, two, three, plus, times, minus : terminal.
+N, NP, NBAR, A, AP, ABAR, DET, V, VBAR, VP, S, CP, C : category.
+r1, r2, r3, r4, r5, r6 : rule.
+he, she, her, his, a, the, some, loves, hates, knows, Julia, Carlos, Monsi, Paulo : terminal.
 
 order i 6 : index.
 

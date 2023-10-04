@@ -1,5 +1,5 @@
 order c 4 : color.
-order v 10 : vertex.
+order v 100 : vertex.
 
 let color : vertex -> color.
 
