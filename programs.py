@@ -35,9 +35,13 @@ grammar = '''
         | assign
         | project
         ;
+        
+    names = manyNames | lastName ;
+    manyNames = firstName:name "," rest:names ;
+    lastName = last:name ;
 
-    add = elems:elements ":" sort:name ;
-    fill = "fill " prefix:name n:number ":" sort:name ;
+    add = elems:elements ":" sort:names ;
+    fill = "fill " prefix:name n:number ":" sort:names ;
     var = "var " vars:elements ":" sort:name ;
     let = "let " f:name ":" domain:elements "->" range:name ;
     order = "order " prefix:name n:number ":" sort:name ;
@@ -135,12 +139,23 @@ def merge(left, right):
     leftValues = leftValues | rightValues
     leftFunctions = leftFunctions | rightFunctions
     return leftSorts, leftVariables, leftValues, leftFunctions
-
+    
 
 class ProgramSemantics:
 
     def name(self, ast):
         return str(ast)
+        
+    def names(self, ast):
+        return ast
+        
+    def manyNames(self, ast):
+        allNames = list(ast.rest) + str(ast.firstName)
+        return list(allNames)
+        
+    def lastName(self, ast):
+        result = [str(ast.last)]
+        return list(result)
 
     def number(self, ast):
         return int(ast.n)
@@ -173,13 +188,15 @@ class ProgramSemantics:
         sorts, variables, values, functions = listMap(), {}, {}, {}
         for elem in ast.elems:
             elem = Term(elem, [])
-            sorts[ast.sort].append(elem)
+            for sortName in ast.sort:
+                sorts[sortName].append(elem)
         return sorts, variables, values, functions
 
     def fill(self, ast):
         sorts, variables, values, functions = listMap(), {}, {}, {}
         indexTerms = [Term(f"{ast.prefix}{i}", []) for i in range(ast.n)]
-        sorts[ast.sort] += indexTerms
+        for sortName in ast.sort:
+            sorts[sortName] += indexTerms
         return sorts, variables, values, functions
 
     def order(self, ast):
