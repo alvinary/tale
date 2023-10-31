@@ -150,7 +150,7 @@ class ProgramSemantics:
         return ast
         
     def manyNames(self, ast):
-        allNames = list(ast.rest) + str(ast.firstName)
+        allNames = [str(ast.firstName)] + list(ast.rest)
         return list(allNames)
         
     def lastName(self, ast):
