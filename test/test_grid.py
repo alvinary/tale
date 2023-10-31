@@ -8,7 +8,7 @@ from tale.formulas import Term
 MODELS = 6
 
 path_prefix = str(abspath(getsourcefile(lambda:0)))
-model_path = path_prefix.replace('tale/test/test_grid.py', 'tale/models/grid_trees.tl')
+model_path = path_prefix.replace('tale/test/test_grid.py', 'tale/models/drafts/grid_trees.tl')
 
 program = ''
 with open(model_path, 'r') as grid_trees:
