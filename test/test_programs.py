@@ -3,7 +3,7 @@ from tale.programs import *
 testProgram = '''
 -- This is a comment.
 -- This is a comment too.
-fill c 4 : const.
+fill c 4 : const, comp.
 var a, b : const.
 var F : fun.
 f, g, h : fun.
@@ -55,6 +55,8 @@ def test_declarations():
 
     assert c1 in sorts['const']
     assert c3 in sorts['const']
+    assert c1 in sorts['comp']
+    assert c3 in sorts['comp']
     assert f in sorts['fun']
     assert 'F' in variables.keys()
     assert 'a' in variables.keys()
