@@ -1,19 +1,6 @@
 NEWLINE = "\n"
 
 
-class BrokenPrecondition(Exception):
-
-    def __init__(self, message, data={}):
-        self.message = message
-        self.data = data
-
-    def __str__(self):
-        return self.message
-
-    def __bool__(self):
-        return True
-
-
 def remainder(vertex, left, right):
     left = {(a, b) for a, b in left if a != vertex}
     right = {(a, b) for a, b in right if a != vertex}
@@ -21,7 +8,7 @@ def remainder(vertex, left, right):
 
 
 def successors(vertex, relation):
-    successors = {b for a, b in relation if a == vertex}
+    successors = {b for a, b in relation if a == vertex and b != vertex}
     return successors
 
 
@@ -33,27 +20,16 @@ def bort(vertex, left, right):
     if len(leftSuccessors) == 0 and len(rightSuccessors) == 0:
         return Leaf(vertex)
         
-    if len(leftSuccessors) == 1:
+    if len(leftSuccessors) == 1 and len(rightSuccessors) == 1:
         leftChild = leftSuccessors.pop()
-    elif len(leftSuccessors) > 1:
-        raise BrokenPrecondition(
-            f"More than one left successor found for vertex {vertex}")
-    elif len(leftSuccessors) == 0:
-        raise BrokenPrecondition(
-            f"No left successor found for vertex {vertex}")
-
-    if len(rightSuccessors) == 1:
         rightChild = rightSuccessors.pop()
-    elif len(rightSuccessors) > 1:
-        raise BrokenPrecondition(
-            f"More than one right successor found for vertex {vertex}")
-    elif len(rightSuccessors) == 0:
-        raise BrokenPrecondition(
-            f"No right successor found for vertex {vertex}")
-
-    leftRemainder, rightRemainder = remainder(vertex, left, right)
-
-    return Node(vertex, leftChild, rightChild, leftRemainder, rightRemainder)
+        leftRemainder, rightRemainder = remainder(vertex, left, right)
+        return Node(vertex, leftChild, rightChild, leftRemainder, rightRemainder)
+        
+    else:
+        error_message = '\nThere is an unexpected number of left and right nodes!'
+        error_message = error_message + f'\nWhat I see is\nleft: { " ".join(leftSuccessors)}\nright: {" ".join(rightSuccessors)}'
+        raise Exception(error_message)
 
 
 class Node():
@@ -87,10 +63,13 @@ class Leaf():
 def extract(literal):
     leftParen = literal.index("(")
     rightParen = literal.index(")")
-    pairSpan = literal[leftParen + 1:rightParen]
-    a, b = pairSpan.split(",")
-    a, b = a.strip(), b.strip()
-    return a, b
+    argumentsSpan = literal[leftParen + 1:rightParen]
+    arguments = argumentsSpan.split(",")
+    if len(arguments) == 2:
+        a, b = arguments[0].strip(), arguments[1].strip()
+        return a, b
+    else:
+        return arguments
 
 
 def reachesBack(vertex, edges):
@@ -133,11 +112,11 @@ def getTree(model, test=False):
         cycles = [v for v in vertices if reachesBack(v, edges)]
         
         if not rooted:
-            raise BrokenPrecondition(
+            raise Exception(
                 f"More than one root found (roots are {', '.join(roots)})")
                 
         if cycles:
-            raise BrokenPrecondition(
+            raise Exception(
                 f"There are loops connecting some vertices to themselves ({', '.join(cycles)})")
         
 
@@ -175,10 +154,12 @@ def getSentence(model):
     isLeft = lambda s: s[0:5] == 'left('
     isRight = lambda s: s[0:6] == 'right('
     isLex = lambda s: s[0:4] == 'terminal('
+    isRoot = lambda s: s[0:5] == 'root('
 
     leftCandidates = {literal for literal in model if 'left(' in literal}
     rightCandidates = {literal for literal in model if 'right(' in literal}
     lexCandidates = {literal for literal in model if 'terminal(' in literal and 'not terminal' not in literal}
+    rootCandidates = {literal for literal in model if 'root(' in literal and 'not root' not in literal}
     
     print(lexCandidates)
 
@@ -194,6 +175,10 @@ def getSentence(model):
         extract(literal)
         for literal in lexCandidates
     }
+    roots = {
+        extract(literal).pop()
+        for literal in rootCandidates
+    }
     
     print(lexicalItems)
 
@@ -207,7 +192,6 @@ def getSentence(model):
     successors = {b for _, b in edges}
     vertices = predecessors | successors
 
-    roots = {i for i in vertices if i not in successors}
     root = roots.pop()
     
     tree = bort(root, leftEdges, rightEdges)

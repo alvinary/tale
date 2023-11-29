@@ -37,7 +37,7 @@ UNum -> negative.
 Num -> UNum Num.
 '''
 
-'''
+grammar_productions = '''
 N -> Paulo.
 N -> Monsi.
 N -> Genaro.
@@ -81,6 +81,8 @@ order n {n} : node.
 order t {n+1} : leaf.
 order n {n} : vertex.
 order t {n+1} : vertex.
+
+let parent : vertex -> vertex.
 
 {', '.join(label_names)} : category.
 {', '.join(rule_names)} : rule.
@@ -143,31 +145,19 @@ terminal (t, o), cat (o, AA), not cat (t, AA) -> False.
 
 -- Tree behavior
 
-left (a, a) -> False.
-right (a, a) -> False.
+before (a, a.next).
+before (a, b) -> before (a, b.next).
+edge (a, b), before (b, a) -> False.
 
-right (t, a) -> False.
-left (t, a) -> False.
+parent (a, a) -> root (a).
+root (a), root (b), a != b -> False.
 
-left (n, a) -> ileft (a, n).
-right (n, a) -> iright (a, n). 
-
+left (a, b) -> edge (a, b).
+right (a, b) -> edge (a, b).
+edge (a, b), not left (a, b), not right (a, b), not root (a) -> False.
 left (a, b), right (a, b) -> False.
 
-right (n, a) -> isRight (a).
-left (n, a) -> isLeft (a).
-
-isLeft (a), isRight (a) -> False.
-
-left (a, b), level (a, i) -> level(b, i.next).
-right (a, b), level (a, i) -> level(b, i.next).
-left (a, b), level (b, i.next) -> level(a, i).
-right (a, b), level (b, i.next) -> level(a, i).
-
-level (a, i.next) -> not before (a, i).
-not before (a, i.next) -> not before (a, i).
-level (a, i) -> before (a, i.next).
-before (a, i) -> before (a, i.next).
+parent (b, a) <-> edge (a, b).
 
 -- Root must be a sentence
 
@@ -191,6 +181,7 @@ def test_sentences():
     for i in range(MODELS):
         models = Program(program).models()
         for i, model in zip(range(1), models):
+            print('\n'.join(list(sorted([p for p in model if ('left' in p or 'right' in p) and ('not' not in p and 'i' not in p)]))))
             sentence = getSentence(model)
             sentences.add(sentence.show().replace("(", "").replace(")", ""))
             

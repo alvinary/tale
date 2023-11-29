@@ -1,4 +1,4 @@
-order v 15 : vertex.
+order v 90 : vertex.
 let parent : vertex -> vertex.
 
 var a, b : vertex.

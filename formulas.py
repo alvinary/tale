@@ -162,7 +162,7 @@ class Index:
 
     def __init__(self, sorts={}, variables={}, functions={}):
 
-        self.functionMap = {k:v for k, v in functions.items() if len(k) != 3}
+        self.functionMap = {k:v for k, v in functions.items() if len(k) == 2}
         self.sortMap = sorts
         self.variableMap = variables
         self.projections = {k:v for k, v in functions.items() if len(k) == 3}
