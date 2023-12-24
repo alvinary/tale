@@ -7,14 +7,11 @@ num, numop, unum, numb : category.
 r1, r2, r3 : rule.
 zero, one, two, three, plus, times, minus : terminal.
 
-order i 6 : index.
-
 var A : category.
 var a, b : vertex.
 var n, m : node.
 var t, s : leaf.
 var o : terminal.
-var i : index.
 var r : rule.
 
 let cat : vertex -> category.
@@ -32,10 +29,7 @@ let terminal : leaf -> terminal.
 let left : node -> vertex.
 let right : node -> vertex.
 
-let ileft : vertex -> node.
-let iright : vertex -> node.
-
-let level : vertex -> index.
+let parent : vertex -> node.
 
 -- Constraints on node categories
 
@@ -63,14 +57,17 @@ terminal (t, o), cat (o, A), not cat (t, A) -> False.
 
 -- Tree behavior
 
+root (a) -> parent (a, a).
+root (a), root (b), a != b -> False.
+
 left (a, a) -> False.
 right (a, a) -> False.
 
-right (t, a) -> False.
-left (t, a) -> False.
+left (a, b) -> parent (b, a).
+right (a, b) -> parent (b, a).
 
-left (n, a) -> ileft (a, n).
-right (n, a) -> iright (a, n). 
+right (t, a) -> False.
+left (t, a) -> False. 
 
 left (a, b), right (a, b) -> False.
 
@@ -79,15 +76,13 @@ left (n, a) -> isLeft (a).
 
 isLeft (a), isRight (a) -> False.
 
-left (a, b), level (a, i) -> level(b, i.next).
-right (a, b), level (a, i) -> level(b, i.next).
-left (a, b), level (b, i.next) -> level(a, i).
-right (a, b), level (b, i.next) -> level(a, i).
+before (n, n.next).
+before (n, m) -> before (n, m.next).
 
-level (a, i.next) -> not before (a, i).
-not before (a, i.next) -> not before (a, i).
-level (a, i) -> before (a, i.next).
-before (a, i) -> before (a, i.next).
+not before (t,  n).
+
+left (a, b), before (b, a) -> False.
+right (a, b), before (b, a) -> False.
 
 -- Test rules
 
