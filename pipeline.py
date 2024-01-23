@@ -253,10 +253,6 @@ if __name__ == '__main__':
     if models:
         print("The input program is satisfiable.")
         print("")
-        for k in program.index.sortMap:
-            print(k, program.index.sortMap[k])
-        for k in program.index.functionMap:
-            print(k, program.index.functionMap[k])
         if size > 1:
             print(f"Showing up to {size} models...")
         elif size == 1:
