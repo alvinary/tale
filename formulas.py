@@ -221,7 +221,7 @@ class Index:
 @dataclass(frozen=True)
 class Term:
     term: str
-    functions: list[str]
+    functions: tuple[str]
 
     def evaluate(self, index, assignment):
 
@@ -257,7 +257,7 @@ class Term:
             value, error = index.value(
                 function,
                 argument.term)  # What if function is a term? Can that happen?
-            value = Term(value, [])
+            value = Term(value, ())
 
             if not isinstance(error, Ok):
                 raise error

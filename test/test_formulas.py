@@ -3,34 +3,33 @@ import pytest
 from pysat.solvers import Solver
 from tale.formulas import *
 
-a = Term('a', [])
-b = Term('b', [])
-c = Term('c', [])
-d = Term('d', [])
-p = Term('p', [])
-q = Term('q', [])
-r = Term('r', [])
-t = Term('t', [])
-s = Term('s', [])
+a = Term('a', ())
+b = Term('b', ())
+c = Term('c', ())
+d = Term('d', ())
+p = Term('p', ())
+q = Term('q', ())
+r = Term('r', ())
+t = Term('t', ())
+s = Term('s', ())
 
-pa = Atom([p, a])
-qa = Atom([q, a])
-sa = Atom([s, a])
-pab = Atom([p, a, b])
-qab = Atom([q, a, b])
-rba = Atom([r, b, a])
-pb = Atom([p, b])
-sab = Atom([s, a, b])
-ta = Atom([t, a])
-
+pa = Atom((p, a))
+qa = Atom((q, a))
+sa = Atom((s, a))
+pab = Atom((p, a, b))
+qab = Atom((q, a, b))
+rba = Atom((r, b, a))
+pb = Atom((p, b))
+sab = Atom((s, a, b))
+ta = Atom((t, a))
 
 def test_terms():
 
     # Define constants, functions, and a variable 'v',
     # which ranges over functions
 
-    funs = ["f", "g"]
-    cons = [a, b, c, d]
+    funs = ("f", "g")
+    cons = (a, b, c, d)
 
     vals = {
         ('f', 'a'): 'a',
@@ -50,8 +49,8 @@ def test_terms():
     # 1b) Test a compund term, g(f(a))
 
     index = Index(functions=vals, variables=varbs)
-    term1 = Term('a', functions=['f'])
-    term2 = Term('a', functions=['f', 'g'])
+    term1 = Term('a', functions=('f',))
+    term2 = Term('a', functions=('f', 'g'))
 
     val_1a = term1.evaluate(index, assign)
     val_1b = term2.evaluate(index, assign)
@@ -61,14 +60,14 @@ def test_terms():
     assert val_1b == b
 
     # Test with assignment
-    term3 = Term('a', functions=['f', 'g', 'v'])
+    term3 = Term('a', functions=('f', 'g', 'v'))
     val2 = term3.evaluate(index, assign)
 
     assert val2 == a
 
     # Test error
 
-    term4 = Term("gggg", ["f"])
+    term4 = Term("gggg", ("f",))
     try:
         val = term4.evaluate(index, assign)
     except FunctionError:
@@ -83,19 +82,19 @@ def test_rules():
     rule4s = "Either q(a), s(a)"
     rule5s = "t(a) v p(a) v q(a)"
 
-    a = Term('a', [])
-    b = Term('b', [])
-    p = Term('p', [])
-    q = Term('q', [])
-    r = Term('r', [])
-    t = Term('t', [])
-    s = Term('s', [])
+    a = Term('a', ())
+    b = Term('b', ())
+    p = Term('p', ())
+    q = Term('q', ())
+    r = Term('r', ())
+    t = Term('t', ())
+    s = Term('s', ())
 
-    rule1 = If([pab], [qa])
-    rule2 = Never([qab, pab])
-    rule3 = Iff([pa, rba, pb], [sab])
-    rule4 = Either([qa, sa])
-    rule5 = Or([ta, pa, qa])
+    rule1 = If((pab,), (qa,))
+    rule2 = Never((qab, pab))
+    rule3 = Iff((pa, rba, pb), (sab,))
+    rule4 = Either((qa, sa))
+    rule5 = Or((ta, pa, qa))
 
     assert rule1.show() == rule1s
     assert rule2.show() == rule2s
@@ -129,11 +128,11 @@ def test_embedding():
 
     dimacs = DimacsIndex(atoms=[pa, qa, pab, qab, rba, pb, sab, ta])
 
-    iff1 = Iff([pa], [qa])
-    if1 = If([ta], [pb])
-    either1 = Either([ta, qa])
-    or1 = Or([ta, qa, pa, pb, sab])
-    never1 = Never([sab, qa])
+    iff1 = Iff((pa,), (qa,))
+    if1 = If((ta,), (pb,))
+    either1 = Either((ta, qa))
+    or1 = Or((ta, qa, pa, pb, sab))
+    never1 = Never((sab, qa))
 
     rules = [iff1, if1, either1]
 

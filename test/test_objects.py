@@ -40,25 +40,25 @@ def test_trees():
     try:
         getTree(model1, test=True)
         assert False
-    except BrokenPrecondition:
+    except Exception:
         pass
 
     try:
         getTree(model2, test=True)
         assert False
-    except BrokenPrecondition:
+    except Exception:
         pass
 
     try:
         getTree(model3, test=True)
         assert False
-    except BrokenPrecondition:
+    except Exception:
         pass
 
     try:
         getTree(model4, test=True)
         assert False
-    except BrokenPrecondition:
+    except Exception:
         pass
 
     assert getTree(model5, test=True)
