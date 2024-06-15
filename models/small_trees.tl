@@ -9,5 +9,3 @@ edge (a, b), before (b, a) -> False.
 
 parent (a, a) -> root (a).
 root (a), root (b), a != b -> False.
-
-parent (b, a) <-> edge (a, b).
